@@ -1,4 +1,4 @@
-import streamlit as st
+vimport streamlit as st
 import google.generativeai as genai
 import requests
 from streamlit_lottie import st_lottie
@@ -45,8 +45,8 @@ st.markdown("""
     }
     
     .avatar-img {
-        width: 100px;
-        height: 100px;
+        width: 80px;
+        height: 80px;
         border-radius: 50%;
         border: 3px solid #2b8a3e; /* Borda verde */
         box-shadow: 0px 4px 15px rgba(0,0,0,0.7);
@@ -77,7 +77,7 @@ st.markdown("""
 <!-- Elementos Flutuantes -->
 <div class="floating-avatar">
     <div class="speech-bubble">Olá! Sou sua IA de Vendas.</div>
-    <img src="https://cdn-icons-png.flaticon.com/512/4712/4712035.png" class="avatar-img" alt="Avatar">
+    <img src="https://i.postimg.cc/SKhHjFHv/Gemini-Generated-Image-7tgz1j7tgz1j7tgz.png" class="avatar-img" alt="Avatar">
 </div>
 
 """, unsafe_allow_html=True)
