@@ -5,7 +5,7 @@ from streamlit_lottie import st_lottie
 import time
 
 # 1. Configuração da Página
-st.set_page_config(page_title="IA Vendas Elite", page_icon="🤖")
+st.set_page_config(page_title="IA Vendas Elite 2.0", page_icon="⚡")
 
 # 2. Visual 'Ilha Paradisíaca' (Mobile Friendly)
 st.markdown("""
@@ -18,7 +18,7 @@ st.markdown("""
     /* Fundo de Ilha (Responsivo) */
     .stApp {
         background-color: #0e1117; /* Fallback */
-        background-image: url('https://images.unsplash.com/photo-1596422846543-75c6fc197f07?q=80&w=2070');
+        background-image: url('[https://images.unsplash.com/photo-1596422846543-75c6fc197f07?q=80&w=2070'](https://images.unsplash.com/photo-1596422846543-75c6fc197f07?q=80&w=2070'));
         background-size: cover;
         background-attachment: fixed;
         background-position: center;
@@ -47,14 +47,14 @@ st.markdown("""
         border: 3px solid #4CAF50; /* Borda verde */
         
         /* Imagem como fundo para controle de corte/foco */
-        background-image: url('https://i.postimg.cc/SKhHjFHv/Gemini-Generated-Image-7tgz1j7tgz1j7tgz.png');
+        background-image: url('[https://i.postimg.cc/SKhHjFHv/Gemini-Generated-Image-7tgz1j7tgz1j7tgz.png'](https://i.postimg.cc/SKhHjFHv/Gemini-Generated-Image-7tgz1j7tgz1j7tgz.png'));
         background-size: cover; 
         background-position: center top; /* Foca na parte de cima (rosto) */
         
-        /* Posicionamento no TOPO */
+        /* Posicionamento no TOPO (Ajustado PRO) */
         position: fixed;
         top: 20px;
-        right: 15px;
+        right: 20px;
         z-index: 1000;
         box-shadow: 0 4px 8px rgba(0,0,0,0.3);
         
@@ -70,8 +70,8 @@ st.markdown("""
     
     .speech-bubble {
         position: absolute;
-        top: 30px; /* Alinhado ao lado do rosto */
-        right: 110px; /* À esquerda do avatar (90px width + 20px gap) */
+        top: 35px; /* Ajuste PRO */
+        right: 120px; /* Ajuste PRO */
         
         background-color: white;
         color: black;
@@ -124,29 +124,31 @@ def load_lottieurl(url):
         return None
 
 # Carregar Animação (Robô 3D)
-lottie_url = "https://lottie.host/58830071-5803-420a-941e-315543769727/I1b3W6l8kE.json"
+lottie_url = "[https://lottie.host/58830071-5803-420a-941e-315543769727/I1b3W6l8kE.json](https://lottie.host/58830071-5803-420a-941e-315543769727/I1b3W6l8kE.json)"
 lottie_json = load_lottieurl(lottie_url)
 
 # Exibir Animação (Se carregou)
 if lottie_json:
     st_lottie(lottie_json, height=200, key="coding")
 
-st.title("Demonstração: IA Vendas Elite")
+st.title("Demonstração: IA Vendas Elite 2.0")
+st.caption("⚡ Versão Turbo (Chave Validada)")
 st.markdown("---")
 
-# 3. Configurações da API
+# 3. Configurações da API (CONEXÃO SEGURA - BLINDADA)
 try:
-    api_key = st.secrets["GOOGLE_API_KEY"]
-    genai.configure(api_key=api_key)
+    # Lendo DIRETAMENTE do arquivo .streamlit/secrets.toml
+    genai.configure(api_key=st.secrets["GOOGLE_API_KEY"])
 except Exception:
-    st.error("❌ Erro: Secret 'GOOGLE_API_KEY' não encontrado.")
+    st.error("❌ Erro CRÍTICO: Chave API não encontrada nos Secrets!")
     st.stop()
 
-# 4. Motor (Indispensável): gemini-pro
+# 4. Motor (Turbo Liso): gemini-2.0-flash-exp
 try:
-    model = genai.GenerativeModel('gemini-pro')
-except Exception:
-    model = genai.GenerativeModel('gemini-pro')
+    # O user GARANTIU que este é o nome correto sem erro
+    model = genai.GenerativeModel('gemini-2.0-flash-exp')
+except Exception as e:
+    st.error(f"Erro de Modelo: {e}")
 
 # 5. Inicialização do Histórico
 if "messages" not in st.session_state:
@@ -155,35 +157,4 @@ if "messages" not in st.session_state:
 # 6. Exibir mensagens do histórico
 for message in st.session_state.messages:
     avatar = "🤖" if message["role"] == "assistant" else "👤"
-    with st.chat_message(message["role"], avatar=avatar):
-        # Hack visual opcional mantido
-        st.markdown(message["content"])
-
-# 7. Entrada do Usuário
-if prompt := st.chat_input("Digite sua mensagem..."):
-    # Adicionar mensagem do usuário
-    st.session_state.messages.append({"role": "user", "content": prompt})
-    with st.chat_message("user", avatar="👤"):
-        # Estilo inline verde para usuário (mantido)
-        st.markdown(f'<div style="background-color: #2b8a3e; padding: 10px; border-radius: 5px; color: white;">{prompt}</div>', unsafe_allow_html=True)
-
-    # 8. Lógica do Vendedor
-    system_prompt = """
-    Aja como um Vendedor Elite. Responda de forma curta e persuasiva. NUNCA use meta-tags como [Dialeto] ou [Resposta].
-    """
-    
-    content_to_send = [prompt, system_prompt]
-
-    with st.chat_message("assistant", avatar="🤖"):
-        message_placeholder = st.empty()
-        
-        # Proteção com try/except
-        try:
-            response = model.generate_content(content_to_send)
-            full_response = response.text
-            message_placeholder.markdown(full_response)
-            st.session_state.messages.append({"role": "assistant", "content": full_response})
-            
-        except Exception:
-            # Mensagem de erro amigável
-            st.warning('⏳ O Vendedor está recarregando as energias. Tente em 1 minuto.')
+    with st.chat
