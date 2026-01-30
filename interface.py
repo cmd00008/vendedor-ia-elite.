@@ -24,8 +24,19 @@ else:
 if api_key:
     genai.configure(api_key=api_key)
     
-    # Modelo (mesmo do hello.py)
-    model = genai.GenerativeModel("gemini-1.5-flash")
+    # Modelo (Seleção Automática)
+    available_models = []
+    for m in genai.list_models():
+        if 'generateContent' in m.supported_generation_methods:
+            available_models.append(m.name)
+    
+    if available_models:
+        model_name = available_models[0]
+        st.toast(f"Modelo selecionado automaticamente: {model_name}")
+        model = genai.GenerativeModel(model_name)
+    else:
+        st.error("Nenhum modelo compatível com 'generateContent' foi encontrado.")
+        st.stop()
 
     # 3. Inicialização do Histórico de Chat
     if "messages" not in st.session_state:
