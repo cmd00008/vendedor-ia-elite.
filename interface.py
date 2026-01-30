@@ -61,9 +61,7 @@ if prompt := st.chat_input("Digite sua mensagem para o vendedor..."):
     2. ADAPTAR seu tom de voz e vocabulário para espelhar o estilo do cliente (Rapport).
     3. Identificar a necessidade oculta do cliente e oferecer o produto perfeito.
     
-    FORMATO DA RESPOSTA:
-    [Dialeto Detectado]: <Nome do Dialeto/Região>
-    [Resposta do Vendedor]: <Sua resposta vendedora e adaptada>
+    REGRA DE OURO: NUNCA escreva rótulos como [Dialeto], [Ação] ou [Resposta]. NUNCA explique seu raciocínio. Apenas responda diretamente ao usuário como se fosse uma conversa natural de WhatsApp.
     """
     
     # Prepara o conteúdo (Simulando chat stateless com contexto imediato ou full history se desejado)
