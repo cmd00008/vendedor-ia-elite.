@@ -7,7 +7,7 @@ import time
 # 1. Configuração da Página
 st.set_page_config(page_title="IA Vendas Elite", page_icon="🤖")
 
-# 2. Visual 'Hacker/LiveChat' (CSS)
+# 2. Visual 'Hacker/LiveChat' (CSS) + Avatar Flutuante
 st.markdown("""
 <style>
     /* Esconder Menu, Header, Footer */
@@ -26,7 +26,53 @@ st.markdown("""
         background-color: #1e1e1e; /* Fundo padrão (bot) */
         border: 1px solid #333;
     }
+    
+    /* --- AVATAR FLUTUANTE ESTILO POWERFRONT --- */
+    .floating-avatar {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 9999;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+    }
+    
+    .avatar-img {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        border: 3px solid #2b8a3e; /* Borda verde */
+        box-shadow: 0px 4px 10px rgba(0,0,0,0.5);
+        transition: transform 0.3s ease;
+    }
+    
+    .avatar-img:hover {
+        transform: scale(1.1);
+        cursor: pointer;
+    }
+    
+    .speech-bubble {
+        background-color: white;
+        color: black;
+        padding: 10px 15px;
+        border-radius: 15px 15px 0 15px;
+        margin-bottom: 10px;
+        box-shadow: 0px 2px 5px rgba(0,0,0,0.2);
+        font-weight: bold;
+        font-size: 14px;
+        max-width: 200px;
+        text-align: right;
+    }
+    
 </style>
+
+<!-- Elementos Flutuantes -->
+<div class="floating-avatar">
+    <div class="speech-bubble">Olá! Sou sua IA de Vendas.</div>
+    <img src="https://cdn-icons-png.flaticon.com/512/4712/4712035.png" class="avatar-img" alt="Avatar">
+</div>
+
 """, unsafe_allow_html=True)
 
 # Função para carregar Lottie
@@ -39,7 +85,7 @@ def load_lottieurl(url):
     except:
         return None
 
-# Carregar Animação
+# Carregar Animação (Robô 3D)
 lottie_url = "https://lottie.host/58830071-5803-420a-941e-315543769727/I1b3W6l8kE.json"
 lottie_json = load_lottieurl(lottie_url)
 
