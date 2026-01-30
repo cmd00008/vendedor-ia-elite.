@@ -12,7 +12,7 @@ def chatbot_salesman():
     genai.configure(api_key=api_key)
     
     # Using the verified working model
-   model = genai.GenerativeModel("gemini-1.5-flash")
+    model = genai.GenerativeModel("gemini-1.5-flash")
 
     print("\n--- 🤖 Vendedor Global Multimodal (Gemini 1.5) ---")
     print("Posso atender por TEXTO ou ÁUDIO.")
@@ -78,5 +78,3 @@ def chatbot_salesman():
 
 if __name__ == "__main__":
     chatbot_salesman()
-
-

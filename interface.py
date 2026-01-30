@@ -11,7 +11,11 @@ st.markdown("---")
 # 2. Configurações da API (Carregadas do ambiente ou input lateral)
 api_key = os.environ.get("GOOGLE_API_KEY")
 
-
+if not api_key:
+    st.warning("⚠️ GOOGLE_API_KEY não encontrada nas variáveis de ambiente.")
+    api_key_input = st.text_input("Insira sua API Key do Google:", type="password")
+    if api_key_input:
+        api_key = api_key_input
 else:
     # Opcional: Mostrar que a chave foi carregada com sucesso, mas escondida
     # st.success("API Key carregada com sucesso!")
@@ -21,7 +25,7 @@ if api_key:
     genai.configure(api_key=api_key)
     
     # Modelo (mesmo do hello.py)
-   model = genai.GenerativeModel("gemini-1.5-pro")
+    model = genai.GenerativeModel("gemini-1.5-flash")
 
     # 3. Inicialização do Histórico de Chat
     if "messages" not in st.session_state:
@@ -73,6 +77,3 @@ if api_key:
 
 else:
     st.info("Por favor, configure a API Key para começar.")
-
-
-
