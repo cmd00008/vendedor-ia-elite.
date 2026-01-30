@@ -1,4 +1,4 @@
-vimport streamlit as st
+import streamlit as st
 import google.generativeai as genai
 import requests
 from streamlit_lottie import st_lottie
@@ -33,41 +33,53 @@ st.markdown("""
         backdrop-filter: blur(5px);
     }
     
-    /* --- AVATAR FLUTUANTE (Mobile Friendly) --- */
+    /* --- AVATAR FLUTUANTE (Background Image + Float) --- */
+    @keyframes float {
+        0% { transform: translateY(0px); }
+        50% { transform: translateY(-10px); }
+        100% { transform: translateY(0px); }
+    }
+
     .floating-avatar {
-        position: fixed;
-        bottom: 150px; /* Levantado para não cobrir teclado mobile */
-        right: 20px;
-        z-index: 9999;
-        display: flex;
-        flex-direction: column;
-        align-items: flex-end;
-    }
-    
-    .avatar-img {
-        width: 80px;
-        height: 80px;
+        width: 90px;
+        height: 90px;
         border-radius: 50%;
-        border: 3px solid #2b8a3e; /* Borda verde */
-        box-shadow: 0px 4px 15px rgba(0,0,0,0.7);
+        border: 3px solid #4CAF50; /* Borda verde mais grossa */
+        
+        /* Imagem como fundo para controle de corte/foco */
+        background-image: url('https://i.postimg.cc/SKhHjFHv/Gemini-Generated-Image-7tgz1j7tgz1j7tgz.png');
+        background-size: cover; /* Preenche todo o círculo */
+        background-position: center top; /* Foca na parte de cima (rosto) */
+        
+        /* Posicionamento e Animação */
+        animation: float 3s ease-in-out infinite;
+        position: fixed;
+        bottom: 150px;
+        right: 20px;
+        z-index: 1000;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        
         transition: transform 0.3s ease;
-        background-color: rgba(0,0,0,0.5); /* Fundo caso png tenha transparencia */
     }
     
-    .avatar-img:hover {
-        transform: scale(1.1);
+    .floating-avatar:hover {
+        transform: scale(1.05);
         cursor: pointer;
     }
     
     .speech-bubble {
+        position: absolute;
+        bottom: 100px; /* Acima do avatar */
+        right: 0;
         background-color: white;
         color: black;
         padding: 10px 15px;
         border-radius: 15px 15px 0 15px;
-        margin-bottom: 10px; /* Espaço entre bolha e avatar */
+        margin-bottom: 10px;
         box-shadow: 0px 2px 5px rgba(0,0,0,0.3);
         font-weight: bold;
         font-size: 14px;
+        width: max-content;
         max-width: 200px;
         text-align: right;
     }
@@ -77,7 +89,6 @@ st.markdown("""
 <!-- Elementos Flutuantes -->
 <div class="floating-avatar">
     <div class="speech-bubble">Olá! Sou sua IA de Vendas.</div>
-    <img src="https://i.postimg.cc/SKhHjFHv/Gemini-Generated-Image-7tgz1j7tgz1j7tgz.png" class="avatar-img" alt="Avatar">
 </div>
 
 """, unsafe_allow_html=True)
