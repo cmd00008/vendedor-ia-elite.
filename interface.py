@@ -165,9 +165,23 @@ except Exception:
     st.error("❌ Erro CRÍTICO: Chave API não encontrada nos Secrets!")
     st.stop()
 
-# 4. Motor: gemini-2.5-flash (CONFIRMADO EM LIST_MODELS)
+# 4. Motor e System Instruction
+# Define a instrução de sistema PRIMEIRO
+system_instruction = """
+Você é o CDM, uma IA de Vendas Global.
+SUA REGRA NÚMERO 1 (INVIOLÁVEL): ESPELHAMENTO DE IDIOMA.
+- Antes de responder, DETECTE o idioma do usuário.
+- Se o usuário falar INGLÊS -> Responda 100% em INGLÊS.
+- Se o usuário falar ESPANHOL -> Responda 100% em ESPANHOL.
+- Se o usuário falar PORTUGUÊS -> Responda 100% em PORTUGUÊS.
+Nunca responda em Português se a pergunta for em Inglês.
+Seja curto, grosso e focado em vendas.
+"""
+
 try:
-    model = genai.GenerativeModel('gemini-2.5-flash')
+    # Passa a instrução NO MODELO (Melhor prática)
+    # Usando gemini-2.5-flash pois o 2.0-flash-exp deu 404
+    model = genai.GenerativeModel('gemini-2.5-flash', system_instruction=system_instruction)
 except Exception as e:
     st.error(f"Erro de Modelo: {e}")
 
@@ -190,27 +204,14 @@ if prompt := st.chat_input("Digite sua mensagem..."):
         # Estilo inline verde para usuário (mantido)
         st.markdown(f'<div style="background-color: #2b8a3e; padding: 10px; border-radius: 5px; color: white;">{prompt}</div>', unsafe_allow_html=True)
 
-    # 8. Lógica do Vendedor (SEM TRAVAS)
-    system_prompt = """
-    Aja como um Vendedor de Elite.
-    Responda de forma extremamente rápida, curta e persuasiva.
-    NUNCA use meta-tags como [Dialeto] ou [Resposta].
-    
-    Você é um Especialista em Vendas Poliglota.
-    REGRA DE IDIOMA: Responda SEMPRE no mesmo idioma do usuário.
-    User: "Do you speak English?" -> Você: "Yes, certainly! How can I help you scale today?"
-    User: "Hola" -> Você: "¡Hola! ¿En qué puedo ayudarte?"
-    User: "Oi" -> Você: "Olá! Tudo bem?"
-    """
-    
-    content_to_send = [prompt, system_prompt]
-
+    # 8. Lógica do Vendedor (Agora usa apenas o prompt, instrução já está no modelo)
     with st.chat_message("assistant", avatar="🤖"):
         message_placeholder = st.empty()
         
         # Chamada LIMPA e DIRETA à API
         try:
-            response = model.generate_content(content_to_send)
+            # Envia apenas o prompt, pois o system_instruction foi configurado no modelo
+            response = model.generate_content(prompt)
             full_response = response.text
             message_placeholder.markdown(full_response)
             st.session_state.messages.append({"role": "assistant", "content": full_response})
