@@ -25,18 +25,26 @@ st.markdown("""
         color: white;
     }
     
-    /* Forçar texto branco geral (CSS FIX) */
-    body, .stApp, .stMarkdown, p, h1, h2, h3, li, span {
-        color: #ffffff !important;
+    /* 1. Forçar texto do Robô para BRANCO PURO */
+    div[data-testid="stChatMessage"] p, 
+    div[data-testid="stChatMessage"] .stMarkdown {
+        color: #FFFFFF !important;
+        text-shadow: 0px 0px 2px black; /* Sombra para garantir leitura */
     }
-    /* Forçar texto branco dentro dos balões de chat */
-    div[data-testid="stChatMessage"] p {
-        color: #ffffff !important;
+    /* 2. Transformar a Caixa de Digitação em MODO ESCURO */
+    .stTextInput input, .stChatInput textarea {
+        color: #FFFFFF !important;       /* Letra Branca */
+        background-color: #333333 !important; /* Fundo Cinza Escuro */
+        border: 1px solid #555555 !important;
     }
-    /* Ajustar fundo do input para o texto branco aparecer */
-    .stTextInput input {
-        color: #ffffff !important;
-        background-color: #333333 !important;
+    /* 3. Cor do texto enquanto digita */
+    textarea, input {
+        color: #FFFFFF !important;
+        -webkit-text-fill-color: #FFFFFF !important;
+    }
+    /* 4. Placeholder (Texto 'Digite sua mensagem...') */
+    ::placeholder {
+        color: #CCCCCC !important;
     }
 
     /* Mensagens com Transparência para Leitura */
