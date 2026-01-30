@@ -84,6 +84,19 @@ st.markdown("""
         text-align: right;
     }
     
+    /* --- CSS Responsivo para Celular --- */
+    @media screen and (max-width: 600px) {
+        .floating-avatar {
+            width: 60px !important; /* Menor no celular */
+            height: 60px !important;
+            bottom: 110px !important; /* Ajuste de altura */
+            right: 10px !important;
+        }
+        .speech-bubble {
+            display: none !important; /* Esconde o balão de fala no celular para não tapar o texto */
+        }
+    }
+    
 </style>
 
 <!-- Elementos Flutuantes -->
