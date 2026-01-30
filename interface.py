@@ -1,83 +1,105 @@
 import streamlit as st
 import google.generativeai as genai
+import requests
+from streamlit_lottie import st_lottie
 import time
 
 # 1. Configuração da Página
 st.set_page_config(page_title="IA Vendas Elite", page_icon="🤖")
 
-# Visual Limpo: CSS para esconder Menu, Header e Footer
+# 2. Visual 'Hacker/LiveChat' (CSS)
 st.markdown("""
 <style>
+    /* Esconder Menu, Header, Footer */
     #MainMenu {visibility: hidden;}
     header {visibility: hidden;}
     footer {visibility: hidden;}
+
+    /* Fundo Escuro Geral */
+    .stApp {
+        background-color: #0e1117;
+        color: white;
+    }
+
+    /* Tentar forçar a cor das mensagens do usuário (verde) */
+    [data-testid="stChatMessage"] {
+        background-color: #1e1e1e; /* Fundo padrão (bot) */
+        border: 1px solid #333;
+    }
 </style>
 """, unsafe_allow_html=True)
+
+# Função para carregar Lottie
+def load_lottieurl(url):
+    try:
+        r = requests.get(url)
+        if r.status_code != 200:
+            return None
+        return r.json()
+    except:
+        return None
+
+# Carregar Animação
+lottie_url = "https://lottie.host/58830071-5803-420a-941e-315543769727/I1b3W6l8kE.json"
+lottie_json = load_lottieurl(lottie_url)
+
+# Exibir Animação (Se carregou)
+if lottie_json:
+    st_lottie(lottie_json, height=200, key="coding")
 
 st.title("Demonstração: IA Vendas Elite")
 st.markdown("---")
 
-# 2. Configurações da API (Blindagem e st.secrets)
+# 3. Configurações da API
 try:
     api_key = st.secrets["GOOGLE_API_KEY"]
     genai.configure(api_key=api_key)
 except Exception:
-    st.error("❌ Erro: Secret 'GOOGLE_API_KEY' não encontrado. Por favor, configure o arquivo .streamlit/secrets.toml.")
+    st.error("❌ Erro: Secret 'GOOGLE_API_KEY' não encontrado.")
     st.stop()
 
-# Modelo: Tentativa Final (gemini-pro)
-# Ajustado para usar especificamente 'gemini-pro' conforme solicitado.
-model = genai.GenerativeModel('gemini-pro')
+# 4. Motor (Indispensável): gemini-pro
+try:
+    model = genai.GenerativeModel('gemini-pro')
+except Exception:
+    model = genai.GenerativeModel('gemini-pro')
 
-# 3. Inicialização do Histórico de Chat
+# 5. Inicialização do Histórico
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
-# 4. Exibir mensagens do histórico
+# 6. Exibir mensagens do histórico
 for message in st.session_state.messages:
-    # Avatars definidos: Robô para assistente, Usuário para user
     avatar = "🤖" if message["role"] == "assistant" else "👤"
     with st.chat_message(message["role"], avatar=avatar):
+        # Hack visual opcional mantido
         st.markdown(message["content"])
 
-# 5. Entrada do Usuário
-if prompt := st.chat_input("Digite sua mensagem para o vendedor..."):
-    # Adiciona mensagem do usuário ao histórico visual
+# 7. Entrada do Usuário
+if prompt := st.chat_input("Digite sua mensagem..."):
+    # Adicionar mensagem do usuário
     st.session_state.messages.append({"role": "user", "content": prompt})
     with st.chat_message("user", avatar="👤"):
-        st.markdown(prompt)
+        # Estilo inline verde para usuário
+        st.markdown(f'<div style="background-color: #2b8a3e; padding: 10px; border-radius: 5px; color: white;">{prompt}</div>', unsafe_allow_html=True)
 
-    # 6. Lógica do Vendedor (System Prompt + Persona)
+    # 8. Lógica do Vendedor
     system_prompt = """
-    ATUE COMO: Um Vendedor Consultivo Especialista Global.
-    
-    SUA MISSÃO:
-    1. Identificar o idioma e o DIALETO/GÍRIA REGIONAL do cliente (ex: Português de Portugal vs. Brasil, Gírias de SP vs. Nordeste, Inglês Britânico vs. Texano).
-    2. ADAPTAR seu tom de voz e vocabulário para espelhar o estilo do cliente (Rapport).
-    3. Identificar a necessidade oculta do cliente e oferecer o produto perfeito.
-    
-    REGRA DE OURO: NUNCA escreva rótulos como [Dialeto], [Ação] ou [Resposta]. NUNCA explique seu raciocínio. Apenas responda diretamente ao usuário como se fosse uma conversa natural de WhatsApp.
+    Aja como um Vendedor Elite. Responda de forma curta e persuasiva. NUNCA use meta-tags como [Dialeto] ou [Resposta].
     """
     
-    # Prepara o conteúdo (Simulando chat stateless com contexto imediato ou full history se desejado)
-    # Para garantir robustez e foco na instrução:
     content_to_send = [prompt, system_prompt]
 
     with st.chat_message("assistant", avatar="🤖"):
         message_placeholder = st.empty()
         
-        # Blindagem Anti-Erro 429
+        # Proteção com try/except
         try:
-            # Envia para o modelo
             response = model.generate_content(content_to_send)
-            
-            # Extrair texto da resposta
             full_response = response.text
             message_placeholder.markdown(full_response)
-            
-            # Adiciona resposta ao histórico
             st.session_state.messages.append({"role": "assistant", "content": full_response})
             
         except Exception:
-            # Mensagem amigável solicitada em caso de erro (Técnico oculto)
-            st.warning('⏳ O Vendedor está atendendo muitos clientes. Aguarde 30 segundos e tente novamente.')
+            # Mensagem de erro amigável
+            st.warning('⏳ O Vendedor está recarregando as energias. Tente em 1 minuto.')
