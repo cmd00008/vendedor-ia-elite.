@@ -7,7 +7,7 @@ import time
 # 1. Configuração da Página
 st.set_page_config(page_title="IA Vendas Elite", page_icon="🤖")
 
-# 2. Visual 'Hacker/LiveChat' (CSS) + Avatar Flutuante
+# 2. Visual 'Ilha Paradisíaca' (Mobile Friendly)
 st.markdown("""
 <style>
     /* Esconder Menu, Header, Footer */
@@ -15,22 +15,28 @@ st.markdown("""
     header {visibility: hidden;}
     footer {visibility: hidden;}
 
-    /* Fundo Escuro Geral */
+    /* Fundo de Ilha (Responsivo) */
     .stApp {
-        background-color: #0e1117;
+        background-color: #0e1117; /* Fallback */
+        background-image: url('https://images.unsplash.com/photo-1596422846543-75c6fc197f07?q=80&w=2070');
+        background-size: cover;
+        background-attachment: fixed;
+        background-position: center;
         color: white;
     }
 
-    /* Tentar forçar a cor das mensagens do usuário (verde) */
+    /* Mensagens com Transparência para Leitura */
     [data-testid="stChatMessage"] {
-        background-color: #1e1e1e; /* Fundo padrão (bot) */
-        border: 1px solid #333;
+        background-color: rgba(30, 30, 30, 0.85); /* Fundo preto semi-transparente */
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+        backdrop-filter: blur(5px);
     }
     
-    /* --- AVATAR FLUTUANTE ESTILO POWERFRONT --- */
+    /* --- AVATAR FLUTUANTE (Mobile Friendly) --- */
     .floating-avatar {
         position: fixed;
-        bottom: 20px;
+        bottom: 150px; /* Levantado para não cobrir teclado mobile */
         right: 20px;
         z-index: 9999;
         display: flex;
@@ -43,8 +49,9 @@ st.markdown("""
         height: 100px;
         border-radius: 50%;
         border: 3px solid #2b8a3e; /* Borda verde */
-        box-shadow: 0px 4px 10px rgba(0,0,0,0.5);
+        box-shadow: 0px 4px 15px rgba(0,0,0,0.7);
         transition: transform 0.3s ease;
+        background-color: rgba(0,0,0,0.5); /* Fundo caso png tenha transparencia */
     }
     
     .avatar-img:hover {
@@ -57,8 +64,8 @@ st.markdown("""
         color: black;
         padding: 10px 15px;
         border-radius: 15px 15px 0 15px;
-        margin-bottom: 10px;
-        box-shadow: 0px 2px 5px rgba(0,0,0,0.2);
+        margin-bottom: 10px; /* Espaço entre bolha e avatar */
+        box-shadow: 0px 2px 5px rgba(0,0,0,0.3);
         font-weight: bold;
         font-size: 14px;
         max-width: 200px;
@@ -126,7 +133,7 @@ if prompt := st.chat_input("Digite sua mensagem..."):
     # Adicionar mensagem do usuário
     st.session_state.messages.append({"role": "user", "content": prompt})
     with st.chat_message("user", avatar="👤"):
-        # Estilo inline verde para usuário
+        # Estilo inline verde para usuário (mantido)
         st.markdown(f'<div style="background-color: #2b8a3e; padding: 10px; border-radius: 5px; color: white;">{prompt}</div>', unsafe_allow_html=True)
 
     # 8. Lógica do Vendedor
