@@ -25,14 +25,9 @@ except Exception:
     st.error("❌ Erro: Secret 'GOOGLE_API_KEY' não encontrado. Por favor, configure o arquivo .streamlit/secrets.toml.")
     st.stop()
 
-# Modelo: Versão Final Gratuita (Blindada)
-# O usuário reportou que a versão 1.5 tem erro 429, migrando para 2.5 conforme solicitado.
-try:
-    # Tenta instanciar o modelo solicitado
-    model = genai.GenerativeModel('gemini-2.5-flash')
-except Exception:
-    # Fallback seguro caso '2.5' seja typo ou não exista ainda, mas mantendo a lógica de armadura
-    model = genai.GenerativeModel('gemini-1.5-flash')
+# Modelo: Tentativa Final (gemini-pro)
+# Ajustado para usar especificamente 'gemini-pro' conforme solicitado.
+model = genai.GenerativeModel('gemini-pro')
 
 # 3. Inicialização do Histórico de Chat
 if "messages" not in st.session_state:
