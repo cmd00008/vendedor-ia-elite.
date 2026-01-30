@@ -8,21 +8,13 @@ st.set_page_config(page_title="IA Vendas Elite", page_icon="🤖")
 st.title("Demonstração: IA Vendas Elite")
 st.markdown("---")
 
-# 2. Configurações da API (Carregadas do ambiente ou input lateral)
-api_key = os.environ.get("GOOGLE_API_KEY")
-
-if not api_key:
-    st.warning("⚠️ GOOGLE_API_KEY não encontrada nas variáveis de ambiente.")
-    api_key_input = st.text_input("Insira sua API Key do Google:", type="password")
-    if api_key_input:
-        api_key = api_key_input
-else:
-    # Opcional: Mostrar que a chave foi carregada com sucesso, mas escondida
-    # st.success("API Key carregada com sucesso!")
-    pass
-
-if api_key:
+# 2. Configurações da API (Carregadas dos Segredos do Streamlit)
+try:
+    api_key = st.secrets["GOOGLE_API_KEY"]
     genai.configure(api_key=api_key)
+except Exception:
+    st.error("❌ Erro: Secret 'GOOGLE_API_KEY' não encontrado. Por favor, configure o arquivo .streamlit/secrets.toml.")
+    st.stop()
     
     # Modelo (Seleção Automática)
     available_models = []
