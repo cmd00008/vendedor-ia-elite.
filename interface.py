@@ -24,6 +24,20 @@ st.markdown("""
         background-position: center;
         color: white;
     }
+    
+    /* Forçar texto branco geral (CSS FIX) */
+    body, .stApp, .stMarkdown, p, h1, h2, h3, li, span {
+        color: #ffffff !important;
+    }
+    /* Forçar texto branco dentro dos balões de chat */
+    div[data-testid="stChatMessage"] p {
+        color: #ffffff !important;
+    }
+    /* Ajustar fundo do input para o texto branco aparecer */
+    .stTextInput input {
+        color: #ffffff !important;
+        background-color: #333333 !important;
+    }
 
     /* Mensagens com Transparência para Leitura */
     [data-testid="stChatMessage"] {
@@ -74,7 +88,7 @@ st.markdown("""
         right: 120px; /* Ajuste PRO */
         
         background-color: white;
-        color: black;
+        color: black !important; /* Exceção: Texto preto no balão branco */
         padding: 10px 15px;
         border-radius: 15px 15px 0 15px;
         
