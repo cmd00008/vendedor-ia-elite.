@@ -33,10 +33,10 @@ st.markdown("""
         backdrop-filter: blur(5px);
     }
     
-    /* --- AVATAR FLUTUANTE (Background Image + Float) --- */
+    /* --- AVATAR FLUTUANTE (Topo Direito) --- */
     @keyframes float {
         0% { transform: translateY(0px); }
-        50% { transform: translateY(-10px); }
+        50% { transform: translateY(-5px); } /* Movimento suave */
         100% { transform: translateY(0px); }
     }
 
@@ -44,21 +44,22 @@ st.markdown("""
         width: 90px;
         height: 90px;
         border-radius: 50%;
-        border: 3px solid #4CAF50; /* Borda verde mais grossa */
+        border: 3px solid #4CAF50; /* Borda verde */
         
         /* Imagem como fundo para controle de corte/foco */
         background-image: url('https://i.postimg.cc/SKhHjFHv/Gemini-Generated-Image-7tgz1j7tgz1j7tgz.png');
-        background-size: cover; /* Preenche todo o círculo */
+        background-size: cover; 
         background-position: center top; /* Foca na parte de cima (rosto) */
         
-        /* Posicionamento e Animação */
-        animation: float 3s ease-in-out infinite;
+        /* Posicionamento no TOPO */
         position: fixed;
-        bottom: 150px;
-        right: 20px;
+        top: 20px;
+        right: 15px;
         z-index: 1000;
         box-shadow: 0 4px 8px rgba(0,0,0,0.3);
         
+        /* Animação */
+        animation: float 3s ease-in-out infinite;
         transition: transform 0.3s ease;
     }
     
@@ -69,31 +70,37 @@ st.markdown("""
     
     .speech-bubble {
         position: absolute;
-        bottom: 100px; /* Acima do avatar */
-        right: 0;
+        top: 30px; /* Alinhado ao lado do rosto */
+        right: 110px; /* À esquerda do avatar (90px width + 20px gap) */
+        
         background-color: white;
         color: black;
         padding: 10px 15px;
         border-radius: 15px 15px 0 15px;
-        margin-bottom: 10px;
+        
         box-shadow: 0px 2px 5px rgba(0,0,0,0.3);
         font-weight: bold;
         font-size: 14px;
         width: max-content;
         max-width: 200px;
         text-align: right;
+        display: block; /* Garante visibilidade */
     }
     
     /* --- CSS Responsivo para Celular --- */
     @media screen and (max-width: 600px) {
         .floating-avatar {
-            width: 60px !important; /* Menor no celular */
-            height: 60px !important;
-            bottom: 110px !important; /* Ajuste de altura */
+            width: 50px !important; /* Menor no celular */
+            height: 50px !important;
+            top: 15px !important;
             right: 10px !important;
         }
         .speech-bubble {
-            display: none !important; /* Esconde o balão de fala no celular para não tapar o texto */
+            display: block !important; /* Mantém VISÍVEL no celular */
+            right: 65px !important; /* Ajusta distância para avatar menor */
+            top: 10px !important;
+            font-size: 11px !important; /* Texto menor */
+            padding: 5px 10px !important;
         }
     }
     
@@ -101,7 +108,7 @@ st.markdown("""
 
 <!-- Elementos Flutuantes -->
 <div class="floating-avatar">
-    <div class="speech-bubble">Olá! Sou sua IA de Vendas.</div>
+    <div class="speech-bubble">Oi, eu sou CDM. Posso te ajudar?</div>
 </div>
 
 """, unsafe_allow_html=True)
