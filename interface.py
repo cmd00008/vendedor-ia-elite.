@@ -11,7 +11,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# --- 2. CSS: ZOOM PERFEITO NO ROSTO + CHAT MODERNO ---
+# --- 2. CSS: ZOOM "SUPER CLOSE" + CHAT MODERNO ---
 st.markdown("""
 <style>
     /* FUNDO */
@@ -47,19 +47,18 @@ st.markdown("""
         display: flex; align-items: center; justify-content: center;
     }
 
-    /* --- FOTO COM ZOOM INTELIGENTE (AJUSTE FINO) --- */
+    /* --- FOTO COM ZOOM MÁXIMO (ROSTO E BONÉ) --- */
     .profile-img-zoom {
         width: 100%; height: 100%;
         object-fit: cover;
         
-        /* 1. Posiciona a imagem para mostrar o topo (onde está a cabeça) */
-        object-position: center top; 
+        /* 1. Posicionamento inicial focado no topo */
+        object-position: center 15%; 
         
-        /* 2. Zoom moderado (1.6x) para não cortar o boné */
-        transform: scale(1.6); 
+        /* 2. ZOOM FORTE (2.8x): Para cortar a jaqueta e focar só na face */
+        transform: scale(2.8); 
         
-        /* 3. O SEGREDO: O Zoom acontece a partir do ponto 'center 20%' (rosto) */
-        /* Isso impede que o zoom empurre a cabeça para fora */
+        /* 3. PONTO DE ANCORAGEM: Mantém o foco entre o boné e o nariz */
         transform-origin: center 20%;
     }
 
@@ -198,8 +197,10 @@ if prompt := st.chat_input("Digite sua mensagem..."):
 
     with st.chat_message("model", avatar=bot_avatar_chat):
         try:
-            # FIX: Safer history slicing logic
-            chat_hist = [{"role": m["role"], "parts": [m["content"]]} for m in st.session_state.messages[:-1]]
+            # FIX: Safer history slicing
+            chat_hist = [{"role": m["role"], "parts": [m["content"]]} 
+                         for m in st.session_state.messages[:-1]]
+            
             chat = model.start_chat(history=chat_hist)
             response = chat.send_message(prompt)
             st.markdown(response.text)
