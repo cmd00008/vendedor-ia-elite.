@@ -3,7 +3,7 @@ import google.generativeai as genai
 import os
 import base64
 
-# --- 1. CONFIGURAÇÃO E LINKS ---
+# --- 1. SEUS LINKS ---
 LINK_FACEBOOK = "https://www.facebook.com/share/1BivFdqW66/"
 LINK_INSTAGRAM = "https://www.instagram.com/tocadocdm?igsh=MTdkYng5OGszNGI3Zw=="
 LINK_YOUTUBE = "https://youtube.com/@cdm_236?si=2cvU0sn9cgEssDpW"
@@ -16,21 +16,21 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# --- 2. CSS (ESTILO VISUAL) ---
+# --- 2. CSS (ESTILO VISUAL NEON) ---
 st.markdown("""
 <style>
-    /* FUNDO AZUL ESCURO */
+    /* FUNDO */
     .stApp {
         background: linear-gradient(to bottom, #0f2027, #203a43, #2c5364);
         background-attachment: fixed;
     }
     
-    /* TEXTO BRANCO EM TUDO */
+    /* TEXTOS */
     p, span, div, li, label, .stMarkdown, button, textarea, h1, h2, h3 {
         color: #FFFFFF !important;
     }
 
-    /* CONTAINER DO TOPO */
+    /* HEADER CONTAINER */
     .header-container {
         display: flex;
         flex-direction: row;
@@ -41,7 +41,7 @@ st.markdown("""
         gap: 20px;
     }
 
-    /* MÁSCARA DA FOTO (CÍRCULO) */
+    /* FOTO PERFIL */
     .profile-mask {
         width: 120px; height: 120px;
         border-radius: 50%;
@@ -53,7 +53,6 @@ st.markdown("""
         display: flex; align-items: center; justify-content: center;
     }
 
-    /* FOTO COM ZOOM 1.8 */
     .profile-img-zoom {
         width: 100%; height: 100%;
         object-fit: cover;
@@ -62,58 +61,52 @@ st.markdown("""
         transform-origin: center 20%;
     }
 
-    /* COLUNA DE TEXTO */
+    /* TEXTO LATERAL */
     .brand-text { 
-        display: flex; 
-        flex-direction: column; 
-        text-align: left;
-        justify-content: center;
+        display: flex; flex-direction: column; 
+        text-align: left; justify-content: center;
     }
-    
     .neon-title {
         font-size: 32px; font-weight: 800; line-height: 1; text-transform: uppercase;
         color: #FFFFFF !important;
         text-shadow: 0 0 10px #00f2fe, 0 0 20px #4facfe;
         margin-bottom: 5px;
     }
-    
     .neon-subtitle { 
-        font-size: 16px; 
-        font-weight: 400; 
-        color: #d1d1d1 !important; 
-        letter-spacing: 1px; 
-        margin-bottom: 12px;
+        font-size: 16px; font-weight: 400; color: #d1d1d1 !important; 
+        letter-spacing: 1px; margin-bottom: 12px;
     }
 
-    /* BARRA DE ÍCONES */
+    /* REDES SOCIAIS */
     .social-bar {
-        display: flex;
-        justify-content: flex-start;
-        gap: 15px;
+        display: flex; justify-content: flex-start; gap: 15px;
     }
-    
     .social-icon {
         width: 28px; height: 28px;
         transition: transform 0.3s ease, filter 0.3s ease;
         filter: drop-shadow(0 0 5px rgba(255,255,255,0.2));
     }
-    
     .social-icon:hover { transform: scale(1.2); }
-    
-    /* --- ESTILO DO EXPANDER (CARTÃO DE VISITA) --- */
-    .streamlit-expanderHeader {
-        background-color: rgba(20, 30, 40, 0.5) !important;
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 10px;
-        color: #FFFFFF !important;
-        font-weight: bold;
+
+    /* --- ESTILO DO BOTÃO DE CONTATO (PERSONALIZADO) --- */
+    /* Transforma o botão padrão do Streamlit em um botão Neon */
+    div.stButton > button {
+        background-color: transparent !important;
+        border: 2px solid #00f2fe !important;
+        border-radius: 25px !important; /* Bordas redondas */
+        color: #00f2fe !important;
+        font-weight: bold !important;
+        padding: 10px 20px !important;
+        transition: all 0.3s ease !important;
+        box-shadow: 0 0 10px rgba(0, 242, 254, 0.2);
     }
-    .streamlit-expanderContent {
-        background-color: rgba(0, 0, 0, 0.3) !important;
-        border-radius: 0 0 10px 10px;
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-top: none;
-        padding: 15px;
+    
+    div.stButton > button:hover {
+        background-color: rgba(0, 242, 254, 0.1) !important;
+        box-shadow: 0 0 20px rgba(0, 242, 254, 0.6);
+        transform: scale(1.05);
+        border-color: #FFFFFF !important;
+        color: #FFFFFF !important;
     }
 
     /* CELULAR */
@@ -125,7 +118,6 @@ st.markdown("""
         .social-icon { width: 24px; height: 24px; }
         .social-bar { gap: 10px; }
     }
-    
     @keyframes float {
         0%, 100% { transform: translateY(0px); }
         50% { transform: translateY(-5px); }
@@ -139,7 +131,6 @@ st.markdown("""
         border-radius: 30px !important;
     }
     .stChatInput button { color: #4facfe !important; }
-
     div[data-testid="stChatMessage"] {
         background-color: rgba(20, 30, 40, 0.5) !important;
         border-radius: 20px !important;
@@ -147,13 +138,11 @@ st.markdown("""
         backdrop-filter: blur(5px);
         margin-bottom: 10px;
     }
-    
     .stChatMessageAvatar img {
         border-radius: 50% !important;
         background-color: #ffffff;
         padding: 2px;
     }
-    
     div[data-testid="stChatMessage"] .stMarkdown p {
         background: linear-gradient(to bottom, #ffffff, #dcdcdc);
         -webkit-background-clip: text;
@@ -180,9 +169,16 @@ except Exception as e:
 # ANTIGRAVITY FIX: models/gemini-2.5-flash
 model = genai.GenerativeModel('models/gemini-2.5-flash', system_instruction="Você é o CDM, IA de Vendas Elite. Responda no idioma do usuário.")
 
-# --- 4. MEMÓRIA ---
+# --- 4. MEMÓRIA & ESTADOS ---
 if "messages" not in st.session_state:
     st.session_state.messages = [{"role": "model", "content": "Olá! Sou o CDM. Como posso ajudar a escalar suas vendas hoje? 🚀"}]
+
+# ESTADO DO CARTÃO DE VISITA (Aparecer/Sumir)
+if "show_card" not in st.session_state:
+    st.session_state.show_card = False
+
+def toggle_card():
+    st.session_state.show_card = not st.session_state.show_card
 
 # --- 5. IMAGENS ---
 nomes = ["perfil.jpg", "perfil.png", "perfil.jpeg", "perfil.jpg.png"]
@@ -203,7 +199,7 @@ else:
 user_avatar_chat = "https://cdn-icons-png.flaticon.com/512/9408/9408175.png" 
 bot_avatar_chat = "https://cdn-icons-png.flaticon.com/512/4712/4712139.png"
 
-# --- 6. EXIBIR CABEÇALHO ---
+# --- 6. HEADER ---
 st.markdown(f"""
 <div class="header-container">
     <div class="profile-mask">
@@ -230,24 +226,29 @@ st.markdown(f"""
 </div>
 """, unsafe_allow_html=True)
 
-# --- 7. CARTÃO DE VISITA (EXPANDER) ---
-# Adiciona um espaço antes
-st.markdown('<div style="margin-top: 20px;"></div>', unsafe_allow_html=True)
+# --- 7. BOTÃO DE CONTATO & CARTÃO (LÓGICA NOVA) ---
 
-# Cria o botão expansível
-with st.expander("📇 Cartão de Visita & Contato", expanded=False):
-    # Nome do arquivo fornecido pelo usuário
+# Centraliza o botão
+col1, col2, col3 = st.columns([1, 2, 1])
+with col2:
+    # O Botão que ativa/desativa
+    # Se estiver fechado mostra "Ver", se aberto mostra "Fechar"
+    texto_botao = "❌ Fechar Cartão" if st.session_state.show_card else "📇 Ver Cartão Digital"
+    if st.button(texto_botao, use_container_width=True):
+        toggle_card()
+        st.rerun() # Recarrega pra mostrar a imagem imediatamente
+
+# MOSTRA A IMAGEM SE O BOTÃO TIVER SIDO CLICADO
+if st.session_state.show_card:
     cartao_visita = "perfil.jpg.jpg"
-    
     if os.path.exists(cartao_visita):
-        # Exibe a imagem ocupando a largura disponível
+        st.markdown('<div style="margin-top: 10px; margin-bottom: 20px; border-radius: 15px; overflow: hidden; border: 1px solid #4facfe;">', unsafe_allow_html=True)
         st.image(cartao_visita, use_column_width=True)
+        st.markdown('</div>', unsafe_allow_html=True)
     else:
-        # Mensagem de erro amigável caso o arquivo não seja encontrado
-        st.error(f"Erro: O arquivo '{cartao_visita}' não foi encontrado na pasta. Verifique o nome e o upload.")
+        st.error(f"⚠️ Imagem '{cartao_visita}' não encontrada.")
 
 st.markdown('<div style="margin-bottom: 30px;"></div>', unsafe_allow_html=True)
-
 
 # --- 8. CHAT ---
 st.markdown('<div style="margin-bottom: 60px;">', unsafe_allow_html=True)
