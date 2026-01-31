@@ -16,7 +16,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# --- 2. CSS (VISUAL PREMIUM REFINADO + BRILHO) ---
+# --- 2. CSS (VISUAL HÍBRIDO: ELITE PC + COMPACTO MOBILE) ---
 st.markdown("""
 <style>
     /* FUNDO */
@@ -29,28 +29,26 @@ st.markdown("""
         color: #FFFFFF !important;
     }
 
-    /* ALINHAMENTO DAS COLUNAS */
+    /* --- ESTILO PC (PADRÃO) --- */
+    
+    /* Centraliza verticalmente o conteúdo das colunas */
     [data-testid="column"] {
         display: flex;
         flex-direction: column;
-        justify-content: center;
-    }
-    
-    [data-testid="column"]:first-child {
-        align-items: center;
+        justify-content: center; 
     }
 
-    /* MÁSCARA DA FOTO */
+    /* MÁSCARA DA FOTO (PC: MAIOR E MAIS BRILHANTE) */
     .profile-mask {
-        width: 130px; height: 130px;
+        width: 160px; height: 160px; /* Aumentei para PC */
         border-radius: 50%;
-        border: 3px solid #00f2fe;
-        box-shadow: 0px 0px 25px rgba(0, 242, 254, 0.6);
+        border: 4px solid #00f2fe;
+        box-shadow: 0px 0px 35px rgba(0, 242, 254, 0.7);
         overflow: hidden; 
         animation: float 6s ease-in-out infinite;
         flex-shrink: 0;
         display: flex; align-items: center; justify-content: center;
-        margin-bottom: 10px;
+        margin: auto; /* Centraliza na coluna */
     }
 
     .profile-img-zoom {
@@ -61,32 +59,41 @@ st.markdown("""
         transform-origin: center 20%;
     }
 
-    /* TEXTOS */
+    /* TEXTOS (PC: GRANDES E IMPONENTES) */
+    .brand-text {
+        padding-left: 20px; /* Espaço entre foto e texto */
+    }
+
     .neon-title {
-        font-size: 32px; font-weight: 800; line-height: 1; text-transform: uppercase;
+        font-size: 42px; /* Bem maior no PC */
+        font-weight: 900; 
+        line-height: 1.1; 
+        text-transform: uppercase;
         color: #FFFFFF !important;
-        text-shadow: 0 0 10px #00f2fe, 0 0 20px #4facfe;
-        margin-bottom: 5px;
+        text-shadow: 0 0 15px #00f2fe, 0 0 30px #4facfe;
+        margin-bottom: 8px;
         margin-top: 0;
     }
     .neon-subtitle { 
-        font-size: 16px; font-weight: 400; color: #d1d1d1 !important; 
-        letter-spacing: 1px; margin-bottom: 15px;
+        font-size: 18px; 
+        font-weight: 400; 
+        color: #e0e0e0 !important; 
+        letter-spacing: 2px; 
+        margin-bottom: 20px;
     }
 
-    /* BARRA DE REDES SOCIAIS */
+    /* BARRA DE REDES SOCIAIS (PC: ESPAÇADA) */
     .social-bar {
-        display: flex; justify-content: flex-start; gap: 15px; margin-bottom: 15px;
+        display: flex; justify-content: flex-start; gap: 20px; margin-bottom: 20px;
     }
     .social-icon {
-        width: 28px; height: 28px;
+        width: 32px; height: 32px; /* Ícones maiores no PC */
         transition: transform 0.3s ease;
-        filter: drop-shadow(0 0 5px rgba(255,255,255,0.2));
+        filter: drop-shadow(0 0 8px rgba(255,255,255,0.3));
     }
-    .social-icon:hover { transform: scale(1.2); }
+    .social-icon:hover { transform: scale(1.3); }
 
-    /* --- O BOTÃO DIGITAL CARD (CORRIGIDO E COM MAIS BRILHO) --- */
-    
+    /* BOTÃO DIGITAL CARD (PC) */
     div.stButton > button {
         background: transparent !important;
         border: none !important;
@@ -98,49 +105,49 @@ st.markdown("""
         transition: transform 0.3s ease;
         margin-top: -5px;
     }
-    
     div.stButton > button:hover { transform: scale(1.05); }
-    div.stButton > button:active { background: transparent !important; }
-    div.stButton > button:focus { color: transparent !important; }
 
-    /* O ÍCONE (CORREÇÃO DE CORTE + BRILHO EXTRA) */
+    /* ÍCONE DO BOTÃO (TELEFONE) */
     div.stButton > button::before {
         content: "";
         display: inline-block;
-        width: 28px; height: 28px;
+        width: 32px; height: 32px;
         background-image: url('https://cdn-icons-png.flaticon.com/512/5585/5585856.png'); 
-        
-        /* --- CORREÇÃO AQUI --- */
-        background-size: contain; /* Garante que o ícone caiba inteiro */
+        background-size: contain;
         background-repeat: no-repeat;
         background-position: center;
-        /* --------------------- */
-        
-        margin-right: 10px;
-        /* Brilho avermelhado mais forte */
+        margin-right: 12px;
         filter: drop-shadow(0 0 8px rgba(255, 50, 50, 0.8)); 
     }
 
-    /* O TEXTO (MAIS BRILHO DOURADO) */
+    /* TEXTO DO BOTÃO */
     div.stButton > button p {
         background: linear-gradient(to right, #BF953F, #FCF6BA, #B38728, #FBF5B7);
         -webkit-background-clip: text !important;
         -webkit-text-fill-color: transparent !important;
-        font-size: 14px !important;
+        font-size: 16px !important;
         font-weight: 800 !important;
         text-transform: uppercase;
         margin: 0 !important;
         letter-spacing: 1px;
-        /* Sombra dourada brilhante no texto */
-        text-shadow: 0 0 10px rgba(191, 149, 63, 0.5), 0 0 20px rgba(251, 245, 183, 0.3);
+        text-shadow: 0 0 15px rgba(191, 149, 63, 0.4);
     }
 
-    /* CELULAR */
+    /* --- AJUSTES ESPECÍFICOS PARA CELULAR (MANTENDO O QUE VC GOSTOU) --- */
     @media (max-width: 600px) {
-        .neon-title { font-size: 24px; text-align: center; }
-        .neon-subtitle { font-size: 12px; text-align: center; }
-        .social-bar { justify-content: center; }
-        div.stButton > button { justify-content: center; width: 100%; }
+        .profile-mask { width: 130px; height: 130px; border-width: 3px; }
+        .neon-title { font-size: 24px; text-align: center; } /* Volta a ser menor no celular */
+        .neon-subtitle { font-size: 12px; text-align: center; letter-spacing: 1px; }
+        .brand-text { padding-left: 0; text-align: center; } /* Centraliza texto no mobile */
+        
+        .social-bar { justify-content: center; gap: 15px; } /* Centraliza ícones */
+        .social-icon { width: 28px; height: 28px; }
+        
+        div.stButton > button { justify-content: center; width: 100%; } /* Centraliza botão */
+        div.stButton > button::before { width: 28px; height: 28px; }
+        div.stButton > button p { font-size: 14px !important; }
+        
+        /* No celular, removemos o alinhamento lateral das colunas para empilhar bonito */
         [data-testid="column"] { align-items: center; }
     }
     
