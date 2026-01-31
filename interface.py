@@ -3,7 +3,7 @@ import google.generativeai as genai
 import os
 import base64
 
-# --- 1. CONFIGURAÇÃO E LINKS (Podem editar aqui) ---
+# --- 1. CONFIGURAÇÃO E LINKS ---
 LINK_FACEBOOK = "https://www.facebook.com/share/1BivFdqW66/"
 LINK_INSTAGRAM = "https://www.instagram.com/tocadocdm?igsh=MTdkYng5OGszNGI3Zw=="
 LINK_YOUTUBE = "https://youtube.com/@cdm_236?si=2cvU0sn9cgEssDpW"
@@ -85,7 +85,7 @@ st.markdown("""
         margin-bottom: 12px;
     }
 
-    /* BARRA DE ÍCONES (ALINHADA À ESQUERDA) */
+    /* BARRA DE ÍCONES */
     .social-bar {
         display: flex;
         justify-content: flex-start;
@@ -99,6 +99,22 @@ st.markdown("""
     }
     
     .social-icon:hover { transform: scale(1.2); }
+    
+    /* --- ESTILO DO EXPANDER (CARTÃO DE VISITA) --- */
+    .streamlit-expanderHeader {
+        background-color: rgba(20, 30, 40, 0.5) !important;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+        color: #FFFFFF !important;
+        font-weight: bold;
+    }
+    .streamlit-expanderContent {
+        background-color: rgba(0, 0, 0, 0.3) !important;
+        border-radius: 0 0 10px 10px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-top: none;
+        padding: 15px;
+    }
 
     /* CELULAR */
     @media (max-width: 600px) {
@@ -187,7 +203,7 @@ else:
 user_avatar_chat = "https://cdn-icons-png.flaticon.com/512/9408/9408175.png" 
 bot_avatar_chat = "https://cdn-icons-png.flaticon.com/512/4712/4712139.png"
 
-# --- 6. EXIBIR CABEÇALHO (HTML PURO) ---
+# --- 6. EXIBIR CABEÇALHO ---
 st.markdown(f"""
 <div class="header-container">
     <div class="profile-mask">
@@ -214,7 +230,26 @@ st.markdown(f"""
 </div>
 """, unsafe_allow_html=True)
 
-# --- 7. CHAT ---
+# --- 7. CARTÃO DE VISITA (EXPANDER) ---
+# Adiciona um espaço antes
+st.markdown('<div style="margin-top: 20px;"></div>', unsafe_allow_html=True)
+
+# Cria o botão expansível
+with st.expander("📇 Cartão de Visita & Contato", expanded=False):
+    # Nome do arquivo fornecido pelo usuário
+    cartao_visita = "perfil.jpg.jpg"
+    
+    if os.path.exists(cartao_visita):
+        # Exibe a imagem ocupando a largura disponível
+        st.image(cartao_visita, use_column_width=True)
+    else:
+        # Mensagem de erro amigável caso o arquivo não seja encontrado
+        st.error(f"Erro: O arquivo '{cartao_visita}' não foi encontrado na pasta. Verifique o nome e o upload.")
+
+st.markdown('<div style="margin-bottom: 30px;"></div>', unsafe_allow_html=True)
+
+
+# --- 8. CHAT ---
 st.markdown('<div style="margin-bottom: 60px;">', unsafe_allow_html=True)
 for msg in st.session_state.messages:
     icon = user_avatar_chat if msg["role"] == "user" else bot_avatar_chat
