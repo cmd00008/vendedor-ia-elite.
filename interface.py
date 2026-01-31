@@ -16,7 +16,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# --- 2. CSS (A CORREÇÃO DO EMPILHAMENTO) ---
+# --- 2. CSS (ORGANIZAÇÃO TOTAL MOBILE) ---
 st.markdown("""
 <style>
     /* FUNDO */
@@ -29,74 +29,74 @@ st.markdown("""
         color: #FFFFFF !important;
     }
 
-    /* --- LAYOUT MOBILE BLINDADO (LADO A LADO) --- */
+    /* --- LAYOUT MOBILE ORGANIZADO --- */
     @media (max-width: 640px) {
         
-        /* OBRIGA A FICAR NA MESMA LINHA (NO-WRAP) */
+        /* 1. CONTAINER GERAL: Força linha horizontal */
         div[data-testid="stHorizontalBlock"] {
             display: flex !important;
-            flex-direction: row !important; /* Força horizontal */
-            flex-wrap: nowrap !important;   /* PROÍBE QUEBRAR LINHA */
+            flex-direction: row !important;
+            flex-wrap: nowrap !important; /* Não deixa a foto ir pra cima do texto */
             align-items: center !important;
-            gap: 10px !important;
+            gap: 15px !important; /* Espaço entre foto e texto */
         }
         
-        /* COLUNA 1: FOTO (ESQUERDA) */
+        /* 2. COLUNA DA FOTO (Esquerda) */
         div[data-testid="column"]:nth-of-type(1) {
-            flex: 0 0 110px !important; /* Largura fixa para a foto não esmagar */
-            min-width: 110px !important;
+            flex: 0 0 100px !important; /* Tamanho FIXO da área da foto */
+            min-width: 100px !important;
             display: flex !important;
             justify-content: center !important;
             align-items: center !important;
         }
         
-        /* COLUNA 2: TEXTO (DIREITA) */
+        /* 3. COLUNA DO TEXTO (Direita) */
         div[data-testid="column"]:nth-of-type(2) {
-            flex: 1 !important; /* Ocupa o resto do espaço */
-            min-width: 0 !important; /* Permite encolher o texto se precisar */
+            flex: 1 !important; /* Ocupa todo o espaço restante */
+            min-width: 0 !important; /* OBRIGATÓRIO para o texto não vazar a tela */
             display: flex !important;
             flex-direction: column !important;
             justify-content: center !important;
-            align-items: flex-start !important;
-            padding-left: 5px !important;
+            align-items: flex-start !important; /* Alinha tudo à esquerda */
         }
 
-        /* AJUSTES DE TAMANHO PARA CABER TUDO */
+        /* 4. AJUSTES DE TAMANHO (Para caber na tela) */
         .neon-title {
-            font-size: 18px !important; /* Um pouco menor para não quebrar */
+            font-size: 18px !important; /* Tamanho seguro */
             text-align: left !important;
+            line-height: 1.2 !important;
             margin-bottom: 2px !important;
-            line-height: 1.1 !important;
             margin-top: 0 !important;
-            white-space: nowrap !important; /* Texto em uma linha só se der */
+            white-space: normal !important; /* Permite quebrar linha se o nome for longo */
+            word-wrap: break-word !important;
         }
         
         .neon-subtitle {
-            font-size: 10px !important; 
+            font-size: 11px !important; 
             text-align: left !important; 
-            margin-bottom: 5px !important;
+            margin-bottom: 8px !important;
+            color: #d1d1d1 !important;
         }
         
         .social-bar {
             justify-content: flex-start !important;
-            gap: 8px !important;
+            gap: 10px !important;
             margin-bottom: 5px !important;
         }
         
         .social-icon { width: 20px !important; height: 20px !important; }
         
-        .profile-mask { width: 95px !important; height: 95px !important; }
+        /* Tamanho da máscara da foto */
+        .profile-mask { width: 90px !important; height: 90px !important; }
         
+        /* Botão */
         div.stButton > button {
-            margin-left: 0px !important;
+            margin-left: -2px !important;
             padding: 0px !important;
-            transform: scale(0.9) !important; /* Reduz levemente o botão */
-            transform-origin: left center !important;
         }
     }
 
     /* --- ESTILOS GERAIS (PC) --- */
-    
     .profile-mask {
         width: 140px; height: 140px;
         border-radius: 50%;
@@ -149,10 +149,8 @@ st.markdown("""
         transition: transform 0.3s ease;
         margin-top: -5px;
     }
-    
     div.stButton > button:hover { transform: scale(1.05); }
 
-    /* ÍCONE TELEFONE VERDE */
     div.stButton > button::before {
         content: "";
         display: inline-block;
@@ -259,7 +257,7 @@ bot_avatar_chat = "https://cdn-icons-png.flaticon.com/512/4712/4712139.png"
 # --- 6. CABEÇALHO ---
 st.markdown('<div style="margin-top: 10px;"></div>', unsafe_allow_html=True)
 
-# Mudei a proporção para [1, 2.5] para garantir que o texto tenha espaço e não quebre a linha
+# Definindo proporção fixa para garantir espaço
 col_foto, col_texto = st.columns([1, 2.5]) 
 
 with col_foto:
@@ -272,6 +270,7 @@ with col_foto:
     """, unsafe_allow_html=True)
 
 with col_texto:
+    # Conteúdo da Direita
     st.markdown(f"""
     <div style="display:flex; flex-direction:column; justify-content:center; height:100%;">
         <div class="neon-title">CDM IA CHATBOT</div>
