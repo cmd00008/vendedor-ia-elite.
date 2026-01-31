@@ -3,7 +3,14 @@ import google.generativeai as genai
 import os
 import base64
 
-# --- 1. CONFIGURAÇÃO ---
+# --- 1. CONFIGURAÇÃO E LINKS (JÁ CONFIGURADOS) ---
+# ---------------------------------------------------------
+LINK_FACEBOOK = "https://www.facebook.com/share/1BivFdqW66/"
+LINK_INSTAGRAM = "https://www.instagram.com/tocadocdm?igsh=MTdkYng5OGszNGI3Zw=="
+LINK_YOUTUBE = "https://youtube.com/@cdm_236?si=2cvU0sn9cgEssDpW"
+LINK_TIKTOK = "https://www.tiktok.com/@cdm_236?_r=1&_t=ZP-93XYGtjM0r8"
+# ---------------------------------------------------------
+
 st.set_page_config(
     page_title="CDM IA Vendas Elite",
     page_icon="⚡",
@@ -11,7 +18,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# --- 2. CSS: VISUAL 1.8 + CHAT MODERNO ---
+# --- 2. CSS: VISUAL 1.8 + CHAT MODERNO + SOCIAL ---
 st.markdown("""
 <style>
     /* FUNDO */
@@ -31,7 +38,7 @@ st.markdown("""
         align-items: center;
         justify-content: center;
         padding-top: 20px;
-        padding-bottom: 20px;
+        padding-bottom: 10px;
         gap: 20px;
     }
 
@@ -47,7 +54,7 @@ st.markdown("""
         display: flex; align-items: center; justify-content: center;
     }
 
-    /* FOTO DE PERFIL (CABEÇALHO) - ZOOM 1.8 */
+    /* FOTO DE PERFIL - ZOOM 1.8 */
     .profile-img-zoom {
         width: 100%; height: 100%;
         object-fit: cover;
@@ -65,12 +72,35 @@ st.markdown("""
     }
     .neon-subtitle { font-size: 16px; font-weight: 400; color: #d1d1d1 !important; letter-spacing: 1px; }
 
+    /* --- BARRA DE REDES SOCIAIS --- */
+    .social-bar {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        margin-bottom: 20px;
+        margin-top: -10px; 
+    }
+    
+    .social-icon {
+        width: 35px;
+        height: 35px;
+        transition: transform 0.3s ease, filter 0.3s ease;
+        filter: drop-shadow(0 0 5px rgba(255,255,255,0.3));
+    }
+    
+    .social-icon:hover { transform: scale(1.2); }
+    .icon-fb:hover { filter: drop-shadow(0 0 10px #1877F2); }
+    .icon-insta:hover { filter: drop-shadow(0 0 10px #E4405F); }
+    .icon-yt:hover { filter: drop-shadow(0 0 10px #FF0000); }
+    .icon-tiktok:hover { filter: drop-shadow(0 0 10px #00F2EA); }
+
     /* CELULAR */
     @media (max-width: 600px) {
         .header-container { justify-content: center; gap: 15px; }
         .profile-mask { width: 85px; height: 85px; }
         .neon-title { font-size: 20px; }
         .neon-subtitle { font-size: 11px; }
+        .social-icon { width: 30px; height: 30px; }
     }
     
     @keyframes float {
@@ -103,13 +133,12 @@ st.markdown("""
         animation: slideIn 0.5s ease-out forwards;
     }
     
-    /* ESTILO DOS AVATARES NO CHAT */
     .stChatMessageAvatar img {
         border-radius: 50% !important;
         border: 2px solid #4facfe !important;
         box-shadow: 0 0 10px rgba(79, 172, 254, 0.5);
-        background-color: #ffffff; /* Fundo branco para o ícone */
-        padding: 2px; /* Espacinho */
+        background-color: #ffffff;
+        padding: 2px;
     }
     
     div[data-testid="stChatMessage"] .stMarkdown p {
@@ -123,7 +152,7 @@ st.markdown("""
 
 # --- 3. CONEXÃO (BLINDADA) ---
 try:
-    api_key = os.environ.get("GOOGLE_API_KEY") # Fix: Priority to Env Var
+    api_key = os.environ.get("GOOGLE_API_KEY") 
     if not api_key:
         api_key = st.secrets["GOOGLE_API_KEY"]
     
@@ -144,7 +173,6 @@ if "messages" not in st.session_state:
     st.session_state.messages = [{"role": "model", "content": "Olá! Sou o CDM. Como posso ajudar a escalar suas vendas hoje? 🚀"}]
 
 # --- 5. LÓGICA DE IMAGENS ---
-# 1. Busca a foto REAL para o CABEÇALHO
 nomes = ["perfil.jpg", "perfil.png", "perfil.jpeg", "perfil.jpg.png"]
 arquivo_usuario = None
 for n in nomes:
@@ -156,19 +184,14 @@ if arquivo_usuario:
     with open(arquivo_usuario, "rb") as f:
         encoded = base64.b64encode(f.read()).decode()
     mime = "image/png" if "png" in arquivo_usuario else "image/jpeg"
-    # Header usa a foto real com zoom
     img_tag_header = f'<img src="data:{mime};base64,{encoded}" class="profile-img-zoom">'
 else:
     img_tag_header = '<img src="https://cdn-icons-png.flaticon.com/512/4712/4712139.png" class="profile-img-zoom">'
 
-# 2. Define o AVATAR DO CHAT (Aqui mudamos!)
-# Link para um ícone de rosto sorrindo (Estilo 3D/Cartoon amigável)
 user_avatar_chat = "https://cdn-icons-png.flaticon.com/512/9408/9408175.png" 
-
-# Link do Robô
 bot_avatar_chat = "https://cdn-icons-png.flaticon.com/512/4712/4712139.png"
 
-# --- 6. EXIBIR CABEÇALHO (FOTO REAL) ---
+# --- 6. EXIBIR CABEÇALHO ---
 st.markdown(f"""
 <div class="header-container">
     <div class="profile-mask">
@@ -181,27 +204,40 @@ st.markdown(f"""
 </div>
 """, unsafe_allow_html=True)
 
-# --- 7. CHAT (COM AVATAR SORRINDO) ---
+# --- 7. EXIBIR BOTÕES SOCIAIS (LINKS ATIVOS) ---
+st.markdown(f"""
+<div class="social-bar">
+    <a href="{LINK_FACEBOOK}" target="_blank">
+        <img src="https://cdn-icons-png.flaticon.com/512/5968/5968764.png" class="social-icon icon-fb" title="Facebook">
+    </a>
+    <a href="{LINK_INSTAGRAM}" target="_blank">
+        <img src="https://cdn-icons-png.flaticon.com/512/3955/3955024.png" class="social-icon icon-insta" title="Instagram">
+    </a>
+    <a href="{LINK_YOUTUBE}" target="_blank">
+        <img src="https://cdn-icons-png.flaticon.com/512/3670/3670147.png" class="social-icon icon-yt" title="YouTube">
+    </a>
+    <a href="{LINK_TIKTOK}" target="_blank">
+        <img src="https://cdn-icons-png.flaticon.com/512/3046/3046121.png" class="social-icon icon-tiktok" title="TikTok">
+    </a>
+</div>
+""", unsafe_allow_html=True)
+
+# --- 8. CHAT ---
 st.markdown('<div style="margin-bottom: 60px;">', unsafe_allow_html=True)
 for msg in st.session_state.messages:
-    # Seleciona o ícone certo
     if msg["role"] == "user":
-        avatar_icon = user_avatar_chat # Agora é o boneco sorrindo!
+        avatar_icon = user_avatar_chat
     else:
         avatar_icon = bot_avatar_chat
-        
     with st.chat_message(msg["role"], avatar=avatar_icon):
         st.markdown(msg["content"])
 st.markdown('</div>', unsafe_allow_html=True)
 
 if prompt := st.chat_input("Digite sua mensagem..."):
     st.session_state.messages.append({"role": "user", "content": prompt})
-    
-    # Usuário (Avatar Sorrindo)
     with st.chat_message("user", avatar=user_avatar_chat):
         st.markdown(prompt)
 
-    # Bot (Robô)
     with st.chat_message("model", avatar=bot_avatar_chat):
         try:
             # FIX: Safer history slicing
