@@ -16,7 +16,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# --- 2. CSS (VISUAL PREMIUM REFINADO) ---
+# --- 2. CSS (VISUAL PREMIUM REFINADO + BRILHO) ---
 st.markdown("""
 <style>
     /* FUNDO */
@@ -85,7 +85,7 @@ st.markdown("""
     }
     .social-icon:hover { transform: scale(1.2); }
 
-    /* --- O BOTÃO DIGITAL CARD (REFINADO) --- */
+    /* --- O BOTÃO DIGITAL CARD (CORRIGIDO E COM MAIS BRILHO) --- */
     
     div.stButton > button {
         background: transparent !important;
@@ -103,28 +103,36 @@ st.markdown("""
     div.stButton > button:active { background: transparent !important; }
     div.stButton > button:focus { color: transparent !important; }
 
-    /* O NOVO ÍCONE (Estilo Telefone Vermelho Degradê) */
+    /* O ÍCONE (CORREÇÃO DE CORTE + BRILHO EXTRA) */
     div.stButton > button::before {
         content: "";
         display: inline-block;
-        width: 28px; height: 28px; /* Um pouco menor para acompanhar a letra */
-        /* Link para um ícone no estilo solicitado */
+        width: 28px; height: 28px;
         background-image: url('https://cdn-icons-png.flaticon.com/512/5585/5585856.png'); 
-        background-size: cover;
+        
+        /* --- CORREÇÃO AQUI --- */
+        background-size: contain; /* Garante que o ícone caiba inteiro */
+        background-repeat: no-repeat;
+        background-position: center;
+        /* --------------------- */
+        
         margin-right: 10px;
-        filter: drop-shadow(0 0 5px rgba(255, 50, 50, 0.5)); /* Brilho avermelhado */
+        /* Brilho avermelhado mais forte */
+        filter: drop-shadow(0 0 8px rgba(255, 50, 50, 0.8)); 
     }
 
-    /* O TEXTO (AINDA MENOR) */
+    /* O TEXTO (MAIS BRILHO DOURADO) */
     div.stButton > button p {
         background: linear-gradient(to right, #BF953F, #FCF6BA, #B38728, #FBF5B7);
         -webkit-background-clip: text !important;
         -webkit-text-fill-color: transparent !important;
-        font-size: 14px !important; /* <-- REDUZIDO PARA 14px */
+        font-size: 14px !important;
         font-weight: 800 !important;
         text-transform: uppercase;
         margin: 0 !important;
         letter-spacing: 1px;
+        /* Sombra dourada brilhante no texto */
+        text-shadow: 0 0 10px rgba(191, 149, 63, 0.5), 0 0 20px rgba(251, 245, 183, 0.3);
     }
 
     /* CELULAR */
