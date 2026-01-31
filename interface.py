@@ -16,7 +16,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# --- 2. CSS (ESTILO VISUAL NEON) ---
+# --- 2. CSS (VISUAL OURO E NEON) ---
 st.markdown("""
 <style>
     /* FUNDO */
@@ -25,12 +25,12 @@ st.markdown("""
         background-attachment: fixed;
     }
     
-    /* TEXTOS */
+    /* TEXTOS GERAIS */
     p, span, div, li, label, .stMarkdown, button, textarea, h1, h2, h3 {
         color: #FFFFFF !important;
     }
 
-    /* HEADER CONTAINER */
+    /* HEADER */
     .header-container {
         display: flex;
         flex-direction: row;
@@ -41,7 +41,7 @@ st.markdown("""
         gap: 20px;
     }
 
-    /* FOTO PERFIL */
+    /* FOTO */
     .profile-mask {
         width: 120px; height: 120px;
         border-radius: 50%;
@@ -88,25 +88,62 @@ st.markdown("""
     }
     .social-icon:hover { transform: scale(1.2); }
 
-    /* --- ESTILO DO BOTÃO DE CONTATO (PERSONALIZADO) --- */
-    /* Transforma o botão padrão do Streamlit em um botão Neon */
+    /* --- BOTÃO DIGITAL CARD (ESTILO OURO) --- */
+    
+    /* Remove o estilo padrão de botão do Streamlit */
     div.stButton > button {
-        background-color: transparent !important;
-        border: 2px solid #00f2fe !important;
-        border-radius: 25px !important; /* Bordas redondas */
-        color: #00f2fe !important;
-        font-weight: bold !important;
-        padding: 10px 20px !important;
-        transition: all 0.3s ease !important;
-        box-shadow: 0 0 10px rgba(0, 242, 254, 0.2);
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+        padding: 5px 0px !important;
+        display: flex;
+        align-items: center;
+        justify-content: flex-start; /* Alinha a esquerda */
+        transition: transform 0.3s ease;
     }
     
+    /* Efeito ao passar o mouse */
     div.stButton > button:hover {
-        background-color: rgba(0, 242, 254, 0.1) !important;
-        box-shadow: 0 0 20px rgba(0, 242, 254, 0.6);
         transform: scale(1.05);
-        border-color: #FFFFFF !important;
-        color: #FFFFFF !important;
+    }
+    div.stButton > button:active {
+        transform: scale(0.95);
+        background: transparent !important;
+    }
+    div.stButton > button:focus {
+        background: transparent !important;
+        color: transparent !important;
+    }
+
+    /* O ÍCONE (Adicionado via CSS antes do texto) */
+    div.stButton > button::before {
+        content: "";
+        display: inline-block;
+        width: 35px;
+        height: 35px;
+        /* Ícone de Contato/Card */
+        background-image: url('https://cdn-icons-png.flaticon.com/512/3095/3095757.png'); 
+        background-size: cover;
+        margin-right: 10px;
+        filter: drop-shadow(0 0 2px rgba(255,215,0, 0.5)); /* Brilho Dourado no ícone */
+    }
+
+    /* O TEXTO "DIGITAL CARD" (Efeito Ouro Metálico) */
+    div.stButton > button p {
+        /* Gradiente Dourado */
+        background: linear-gradient(to right, #BF953F, #FCF6BA, #B38728, #FBF5B7, #AA771C);
+        -webkit-background-clip: text !important;
+        -webkit-text-fill-color: transparent !important;
+        background-clip: text !important;
+        color: transparent !important;
+        
+        font-size: 22px !important;
+        font-family: 'Arial', sans-serif !important;
+        font-weight: 900 !important; /* Negrito Forte */
+        text-transform: uppercase;
+        margin: 0 !important;
+        letter-spacing: 1px;
+        text-shadow: 0px 2px 2px rgba(0,0,0,0.5);
     }
 
     /* CELULAR */
@@ -117,7 +154,12 @@ st.markdown("""
         .neon-subtitle { font-size: 11px; }
         .social-icon { width: 24px; height: 24px; }
         .social-bar { gap: 10px; }
+        
+        /* Ajuste do botão no celular para centralizar */
+        div.stButton > button { justify-content: center; width: 100%; }
+        div.stButton > button p { font-size: 18px !important; }
     }
+    
     @keyframes float {
         0%, 100% { transform: translateY(0px); }
         50% { transform: translateY(-5px); }
@@ -131,6 +173,7 @@ st.markdown("""
         border-radius: 30px !important;
     }
     .stChatInput button { color: #4facfe !important; }
+
     div[data-testid="stChatMessage"] {
         background-color: rgba(20, 30, 40, 0.5) !important;
         border-radius: 20px !important;
@@ -138,11 +181,13 @@ st.markdown("""
         backdrop-filter: blur(5px);
         margin-bottom: 10px;
     }
+    
     .stChatMessageAvatar img {
         border-radius: 50% !important;
         background-color: #ffffff;
         padding: 2px;
     }
+    
     div[data-testid="stChatMessage"] .stMarkdown p {
         background: linear-gradient(to bottom, #ffffff, #dcdcdc);
         -webkit-background-clip: text;
@@ -153,7 +198,7 @@ st.markdown("""
 
 # --- 3. CONEXÃO (BLINDADA) ---
 try:
-    api_key = os.environ.get("GOOGLE_API_KEY") # Prioridade para Env Var
+    api_key = os.environ.get("GOOGLE_API_KEY") 
     if not api_key:
         api_key = st.secrets["GOOGLE_API_KEY"]
     
@@ -173,7 +218,7 @@ model = genai.GenerativeModel('models/gemini-2.5-flash', system_instruction="Voc
 if "messages" not in st.session_state:
     st.session_state.messages = [{"role": "model", "content": "Olá! Sou o CDM. Como posso ajudar a escalar suas vendas hoje? 🚀"}]
 
-# ESTADO DO CARTÃO DE VISITA (Aparecer/Sumir)
+# Estado do Cartão
 if "show_card" not in st.session_state:
     st.session_state.show_card = False
 
@@ -199,7 +244,7 @@ else:
 user_avatar_chat = "https://cdn-icons-png.flaticon.com/512/9408/9408175.png" 
 bot_avatar_chat = "https://cdn-icons-png.flaticon.com/512/4712/4712139.png"
 
-# --- 6. HEADER ---
+# --- 6. HEADER COMPLETO ---
 st.markdown(f"""
 <div class="header-container">
     <div class="profile-mask">
@@ -226,23 +271,22 @@ st.markdown(f"""
 </div>
 """, unsafe_allow_html=True)
 
-# --- 7. BOTÃO DE CONTATO & CARTÃO (LÓGICA NOVA) ---
+# --- 7. BOTÃO DIGITAL CARD (PURO LUXO) ---
 
-# Centraliza o botão
+# Centraliza o botão (no PC usa colunas, no mobile o CSS ajusta)
 col1, col2, col3 = st.columns([1, 2, 1])
-with col2:
-    # O Botão que ativa/desativa
-    # Se estiver fechado mostra "Ver", se aberto mostra "Fechar"
-    texto_botao = "❌ Fechar Cartão" if st.session_state.show_card else "📇 Ver Cartão Digital"
-    if st.button(texto_botao, use_container_width=True):
-        toggle_card()
-        st.rerun() # Recarrega pra mostrar a imagem imediatamente
 
-# MOSTRA A IMAGEM SE O BOTÃO TIVER SIDO CLICADO
+with col2:
+    if st.button("DIGITAL CARD", use_container_width=True):
+        toggle_card()
+        st.rerun()
+
+# --- 8. MOSTRA O CARTÃO ---
 if st.session_state.show_card:
     cartao_visita = "perfil.jpg.jpg"
     if os.path.exists(cartao_visita):
-        st.markdown('<div style="margin-top: 10px; margin-bottom: 20px; border-radius: 15px; overflow: hidden; border: 1px solid #4facfe;">', unsafe_allow_html=True)
+        # Efeito de aparecer suave
+        st.markdown('<div style="animation: float 1s ease-out;">', unsafe_allow_html=True)
         st.image(cartao_visita, use_column_width=True)
         st.markdown('</div>', unsafe_allow_html=True)
     else:
@@ -250,7 +294,7 @@ if st.session_state.show_card:
 
 st.markdown('<div style="margin-bottom: 30px;"></div>', unsafe_allow_html=True)
 
-# --- 8. CHAT ---
+# --- 9. CHAT ---
 st.markdown('<div style="margin-bottom: 60px;">', unsafe_allow_html=True)
 for msg in st.session_state.messages:
     icon = user_avatar_chat if msg["role"] == "user" else bot_avatar_chat
