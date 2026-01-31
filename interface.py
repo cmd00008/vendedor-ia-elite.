@@ -1,101 +1,127 @@
 import streamlit as st
+import time
 import os
 import google.generativeai as genai
 
-# 1. Configuração da Página (Deve ser o primeiro comando)
-st.set_page_config(page_title="IA Vendas Elite 2.5", layout="centered")
+# -----------------------------------------------------------------------------
+# 1. CONFIGURAÇÃO DA PÁGINA
+# -----------------------------------------------------------------------------
+st.set_page_config(
+    page_title="IA Vendas Elite | Sistema Neural",
+    page_icon="🚀",
+    layout="centered",
+    initial_sidebar_state="collapsed"
+)
 
-# 2. CSS Personalizado (O "Segredo" do Design)
+# -----------------------------------------------------------------------------
+# 2. DESIGN SYSTEM (CSS "Neural" - Visual Futurista & Correção Mobile)
+# -----------------------------------------------------------------------------
 st.markdown("""
 <style>
-    /* Importando fonte moderna do Google Fonts */
-    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+    /* FONTE IMPORTADA (Rajdhani para títulos técnicos, Inter para leitura) */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Rajdhani:wght@500;700&display=swap');
 
-    /* Aplicando a fonte em tudo */
+    /* CONFIGURAÇÃO GERAL */
     html, body, [class*="css"] {
-        font-family: 'Poppins', sans-serif;
+        font-family: 'Inter', sans-serif;
+        color: #e0e0e0;
     }
 
-    /* FUNDO GERAL (Gradiente Dark Moderno) */
+    /* FUNDO PRINCIPAL (Background Imersivo) */
     .stApp {
-        background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        background-color: #050511;
+        background-image: 
+            radial-gradient(at 0% 0%, hsla(253,16%,7%,1) 0, transparent 50%), 
+            radial-gradient(at 50% 0%, hsla(225,39%,30%,1) 0, transparent 50%), 
+            radial-gradient(at 100% 0%, hsla(339,49%,30%,1) 0, transparent 50%);
         background-attachment: fixed;
     }
 
-    /* Esconder o menu padrão do topo e rodapé para ficar limpo */
-    #MainMenu {visibility: hidden;}
-    footer {visibility: hidden;}
-    header {visibility: hidden;}
+    /* TÍTULOS */
+    h1, h2, h3 {
+        font-family: 'Rajdhani', sans-serif;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+    }
 
-    /* ESTILO DO TÍTULO (Gradiente no Texto) */
-    h1 {
-        background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
+    /* O BLOCO CENTRAL DE CHAT (Vidro Escuro) */
+    .block-container {
+        background: rgba(10, 10, 20, 0.6);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 20px;
+        padding: 2rem !important;
+        margin-top: 40px;
+        box-shadow: 0 0 40px rgba(0, 0, 0, 0.5);
+    }
+
+    /* CABEÇALHO PERSONALIZADO */
+    .header-style {
+        text-align: center;
+        padding-bottom: 20px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        margin-bottom: 20px;
+    }
+    
+    .neon-text {
+        background: linear-gradient(to right, #00c6ff, #0072ff);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
-        font-weight: 700 !important;
-        text-align: center;
-        padding-bottom: 20px;
-    }
-    
-    h3 {
-        color: #e2e8f0 !important;
-        text-align: center;
-        font-weight: 300 !important;
-        font-size: 1.2rem !important;
+        font-weight: 800;
+        font-size: 2.5rem;
+        text-shadow: 0 0 20px rgba(0, 114, 255, 0.3);
     }
 
-    /* CONTAINER PRINCIPAL (Glassmorphism) */
-    /* Cria um efeito de vidro ao redor do conteúdo central, se desejar */
-    .block-container {
-        background: rgba(255, 255, 255, 0.03);
-        border-radius: 20px;
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        padding: 3rem !important;
-        margin-top: 50px;
-        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    /* --- CORREÇÃO DE CHAT (CRÍTICO PARA MOBILE) --- */
+    
+    /* Mensagem da IA */
+    .stChatMessage[data-testid="stChatMessage"]:nth-child(odd) {
+        background-color: rgba(0, 0, 0, 0.4);
+        border: 1px solid #0072ff;
+        border-radius: 4px 20px 20px 20px;
+        box-shadow: 0 0 15px rgba(0, 114, 255, 0.1);
     }
 
-    /* ESTILIZANDO A BARRA DE INPUT DE CHAT */
-    .stChatInputContainer {
-        padding-bottom: 20px;
+    /* Mensagem do Usuário */
+    .stChatMessage[data-testid="stChatMessage"]:nth-child(even) {
+        background: linear-gradient(135deg, #2b32b2 0%, #1488cc 100%);
+        border: none;
+        color: white !important;
+        border-radius: 20px 4px 20px 20px;
+        text-align: right;
     }
-    
+
+    .stChatMessage p {
+        color: #ffffff !important;
+        font-size: 1rem;
+        line-height: 1.6;
+    }
+
+    /* Avatar */
+    .stChatMessage .stAvatar {
+        background-color: transparent !important;
+    }
+
+    /* INPUT */
     .stChatInput input {
         background-color: rgba(255, 255, 255, 0.05) !important;
         color: white !important;
         border: 1px solid rgba(255, 255, 255, 0.2) !important;
-        border-radius: 30px !important;
+        border-radius: 10px !important;
     }
     
-    /* MENSAGENS DO CHAT */
-    /* Usuário */
-    .stChatMessage[data-testid="stChatMessage"]:nth-child(odd) {
-        background-color: rgba(79, 172, 254, 0.1);
-        border-radius: 15px;
-        border: 1px solid rgba(79, 172, 254, 0.3);
-    }
+    /* ESCONDER ELEMENTOS */
+    #MainMenu {visibility: hidden;}
+    footer {visibility: hidden;}
+    header {visibility: hidden;}
     
-    /* Botões de Idioma (Pequenos ajustes) */
-    div.stButton > button {
-        background-color: transparent;
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        color: white;
-        border-radius: 20px;
-        transition: all 0.3s ease;
-    }
-    div.stButton > button:hover {
-        background-color: #4facfe;
-        border-color: #4facfe;
-        color: white;
-        transform: scale(1.05);
-    }
-
 </style>
 """, unsafe_allow_html=True)
 
-# 3. Configuração da API (Backend Integro)
+# -----------------------------------------------------------------------------
+# 3. BACKEND (GEMINI AI RESTORED)
+# -----------------------------------------------------------------------------
 api_key = os.environ.get("GOOGLE_API_KEY")
 if not api_key:
     try:
@@ -107,52 +133,46 @@ model = None
 if api_key:
     genai.configure(api_key=api_key)
     try:
+        # Usando a versão FLASH 2.5 como verificado anteriormente
         model = genai.GenerativeModel("models/gemini-2.5-flash")
     except Exception as e:
-        # Fallback silencioso ou log, caso mude novamente
-        st.error(f"Erro ao carregar modelo: {e}")
+        st.error(f"Erro ao conectar no modelo: {e}")
 
-# Inicializa estado do idioma
-if 'lang' not in st.session_state:
-    st.session_state['lang'] = 'pt'
+# -----------------------------------------------------------------------------
+# 4. INTERFACE VISUAL
+# -----------------------------------------------------------------------------
 
-# 4. Layout da Aplicação
+# Cabeçalho
+st.markdown("""
+    <div class="header-style">
+        <h3 style="color: #64748b; font-size: 0.9rem; margin-bottom: -10px;">SISTEMA DE VENDAS INTELIGENTE</h3>
+        <h1 class="neon-text">ELITE SALES AI <span style="font-size:1rem; color: #fff; vertical-align: super;">V2.5</span></h1>
+        <p style="color: #94a3b8; font-size: 0.9rem;"><i>"Transformando conversas em conversão."</i></p>
+    </div>
+""", unsafe_allow_html=True)
 
-# Seção de Idiomas (Topo)
-col1, col2, col3, col4, col5 = st.columns([4, 1, 1, 1, 4])
-with col2:
-    if st.button("BR"):
-        st.session_state['lang'] = 'pt'
-        st.rerun()
-with col3:
-    if st.button("US"):
-        st.session_state['lang'] = 'en'
-        st.rerun()
-with col4:
-    if st.button("ES"):
-        st.session_state['lang'] = 'es'
-        st.rerun()
-
-# Espaçamento
-st.write("") 
-
-# Título e Subtítulo
-st.markdown("<h1>Demonstração: IA Vendas Elite 2.5</h1>", unsafe_allow_html=True)
-st.markdown("<h3>🚀 Versão 2.5 Flash Turbo (Super Rápida)</h3>", unsafe_allow_html=True)
-
-st.divider()
-
-# --- LÓGICA DO CHAT ---
+# Inicializar histórico
 if "messages" not in st.session_state:
     st.session_state.messages = [
-        {"role": "assistant", "content": "Olá! Pronta para ir direto ao ponto e otimizar seu tempo? Diga-me, qual seu desafio principal hoje?"}
+        {"role": "assistant", "content": "Olá. Sou sua IA de Vendas Elite. Analisei seu perfil e identifiquei uma oportunidade de crescimento. \n\n**Qual é o maior obstáculo impedindo suas vendas de dobrarem hoje?**"}
     ]
 
-# Exibir mensagens
-for message in st.session_state.messages:
-    with st.chat_message(message["role"]):
-        st.write(message["content"])
+# Exibir histórico
+for msg in st.session_state.messages:
+    if msg["role"] == "assistant":
+        avatar_icon = "💎"
+    else:
+        avatar_icon = "👤"
 
-# Input
-if prompt := st.chat_input("Digite sua mensagem..."):
+    with st.chat_message(msg["role"], avatar=avatar_icon):
+        st.markdown(msg["content"])
+
+# -----------------------------------------------------------------------------
+# 5. CÉREBRO DA IA + EFEITO DIGITAÇÃO
+# -----------------------------------------------------------------------------
+
+prompt = st.chat_input("Digite sua resposta aqui...")
+
+if prompt:
+    # 1. Mensagem Usuário
     st.session_state.messages.append({"role": "user", "content": prompt})
