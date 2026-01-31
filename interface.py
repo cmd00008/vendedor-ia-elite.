@@ -16,7 +16,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# --- 2. CSS BLINDADO (PC E CELULAR PERFEITOS) ---
+# --- 2. CSS (LAYOUT INTELIGENTE: CENTRO + ESQUERDA) ---
 st.markdown("""
 <style>
     /* FUNDO */
@@ -29,41 +29,55 @@ st.markdown("""
         color: #FFFFFF !important;
     }
 
-    /* --- TRUQUE DE MESTRE PARA O CELULAR --- */
-    /* Isso força o layout a ficar LADO A LADO na tela pequena */
+    /* --- AJUSTES ESPECÍFICOS PARA CELULAR --- */
     @media (max-width: 600px) {
-        /* Obriga as colunas a ficarem na mesma linha */
+        /* 1. Empilha as colunas (Foto em cima, Texto embaixo) */
         div[data-testid="stHorizontalBlock"] {
-            flex-direction: row !important; 
-            align-items: center !important;
-            gap: 5px !important;
+            flex-direction: column !important;
+            gap: 10px !important;
         }
         
-        /* Ajusta a largura das colunas para caber */
+        /* 2. Centraliza a Foto */
         div[data-testid="column"]:nth-of-type(1) {
-            flex: 1 !important; /* Coluna da foto menor */
-            min-width: 90px !important;
+            display: flex !important;
+            justify-content: center !important;
+            width: 100% !important;
         }
-        div[data-testid="column"]:nth-of-type(2) {
-            flex: 2 !important; /* Coluna do texto maior */
-        }
-
-        /* Reduz tamanhos para o celular */
-        .profile-mask { width: 85px !important; height: 85px !important; margin-bottom: 0 !important; }
-        .neon-title { font-size: 19px !important; margin-bottom: 2px !important; text-align: left !important; }
-        .neon-subtitle { font-size: 10px !important; margin-bottom: 5px !important; text-align: left !important; }
-        .social-bar { margin-bottom: 5px !important; justify-content: flex-start !important; }
-        .social-icon { width: 20px !important; height: 20px !important; }
         
-        /* Ajuste do botão no celular */
-        div.stButton > button { margin-top: 0px !important; }
-        div.stButton > button p { font-size: 11px !important; }
-        div.stButton > button::before { width: 22px !important; height: 22px !important; }
+        /* 3. Centraliza o Título e o Subtítulo */
+        .neon-title {
+            text-align: center !important;
+            font-size: 26px !important;
+            margin-bottom: 5px !important;
+        }
+        .neon-subtitle {
+            text-align: center !important;
+            font-size: 14px !important;
+            margin-bottom: 25px !important; /* Espaço antes dos ícones */
+        }
+        
+        /* 4. Alinha Ícones e Botão à ESQUERDA */
+        .social-bar {
+            justify-content: flex-start !important; /* Joga pra esquerda */
+            padding-left: 10px !important; /* Um pouquinho de margem */
+        }
+        
+        /* Ajuste do botão no celular para alinhar à esquerda */
+        div.stButton > button {
+            justify-content: flex-start !important;
+            width: auto !important; /* Não ocupa a tela toda */
+            margin-left: 10px !important;
+        }
+        
+        /* Tamanho da foto no celular */
+        .profile-mask {
+            width: 120px !important;
+            height: 120px !important;
+        }
     }
 
     /* --- ESTILOS GERAIS (PC) --- */
     
-    /* MÁSCARA DA FOTO */
     .profile-mask {
         width: 140px; height: 140px;
         border-radius: 50%;
@@ -83,7 +97,6 @@ st.markdown("""
         transform-origin: center 20%;
     }
 
-    /* TEXTOS */
     .neon-title {
         font-size: 36px; font-weight: 800; line-height: 1; text-transform: uppercase;
         color: #FFFFFF !important;
@@ -92,11 +105,10 @@ st.markdown("""
         margin-top: 0;
     }
     .neon-subtitle { 
-        font-size: 16px; font-weight: 400; color: #d1d1d1 !important; 
+        font-size: 18px; font-weight: 400; color: #d1d1d1 !important; 
         letter-spacing: 1px; margin-bottom: 15px;
     }
 
-    /* REDES SOCIAIS */
     .social-bar {
         display: flex; justify-content: flex-start; gap: 15px; margin-bottom: 15px;
     }
@@ -107,7 +119,6 @@ st.markdown("""
     }
     .social-icon:hover { transform: scale(1.2); }
 
-    /* --- BOTÃO DIGITAL CARD --- */
     div.stButton > button {
         background: transparent !important;
         border: none !important;
@@ -119,10 +130,8 @@ st.markdown("""
         transition: transform 0.3s ease;
         margin-top: -5px;
     }
-    
     div.stButton > button:hover { transform: scale(1.05); }
 
-    /* ÍCONE DO BOTÃO (TELEFONE VERMELHO) */
     div.stButton > button::before {
         content: "";
         display: inline-block;
@@ -135,7 +144,6 @@ st.markdown("""
         filter: drop-shadow(0 0 8px rgba(255, 50, 50, 0.8)); 
     }
 
-    /* TEXTO DO BOTÃO (DOURADO) */
     div.stButton > button p {
         background: linear-gradient(to right, #BF953F, #FCF6BA, #B38728, #FBF5B7);
         -webkit-background-clip: text !important;
@@ -153,7 +161,6 @@ st.markdown("""
         50% { transform: translateY(-5px); }
     }
 
-    /* CHAT */
     .stChatInput textarea {
         background-color: #FFFFFF !important;
         color: #000000 !important;
@@ -231,12 +238,9 @@ bot_avatar_chat = "https://cdn-icons-png.flaticon.com/512/4712/4712139.png"
 # --- 6. CABEÇALHO ---
 st.markdown('<div style="margin-top: 20px;"></div>', unsafe_allow_html=True)
 
-# CONFIGURAÇÃO DE COLUNAS LADO A LADO
-# Coluna 1: Foto (Menor) | Coluna 2: Texto + Ícones + Botão (Maior)
 col_foto, col_texto = st.columns([1.2, 2.8]) 
 
 with col_foto:
-    # A foto fica centralizada dentro da coluna dela
     st.markdown(f"""
     <div style="display:flex; justify-content:center;">
         <div class="profile-mask">
@@ -246,7 +250,6 @@ with col_foto:
     """, unsafe_allow_html=True)
 
 with col_texto:
-    # O HTML do texto e redes sociais
     st.markdown(f"""
     <div style="display:flex; flex-direction:column; justify-content:center; height:100%;">
         <div class="neon-title">CDM IA CHATBOT</div>
@@ -268,7 +271,6 @@ with col_texto:
     </div>
     """, unsafe_allow_html=True)
     
-    # O Botão "DIGITAL CARD" fica logo abaixo
     if st.button("DIGITAL CARD"):
         toggle_card()
         st.rerun()
