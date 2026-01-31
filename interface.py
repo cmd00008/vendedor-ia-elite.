@@ -16,7 +16,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# --- 2. CSS (REPLICA EXATA DA FOTO) ---
+# --- 2. CSS (ESTILO) ---
 st.markdown("""
 <style>
     /* FUNDO */
@@ -29,17 +29,17 @@ st.markdown("""
         color: #FFFFFF !important;
     }
 
-    /* --- LAYOUT MOBILE: IDÊNTICO À FOTO --- */
+    /* --- LAYOUT MOBILE LADO A LADO --- */
     @media (max-width: 600px) {
         
-        /* 1. Bloqueio Horizontal e Vertical */
+        /* Força as colunas a ficarem lado a lado */
         div[data-testid="stHorizontalBlock"] {
             flex-direction: row !important;
-            align-items: center !important; /* Centraliza verticalmente a foto com o texto */
-            gap: 10px !important;
+            align-items: center !important;
+            gap: 5px !important;
         }
         
-        /* 2. Coluna da Foto */
+        /* Coluna da Foto */
         div[data-testid="column"]:nth-of-type(1) {
             flex: 1 !important;
             display: flex !important;
@@ -47,29 +47,25 @@ st.markdown("""
             justify-content: center !important;
         }
         
-        /* 3. Coluna do Texto */
+        /* Coluna do Texto/Botão */
         div[data-testid="column"]:nth-of-type(2) {
-            flex: 2.2 !important;
+            flex: 2.5 !important;
             display: flex !important;
             flex-direction: column !important;
-            
-            /* ALINHAMENTO IGUAL À FOTO: */
-            justify-content: center !important; /* Centro Vertical */
-            align-items: flex-start !important; /* Esquerda Horizontal */
-            
-            padding-left: 5px !important;
+            justify-content: center !important;
+            align-items: flex-start !important;
+            padding-left: 10px !important;
         }
 
-        /* Título */
+        /* Ajustes de Fonte no Celular */
         .neon-title {
-            font-size: 19px !important; 
+            font-size: 20px !important; 
             text-align: left !important; 
             margin-bottom: 2px !important;
             line-height: 1.1 !important;
             margin-top: 0 !important;
         }
         
-        /* Subtítulo */
         .neon-subtitle {
             font-size: 11px !important; 
             text-align: left !important; 
@@ -88,12 +84,11 @@ st.markdown("""
         /* Foto Mobile */
         .profile-mask { width: 100px !important; height: 100px !important; }
         
-        /* Botão Digital Card (Colado na esquerda) */
+        /* Botão Digital Card no Mobile */
         div.stButton > button {
             justify-content: flex-start !important;
             margin-left: 0px !important;
-            padding-left: 0px !important;
-            margin-top: -2px !important;
+            margin-top: 0px !important;
         }
     }
 
@@ -155,12 +150,11 @@ st.markdown("""
     
     div.stButton > button:hover { transform: scale(1.05); }
 
-    /* ÍCONE TELEFONE VERDE (CORRIGIDO PELA FOTO) */
+    /* ÍCONE TELEFONE VERDE */
     div.stButton > button::before {
         content: "";
         display: inline-block;
         width: 28px; height: 28px;
-        /* Ícone Verde igual da foto */
         background-image: url('https://cdn-icons-png.flaticon.com/512/3616/3616190.png'); 
         background-size: contain; 
         background-repeat: no-repeat;
@@ -265,9 +259,10 @@ bot_avatar_chat = "https://cdn-icons-png.flaticon.com/512/4712/4712139.png"
 # --- 6. CABEÇALHO ---
 st.markdown('<div style="margin-top: 20px;"></div>', unsafe_allow_html=True)
 
-# Coluna 1: Foto | Coluna 2: Texto + Ícones + Botão
+# Cria duas colunas: uma para a foto (esquerda) e outra para o texto/botão (direita)
 col_foto, col_texto = st.columns([1.2, 2.8]) 
 
+# Coluna da Esquerda: Foto
 with col_foto:
     st.markdown(f"""
     <div style="display:flex; justify-content:center;">
@@ -277,8 +272,8 @@ with col_foto:
     </div>
     """, unsafe_allow_html=True)
 
+# Coluna da Direita: Texto, Ícones e Botão
 with col_texto:
-    # A estrutura com justify-content: center para alinhar no meio
     st.markdown(f"""
     <div style="display:flex; flex-direction:column; justify-content:center; height:100%;">
         <div class="neon-title">CDM IA CHATBOT</div>
@@ -300,7 +295,7 @@ with col_texto:
     </div>
     """, unsafe_allow_html=True)
     
-    # O BOTÃO DIGITAL CARD (Com ícone VERDE)
+    # Botão Digital Card
     if st.button("DIGITAL CARD"):
         toggle_card()
         st.rerun()
