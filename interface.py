@@ -16,7 +16,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# --- 2. CSS (ESTILO) ---
+# --- 2. CSS (A CORREÇÃO DO EMPILHAMENTO) ---
 st.markdown("""
 <style>
     /* FUNDO */
@@ -29,66 +29,69 @@ st.markdown("""
         color: #FFFFFF !important;
     }
 
-    /* --- LAYOUT MOBILE LADO A LADO --- */
-    @media (max-width: 600px) {
+    /* --- LAYOUT MOBILE BLINDADO (LADO A LADO) --- */
+    @media (max-width: 640px) {
         
-        /* Força as colunas a ficarem lado a lado */
+        /* OBRIGA A FICAR NA MESMA LINHA (NO-WRAP) */
         div[data-testid="stHorizontalBlock"] {
-            flex-direction: row !important;
-            align-items: center !important;
-            gap: 5px !important;
-        }
-        
-        /* Coluna da Foto */
-        div[data-testid="column"]:nth-of-type(1) {
-            flex: 1 !important;
             display: flex !important;
+            flex-direction: row !important; /* Força horizontal */
+            flex-wrap: nowrap !important;   /* PROÍBE QUEBRAR LINHA */
             align-items: center !important;
-            justify-content: center !important;
+            gap: 10px !important;
         }
         
-        /* Coluna do Texto/Botão */
+        /* COLUNA 1: FOTO (ESQUERDA) */
+        div[data-testid="column"]:nth-of-type(1) {
+            flex: 0 0 110px !important; /* Largura fixa para a foto não esmagar */
+            min-width: 110px !important;
+            display: flex !important;
+            justify-content: center !important;
+            align-items: center !important;
+        }
+        
+        /* COLUNA 2: TEXTO (DIREITA) */
         div[data-testid="column"]:nth-of-type(2) {
-            flex: 2.5 !important;
+            flex: 1 !important; /* Ocupa o resto do espaço */
+            min-width: 0 !important; /* Permite encolher o texto se precisar */
             display: flex !important;
             flex-direction: column !important;
             justify-content: center !important;
             align-items: flex-start !important;
-            padding-left: 10px !important;
+            padding-left: 5px !important;
         }
 
-        /* Ajustes de Fonte no Celular */
+        /* AJUSTES DE TAMANHO PARA CABER TUDO */
         .neon-title {
-            font-size: 20px !important; 
-            text-align: left !important; 
+            font-size: 18px !important; /* Um pouco menor para não quebrar */
+            text-align: left !important;
             margin-bottom: 2px !important;
             line-height: 1.1 !important;
             margin-top: 0 !important;
+            white-space: nowrap !important; /* Texto em uma linha só se der */
         }
         
         .neon-subtitle {
-            font-size: 11px !important; 
+            font-size: 10px !important; 
             text-align: left !important; 
-            margin-bottom: 8px !important;
-        }
-        
-        /* Ícones */
-        .social-bar {
-            justify-content: flex-start !important; 
-            gap: 12px !important;
             margin-bottom: 5px !important;
         }
         
-        .social-icon { width: 22px !important; height: 22px !important; }
-        
-        /* Foto Mobile */
-        .profile-mask { width: 100px !important; height: 100px !important; }
-        
-        /* Botão Digital Card no Mobile */
-        div.stButton > button {
+        .social-bar {
             justify-content: flex-start !important;
+            gap: 8px !important;
+            margin-bottom: 5px !important;
+        }
+        
+        .social-icon { width: 20px !important; height: 20px !important; }
+        
+        .profile-mask { width: 95px !important; height: 95px !important; }
+        
+        div.stButton > button {
             margin-left: 0px !important;
-            margin-top: 0px !important;
+            padding: 0px !important;
+            transform: scale(0.9) !important; /* Reduz levemente o botão */
+            transform-origin: left center !important;
         }
     }
 
@@ -135,7 +138,6 @@ st.markdown("""
     }
     .social-icon:hover { transform: scale(1.2); }
 
-    /* --- BOTÃO DIGITAL CARD --- */
     div.stButton > button {
         background: transparent !important;
         border: none !important;
@@ -163,7 +165,6 @@ st.markdown("""
         filter: drop-shadow(0 0 5px rgba(0, 255, 0, 0.4)); 
     }
 
-    /* TEXTO DOURADO */
     div.stButton > button p {
         background: linear-gradient(to right, #BF953F, #FCF6BA, #B38728, #FBF5B7);
         -webkit-background-clip: text !important;
@@ -181,7 +182,6 @@ st.markdown("""
         50% { transform: translateY(-5px); }
     }
 
-    /* CHAT */
     .stChatInput textarea {
         background-color: #FFFFFF !important;
         color: #000000 !important;
@@ -227,7 +227,7 @@ except Exception as e:
 # ANTIGRAVITY FIX: models/gemini-2.5-flash
 model = genai.GenerativeModel('models/gemini-2.5-flash', system_instruction="Você é o CDM, IA de Vendas Elite. Responda no idioma do usuário.")
 
-# --- 4. ESTADO ---
+# --- 4. MEMÓRIA ---
 if "messages" not in st.session_state:
     st.session_state.messages = [{"role": "model", "content": "Olá! Sou o CDM. Como posso ajudar a escalar suas vendas hoje? 🚀"}]
 
@@ -257,12 +257,11 @@ user_avatar_chat = "https://cdn-icons-png.flaticon.com/512/9408/9408175.png"
 bot_avatar_chat = "https://cdn-icons-png.flaticon.com/512/4712/4712139.png"
 
 # --- 6. CABEÇALHO ---
-st.markdown('<div style="margin-top: 20px;"></div>', unsafe_allow_html=True)
+st.markdown('<div style="margin-top: 10px;"></div>', unsafe_allow_html=True)
 
-# Cria duas colunas: uma para a foto (esquerda) e outra para o texto/botão (direita)
-col_foto, col_texto = st.columns([1.2, 2.8]) 
+# Mudei a proporção para [1, 2.5] para garantir que o texto tenha espaço e não quebre a linha
+col_foto, col_texto = st.columns([1, 2.5]) 
 
-# Coluna da Esquerda: Foto
 with col_foto:
     st.markdown(f"""
     <div style="display:flex; justify-content:center;">
@@ -272,7 +271,6 @@ with col_foto:
     </div>
     """, unsafe_allow_html=True)
 
-# Coluna da Direita: Texto, Ícones e Botão
 with col_texto:
     st.markdown(f"""
     <div style="display:flex; flex-direction:column; justify-content:center; height:100%;">
@@ -295,7 +293,6 @@ with col_texto:
     </div>
     """, unsafe_allow_html=True)
     
-    # Botão Digital Card
     if st.button("DIGITAL CARD"):
         toggle_card()
         st.rerun()
