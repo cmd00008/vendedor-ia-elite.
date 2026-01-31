@@ -11,7 +11,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# --- 2. CSS: CORREÇÃO VISUAL E FOTO PERFEITA ---
+# --- 2. CSS: CORREÇÃO DE CORES E VISUAL ---
 st.markdown("""
 <style>
     /* FUNDO AZUL PROFUNDO */
@@ -20,65 +20,50 @@ st.markdown("""
         background-attachment: fixed;
     }
     
-    /* TEXTOS BRANCOS */
-    h1, h2, h3, h4, h5, h6, p, span, div, li, label, .stMarkdown, button, textarea {
+    /* TEXTOS GERAIS (Títulos, mensagens antigas) - BRANCO */
+    h1, h2, h3, h4, h5, h6, p, span, div, li, label, .stMarkdown {
         color: #FFFFFF !important;
     }
 
-    /* --- O SEGREDO DA FOTO PERFEITA --- */
-    .profile-container {
-        display: flex;
-        justify-content: center;
-        padding-top: 30px;
-        padding-bottom: 20px;
-    }
-    
-    .profile-img {
-        width: 150px; 
-        height: 150px;
-        border-radius: 50%;          /* Faz o círculo */
-        
-        /* AQUI ESTÁ A CORREÇÃO: */
-        object-fit: cover;           /* Dá zoom para preencher o círculo (sem borda cinza) */
-        object-position: top center; /* Foca no rosto/boné, corta o peito se precisar */
-        
-        border: 4px solid #4facfe;   /* Borda Azul Neon */
-        box-shadow: 0px 0px 30px rgba(79, 172, 254, 0.7); /* Brilho forte */
-        animation: float 6s ease-in-out infinite;
-    }
-    
-    @keyframes float {
-        0% { transform: translateY(0px); }
-        50% { transform: translateY(-15px); }
-        100% { transform: translateY(0px); }
-    }
-
-    /* ESTILO DA BARRA DE CHAT (OFICIAL) */
+    /* --- CORREÇÃO DA BARRA DE DIGITAÇÃO (BRANCA COM LETRA PRETA) --- */
     .stChatInput textarea {
-        background-color: #1e1e1e !important; /* Fundo Escuro */
-        color: #FFFFFF !important; /* Letra Branca */
+        background-color: #FFFFFF !important; /* Fundo BRANCO */
+        color: #000000 !important;       /* Letra PRETA */
+        caret-color: #000000 !important; /* Cursor piscando PRETO */
         border: 2px solid #4facfe !important; /* Borda Azul */
         border-radius: 30px !important;
     }
     
-    /* Ícone de Enviar */
+    /* Cor do texto de ajuda (Placeholder) dentro da barra branca */
+    .stChatInput textarea::placeholder {
+        color: #555555 !important; /* Cinza escuro para ler fácil */
+    }
+
+    /* Ícone de Enviar (Setinha) */
     .stChatInput button {
         color: #4facfe !important;
     }
 
-    /* BALÕES */
+    /* --- BALÕES DO CHAT --- */
     div[data-testid="stChatMessage"] {
         background-color: rgba(0, 0, 0, 0.6);
         border: 1px solid rgba(255, 255, 255, 0.1);
         border-radius: 15px;
         margin-bottom: 10px;
     }
+    
+    /* ANIMAÇÃO DE FLUTUAR A FOTO */
+    @keyframes float {
+        0% { transform: translateY(0px); }
+        50% { transform: translateY(-15px); }
+        100% { transform: translateY(0px); }
+    }
 </style>
 """, unsafe_allow_html=True)
 
 # --- 3. CONEXÃO (BLINDADA) ---
 try:
-    api_key = os.environ.get("GOOGLE_API_KEY") 
+    api_key = os.environ.get("GOOGLE_API_KEY") # Prioridade Env Var
     if not api_key:
         api_key = st.secrets["GOOGLE_API_KEY"]
     
@@ -91,60 +76,65 @@ except Exception as e:
     st.error(f"⚠️ Erro de Configuração: {e}")
     st.stop()
 
-# Configuração do Modelo (ANTIGRAVITY FIX: models/gemini-2.5-flash)
+# ANTIGRAVITY FIX: models/gemini-2.5-flash
 model = genai.GenerativeModel('models/gemini-2.5-flash', system_instruction="Você é o CDM, IA de Vendas Elite. Responda no idioma do usuário.")
 
 # --- 4. MEMÓRIA ---
 if "messages" not in st.session_state:
-    st.session_state.messages = [{"role": "model", "content": "Olá! Sou o CDM. Estou pronto para escalar suas vendas! 🚀"}]
+    st.session_state.messages = [{"role": "model", "content": "Olá! Sou o CDM. Vamos bater as metas de hoje? 🚀"}]
 
-# --- 5. BUSCA INTELIGENTE DA FOTO (Resolve o problema do nome) ---
-st.markdown('<div class="profile-container">', unsafe_allow_html=True)
+# --- 5. FOTO DE PERFIL (CORREÇÃO DO ZOOM) ---
+st.markdown('<div style="display: flex; justify-content: center; padding: 30px 0;">', unsafe_allow_html=True)
 
-# Lista de tentativas: o código vai tentar todos esses nomes até achar sua foto
-nomes_possiveis = [
-    "perfil.jpg", 
-    "perfil.png", 
-    "perfil.jpeg", 
-    "perfil.jpg.png", # Caso tenha renomeado errado
-    "perfil.png.jpg"
-]
-
+# Procura o arquivo
+nomes_possiveis = ["perfil.jpg", "perfil.png", "perfil.jpeg", "perfil.jpg.png"]
 arquivo_encontrado = None
 
-# O Loop Caçador de Arquivos
 for nome in nomes_possiveis:
     if os.path.exists(nome):
         arquivo_encontrado = nome
-        break # Achou! Para de procurar.
+        break
 
+# HTML DA IMAGEM (Com estilo INLINE para garantir o corte redondo)
 if arquivo_encontrado:
-    # Se achou, carrega e exibe
     with open(arquivo_encontrado, "rb") as f:
         data = f.read()
         encoded = base64.b64encode(data).decode()
     
-    # Define o tipo (truque técnico para navegador)
     mime = "image/png" if "png" in arquivo_encontrado else "image/jpeg"
     
-    st.markdown(f'<img src="data:{mime};base64,{encoded}" class="profile-img">', unsafe_allow_html=True)
+    # O SEGREDO ESTÁ AQUI: object-fit: cover FORÇADO
+    st.markdown(f"""
+    <img src="data:{mime};base64,{encoded}" 
+         style="
+            width: 150px; 
+            height: 150px; 
+            border-radius: 50%; 
+            object-fit: cover; 
+            object-position: top center; 
+            border: 4px solid #4facfe; 
+            box-shadow: 0px 0px 30px rgba(79, 172, 254, 0.7);
+            animation: float 6s ease-in-out infinite;
+         ">
+    """, unsafe_allow_html=True)
 else:
-    # Se não achou NADA, mostra o robô (pra não ficar buraco na tela)
-    st.markdown('<img src="https://cdn-icons-png.flaticon.com/512/4712/4712139.png" class="profile-img">', unsafe_allow_html=True)
+    # Robô (Reserva)
+    st.markdown("""
+    <img src="https://cdn-icons-png.flaticon.com/512/4712/4712139.png" 
+         style="width: 150px; height: 150px; border-radius: 50%; object-fit: cover; border: 4px solid #4facfe; animation: float 6s ease-in-out infinite;">
+    """, unsafe_allow_html=True)
 
 st.markdown('</div>', unsafe_allow_html=True)
 
 # --- 6. EXIBIR O CHAT ---
-# Mostra o histórico
-st.markdown('<div class="chat-container">', unsafe_allow_html=True)
+st.markdown('<div style="margin-bottom: 50px;">', unsafe_allow_html=True)
 for msg in st.session_state.messages:
     avatar = "⚡" if msg["role"] == "model" else "👤"
     with st.chat_message(msg["role"], avatar=avatar):
         st.markdown(msg["content"])
 st.markdown('</div>', unsafe_allow_html=True)
 
-# --- 7. A BARRA DE CHAT OFICIAL (Resolve o problema do Enter) ---
-# st.chat_input cria aquela barra fixa embaixo igual WhatsApp
+# --- 7. BARRA DE DIGITAÇÃO (AGORA BRANCA) ---
 if prompt := st.chat_input("Digite sua mensagem aqui..."):
     # 1. Mostra msg do usuário
     st.session_state.messages.append({"role": "user", "content": prompt})
@@ -154,7 +144,8 @@ if prompt := st.chat_input("Digite sua mensagem aqui..."):
     # 2. IA Responde
     with st.chat_message("model", avatar="⚡"):
         try:
-            # HISTORY FIX: avoid duplicate prompt in history
+            # FIX: Use safe history slicing to include all BUT the last (just added) message
+            # This is safer than filtering by content which might accidentally remove duplicates
             chat_hist = [{"role": m["role"], "parts": [m["content"]]} 
                          for m in st.session_state.messages[:-1]]
             
