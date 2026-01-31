@@ -21,8 +21,21 @@ try:
 
     if api_key:
         genai.configure(api_key=api_key)
-        # Usando a versão FLASH 2.5 verificada
-        model = genai.GenerativeModel("models/gemini-2.5-flash")
+        
+        # --- SYSTEM INSTRUCTION (MANDATORY LANGUAGE DETECTION) ---
+        system_instruction = \"\"\"
+Você é o CDM, uma IA de Vendas Global.
+SUA REGRA NÚMERO 1 (INVIOLÁVEL): ESPELHAMENTO DE IDIOMA.
+- Antes de responder, DETECTE o idioma do usuário.
+- Se o usuário falar INGLÊS -> Responda 100% em INGLÊS.
+- Se o usuário falar ESPANHOL -> Responda 100% em ESPANHOL.
+- Se o usuário falar PORTUGUÊS -> Responda 100% em PORTUGUÊS.
+Nunca responda em Português se a pergunta for em Inglês.
+Seja curto, grosso e focado em vendas.
+\"\"\"
+        
+        # Usando a versão FLASH 2.5 verificada COM System Instruction
+        model = genai.GenerativeModel("models/gemini-2.5-flash", system_instruction=system_instruction)
     else:
         model = None
 except Exception as e:
@@ -107,9 +120,8 @@ if prompt := st.chat_input("Digite aqui..."):
         if model:
             try:
                 message_placeholder.markdown("⚡ Processando...")
-                # Prompt de Sistema Oculto
-                system_prompt = "ATUE COMO: Vendedor Elite. SEJA: Curto, direto e estratégico."
-                response = model.generate_content(f"{system_prompt}\n\nMensagem: {prompt}")
+                # Prompt Direto (Instrução já está no Sistema)
+                response = model.generate_content(prompt)
                 resposta = response.text
             except Exception as e:
                 resposta = f"Erro na API: {e}"
