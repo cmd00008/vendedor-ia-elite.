@@ -11,7 +11,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# --- 2. CSS: ZOOM AJUSTADO (BONÉ VISÍVEL) + CHAT MODERNO ---
+# --- 2. CSS: ZOOM PERFEITO (2.0) + CHAT MODERNO ---
 st.markdown("""
 <style>
     /* FUNDO */
@@ -47,18 +47,18 @@ st.markdown("""
         display: flex; align-items: center; justify-content: center;
     }
 
-    /* --- FOTO COM ZOOM AJUSTADO --- */
+    /* --- FOTO COM ZOOM FINAL (2.0) --- */
     .profile-img-zoom {
         width: 100%; height: 100%;
         object-fit: cover;
         
-        /* Posicionamento focado no topo */
+        /* Posiciona o foco no topo (onde está a cabeça) */
         object-position: center 15%; 
         
-        /* ZOOM REDUZIDO LEVEMENTE (De 2.8 para 2.4): Para mostrar o boné inteiro */
-        transform: scale(2.4); 
+        /* O AJUSTE PEDIDO: 2.0 (Equilíbrio perfeito entre rosto e boné) */
+        transform: scale(2.0); 
         
-        /* PONTO DE ANCORAGEM: Mantém o foco no rosto */
+        /* PONTO DE ANCORAGEM: Garante que o zoom foque no rosto */
         transform-origin: center 20%;
     }
 
