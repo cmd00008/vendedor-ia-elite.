@@ -16,7 +16,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# --- 2. CSS (LAYOUT INTELIGENTE: CENTRO + ESQUERDA) ---
+# --- 2. CSS (LAYOUT HÍBRIDO: CENTRO + ESQUERDA) ---
 st.markdown("""
 <style>
     /* FUNDO */
@@ -31,53 +31,54 @@ st.markdown("""
 
     /* --- AJUSTES ESPECÍFICOS PARA CELULAR --- */
     @media (max-width: 600px) {
-        /* 1. Empilha as colunas (Foto em cima, Texto embaixo) */
+        
+        /* 1. Empilha as colunas (Volta ao padrão vertical) */
         div[data-testid="stHorizontalBlock"] {
             flex-direction: column !important;
-            gap: 10px !important;
+            gap: 5px !important;
         }
         
-        /* 2. Centraliza a Foto */
+        /* 2. Centraliza a Foto e remove margens extras */
         div[data-testid="column"]:nth-of-type(1) {
             display: flex !important;
             justify-content: center !important;
             width: 100% !important;
+            margin-bottom: 5px !important;
         }
         
-        /* 3. Centraliza o Título e o Subtítulo */
+        /* 3. Centraliza o Título e Subtítulo */
         .neon-title {
             text-align: center !important;
-            font-size: 26px !important;
+            font-size: 24px !important;
             margin-bottom: 5px !important;
         }
         .neon-subtitle {
             text-align: center !important;
             font-size: 14px !important;
-            margin-bottom: 25px !important; /* Espaço antes dos ícones */
+            margin-bottom: 20px !important; /* Espaço para separar dos ícones */
         }
         
-        /* 4. Alinha Ícones e Botão à ESQUERDA */
+        /* 4. Ícones: Bem na Esquerda */
         .social-bar {
-            justify-content: flex-start !important; /* Joga pra esquerda */
-            padding-left: 10px !important; /* Um pouquinho de margem */
+            justify-content: flex-start !important; /* Esquerda */
+            padding-left: 15px !important; /* Margem da borda */
+            margin-bottom: 10px !important;
         }
         
-        /* Ajuste do botão no celular para alinhar à esquerda */
+        /* 5. Botão: Bem na Esquerda (Debaixo dos ícones) */
         div.stButton > button {
             justify-content: flex-start !important;
-            width: auto !important; /* Não ocupa a tela toda */
-            margin-left: 10px !important;
+            margin-left: 15px !important; /* Alinhado com os ícones */
+            width: auto !important;
         }
-        
-        /* Tamanho da foto no celular */
-        .profile-mask {
-            width: 120px !important;
-            height: 120px !important;
-        }
+
+        /* Reduz foto no celular */
+        .profile-mask { width: 110px !important; height: 110px !important; }
     }
 
     /* --- ESTILOS GERAIS (PC) --- */
     
+    /* MÁSCARA DA FOTO */
     .profile-mask {
         width: 140px; height: 140px;
         border-radius: 50%;
@@ -97,6 +98,7 @@ st.markdown("""
         transform-origin: center 20%;
     }
 
+    /* TEXTOS */
     .neon-title {
         font-size: 36px; font-weight: 800; line-height: 1; text-transform: uppercase;
         color: #FFFFFF !important;
@@ -109,6 +111,7 @@ st.markdown("""
         letter-spacing: 1px; margin-bottom: 15px;
     }
 
+    /* REDES SOCIAIS */
     .social-bar {
         display: flex; justify-content: flex-start; gap: 15px; margin-bottom: 15px;
     }
@@ -119,6 +122,7 @@ st.markdown("""
     }
     .social-icon:hover { transform: scale(1.2); }
 
+    /* --- BOTÃO DIGITAL CARD --- */
     div.stButton > button {
         background: transparent !important;
         border: none !important;
@@ -132,18 +136,23 @@ st.markdown("""
     }
     div.stButton > button:hover { transform: scale(1.05); }
 
+    /* ÍCONE TELEFONE (CORRIGIDO PARA NÃO CORTAR) */
     div.stButton > button::before {
         content: "";
         display: inline-block;
         width: 28px; height: 28px;
         background-image: url('https://cdn-icons-png.flaticon.com/512/5585/5585856.png'); 
-        background-size: contain;
+        
+        /* O SEGREDO DO ÍCONE PERFEITO: */
+        background-size: contain; 
         background-repeat: no-repeat;
         background-position: center;
+        
         margin-right: 10px;
         filter: drop-shadow(0 0 8px rgba(255, 50, 50, 0.8)); 
     }
 
+    /* TEXTO DOURADO */
     div.stButton > button p {
         background: linear-gradient(to right, #BF953F, #FCF6BA, #B38728, #FBF5B7);
         -webkit-background-clip: text !important;
@@ -161,6 +170,7 @@ st.markdown("""
         50% { transform: translateY(-5px); }
     }
 
+    /* CHAT */
     .stChatInput textarea {
         background-color: #FFFFFF !important;
         color: #000000 !important;
@@ -236,7 +246,8 @@ user_avatar_chat = "https://cdn-icons-png.flaticon.com/512/9408/9408175.png"
 bot_avatar_chat = "https://cdn-icons-png.flaticon.com/512/4712/4712139.png"
 
 # --- 6. CABEÇALHO ---
-st.markdown('<div style="margin-top: 20px;"></div>', unsafe_allow_html=True)
+# Puxa tudo um pouco pra cima no mobile
+st.markdown('<div style="margin-top: 10px;"></div>', unsafe_allow_html=True)
 
 col_foto, col_texto = st.columns([1.2, 2.8]) 
 
