@@ -11,7 +11,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# --- 2. CSS: ZOOM AJUSTADO PARA 1.8 + CHAT MODERNO ---
+# --- 2. CSS: VISUAL 1.8 + CHAT MODERNO ---
 st.markdown("""
 <style>
     /* FUNDO */
@@ -47,18 +47,12 @@ st.markdown("""
         display: flex; align-items: center; justify-content: center;
     }
 
-    /* --- FOTO COM ZOOM 1.8 (AJUSTE FINO) --- */
+    /* FOTO DE PERFIL (CABEÇALHO) - ZOOM 1.8 */
     .profile-img-zoom {
         width: 100%; height: 100%;
         object-fit: cover;
-        
-        /* Foco no topo (cabeça) */
         object-position: center 15%; 
-        
-        /* O AJUSTE PEDIDO: 1.8 (Um pouco mais afastado que o 2.0) */
         transform: scale(1.8); 
-        
-        /* PONTO DE ANCORAGEM: Mantém o foco no rosto */
         transform-origin: center 20%;
     }
 
@@ -109,10 +103,13 @@ st.markdown("""
         animation: slideIn 0.5s ease-out forwards;
     }
     
+    /* ESTILO DOS AVATARES NO CHAT */
     .stChatMessageAvatar img {
         border-radius: 50% !important;
         border: 2px solid #4facfe !important;
         box-shadow: 0 0 10px rgba(79, 172, 254, 0.5);
+        background-color: #ffffff; /* Fundo branco para o ícone */
+        padding: 2px; /* Espacinho */
     }
     
     div[data-testid="stChatMessage"] .stMarkdown p {
@@ -126,7 +123,7 @@ st.markdown("""
 
 # --- 3. CONEXÃO (BLINDADA) ---
 try:
-    api_key = os.environ.get("GOOGLE_API_KEY") 
+    api_key = os.environ.get("GOOGLE_API_KEY") # Fix: Priority to Env Var
     if not api_key:
         api_key = st.secrets["GOOGLE_API_KEY"]
     
@@ -146,7 +143,8 @@ model = genai.GenerativeModel('models/gemini-2.5-flash', system_instruction="Voc
 if "messages" not in st.session_state:
     st.session_state.messages = [{"role": "model", "content": "Olá! Sou o CDM. Como posso ajudar a escalar suas vendas hoje? 🚀"}]
 
-# --- 5. CABEÇALHO ---
+# --- 5. LÓGICA DE IMAGENS ---
+# 1. Busca a foto REAL para o CABEÇALHO
 nomes = ["perfil.jpg", "perfil.png", "perfil.jpeg", "perfil.jpg.png"]
 arquivo_usuario = None
 for n in nomes:
@@ -158,19 +156,23 @@ if arquivo_usuario:
     with open(arquivo_usuario, "rb") as f:
         encoded = base64.b64encode(f.read()).decode()
     mime = "image/png" if "png" in arquivo_usuario else "image/jpeg"
-    img_tag = f'<img src="data:{mime};base64,{encoded}" class="profile-img-zoom">'
-    user_avatar_chat = arquivo_usuario 
+    # Header usa a foto real com zoom
+    img_tag_header = f'<img src="data:{mime};base64,{encoded}" class="profile-img-zoom">'
 else:
-    img_tag = '<img src="https://cdn-icons-png.flaticon.com/512/4712/4712139.png" class="profile-img-zoom">'
-    user_avatar_chat = "👤"
+    img_tag_header = '<img src="https://cdn-icons-png.flaticon.com/512/4712/4712139.png" class="profile-img-zoom">'
 
+# 2. Define o AVATAR DO CHAT (Aqui mudamos!)
+# Link para um ícone de rosto sorrindo (Estilo 3D/Cartoon amigável)
+user_avatar_chat = "https://cdn-icons-png.flaticon.com/512/9408/9408175.png" 
+
+# Link do Robô
 bot_avatar_chat = "https://cdn-icons-png.flaticon.com/512/4712/4712139.png"
 
-# --- 6. EXIBIÇÃO ---
+# --- 6. EXIBIR CABEÇALHO (FOTO REAL) ---
 st.markdown(f"""
 <div class="header-container">
     <div class="profile-mask">
-        {img_tag}
+        {img_tag_header}
     </div>
     <div class="brand-text">
         <div class="neon-title">CDM IA CHATBOT</div>
@@ -179,22 +181,27 @@ st.markdown(f"""
 </div>
 """, unsafe_allow_html=True)
 
-# --- 7. CHAT ---
+# --- 7. CHAT (COM AVATAR SORRINDO) ---
 st.markdown('<div style="margin-bottom: 60px;">', unsafe_allow_html=True)
 for msg in st.session_state.messages:
+    # Seleciona o ícone certo
     if msg["role"] == "user":
-        avatar_icon = user_avatar_chat
+        avatar_icon = user_avatar_chat # Agora é o boneco sorrindo!
     else:
         avatar_icon = bot_avatar_chat
+        
     with st.chat_message(msg["role"], avatar=avatar_icon):
         st.markdown(msg["content"])
 st.markdown('</div>', unsafe_allow_html=True)
 
 if prompt := st.chat_input("Digite sua mensagem..."):
     st.session_state.messages.append({"role": "user", "content": prompt})
+    
+    # Usuário (Avatar Sorrindo)
     with st.chat_message("user", avatar=user_avatar_chat):
         st.markdown(prompt)
 
+    # Bot (Robô)
     with st.chat_message("model", avatar=bot_avatar_chat):
         try:
             # FIX: Safer history slicing
