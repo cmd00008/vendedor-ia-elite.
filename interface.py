@@ -1,39 +1,18 @@
 import streamlit as st
 import time
 import os
-import base64
 import google.generativeai as genai
+from PIL import Image
 
-# -----------------------------------------------------------------------------
-# 1. CONFIGURAÇÃO GERAL
-# -----------------------------------------------------------------------------
+# 1. CONFIGURAÇÃO (Simples e Leve para não travar)
 st.set_page_config(
-    page_title="IA Vendas Elite 5.0",
-    page_icon="�",
-    layout="centered", # 'Centered' funciona melhor no celular que 'Wide'
-    initial_sidebar_state="collapsed"
+    page_title="Elite AI",
+    layout="centered",
+    initial_sidebar_state="expanded" # Abre a lateral automaticamente
 )
 
 # -----------------------------------------------------------------------------
-# 2. CARREGAMENTO DA FOTO (Lógica Inteligente)
-# -----------------------------------------------------------------------------
-def get_img_as_base64(file):
-    with open(file, "rb") as f:
-        data = f.read()
-    return base64.b64encode(data).decode()
-
-# Tenta carregar sua foto 'perfil.png'
-img_tag = ""
-if os.path.exists("perfil.png"):
-    img_b64 = get_img_as_base64("perfil.png")
-    # CSS aqui faz o recorte redondo e foca no rosto (object-position)
-    img_tag = f'<img src="data:image/png;base64,{img_b64}" class="profile-pic">'
-else:
-    # Avatar genérico caso você esqueça de subir a foto
-    img_tag = '<div style="font-size:50px;">👨‍💼</div>'
-
-# -----------------------------------------------------------------------------
-# 3. BACKEND (GEMINI AI RESTORED)
+# 2. BACKEND (GEMINI AI RESTORED) - Conexão Real (Mantida)
 # -----------------------------------------------------------------------------
 try:
     api_key = os.environ.get("GOOGLE_API_KEY")
@@ -49,135 +28,95 @@ try:
 except Exception as e:
     model = None
 
-# -----------------------------------------------------------------------------
-# 4. ESTILO VISUAL (CSS OTIMIZADO PARA MOBILE)
-# -----------------------------------------------------------------------------
+# 2. DESIGN (CSS Corrigido para Celular e PC)
 st.markdown("""
 <style>
-    /* Fontes Clean */
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
+    /* Fundo Preto Absoluto */
+    .stApp { background-color: #000000; color: white; }
 
-    /* Fundo Escuro Moderno */
-    .stApp {
-        background-color: #0e1117;
-        background-image: linear-gradient(180deg, #161b2e 0%, #000000 100%);
-        color: white;
+    /* Estilo da Foto (Redonda e Centralizada) */
+    .css-1v0mbdj img, .profile-pic {
+        border-radius: 50%;
+        border: 4px solid #00C9FF;
+        box-shadow: 0 0 20px rgba(0, 201, 255, 0.5);
+        object-fit: cover;
     }
 
-    /* --- ESTILO DA SUA FOTO (Foco no Rosto) --- */
-    .profile-pic {
-        width: 110px;
-        height: 110px;
-        border-radius: 50%;        /* Faz ficar redondo */
-        object-fit: cover;         /* Preenche sem esticar */
-        object-position: center 20%; /* FOCA NO ROSTO (Sobe o foco 20%) */
-        border: 3px solid #00C9FF; /* Borda Neon */
-        box-shadow: 0 0 20px rgba(0, 201, 255, 0.4);
-        margin-bottom: 10px;
-    }
-
-    /* Títulos */
-    h1 {
-        font-family: 'Inter', sans-serif;
-        font-weight: 800;
-        background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        margin: 0;
-        padding: 0;
-        font-size: 2.2rem !important;
-    }
+    /* Balões de Chat (Legíveis no Mobile) */
+    .stChatMessage { background-color: transparent !important; }
     
-    p {
-        font-family: 'Inter', sans-serif;
-        color: #b0b0b0 !important;
-    }
-
-    /* --- CHAT MOBILE FIX (Correção de Texto Invisível) --- */
-    .stChatMessage {
-        background-color: transparent !important;
-    }
-
-    /* Balão do Usuário */
-    .stChatMessage[data-testid="stChatMessage"]:nth-child(even) {
-        background-color: rgba(79, 172, 254, 0.15) !important;
-        border: 1px solid rgba(79, 172, 254, 0.3);
-        border-radius: 15px;
-    }
-    
-    /* Balão da IA */
+    /* Balão IA */
     .stChatMessage[data-testid="stChatMessage"]:nth-child(odd) {
-        background-color: rgba(255, 255, 255, 0.05) !important;
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 15px;
+        background: #111 !important;
+        border-left: 3px solid #00C9FF;
     }
-
-    /* Força texto branco SEMPRE */
-    .stChatMessage p, .stChatMessage div {
-        color: #ffffff !important;
-    }
-
-    /* Input ajustado para não quebrar no iPhone */
-    .stChatInput {
-        padding-bottom: 15px !important;
-    }
+    
+    /* Texto Branco Sempre */
+    p, div, span { color: white !important; font-family: sans-serif; }
 
     /* Esconder menus chatos */
     #MainMenu, footer, header {visibility: hidden;}
-    
 </style>
 """, unsafe_allow_html=True)
 
-# -----------------------------------------------------------------------------
-# 5. CABEÇALHO (SEU PERFIL + ROBÔ)
-# -----------------------------------------------------------------------------
+# 3. BARRA LATERAL (ONDE VOCÊ COLOCA A FOTO)
+with st.sidebar:
+    st.title("📸 Configuração")
+    st.info("Para sua foto aparecer, clique abaixo e selecione o arquivo do seu computador/celular.")
+    
+    # BOTÃO DE UPLOAD (A Mágica Acontece Aqui)
+    arquivo_foto = st.file_uploader("Carregar Foto de Perfil", type=["jpg", "png", "jpeg"])
 
-col_left, col_center, col_right = st.columns([1, 2, 1])
+# 4. ÁREA PRINCIPAL
+col1, col2, col3 = st.columns([1, 2, 1])
 
-# Coluna 1: Robô
-with col_left:
-    st.markdown('<div style="display:flex; justify-content:center; align-items:center; height:100%;">', unsafe_allow_html=True)
-    st.image("https://cdn-icons-png.flaticon.com/512/4712/4712038.png", width=60) # Ícone Robô 3D
-    st.markdown('</div>', unsafe_allow_html=True)
-
-# Coluna 2: Título
-with col_center:
-    st.markdown("""
-        <div style="text-align: center;">
-            <h1>VENDAS ELITE</h1>
-            <p style="font-size: 0.8rem; letter-spacing: 2px; text-transform: uppercase;">Inteligência Artificial</p>
-        </div>
-    """, unsafe_allow_html=True)
-
-# Coluna 3: SUA FOTO
-with col_right:
-    st.markdown(f"""
-        <div style="display: flex; justify-content: center;">
-            {img_tag}
-        </div>
-    """, unsafe_allow_html=True)
-
-st.divider()
-
-# -----------------------------------------------------------------------------
-# 6. LÓGICA DO CHAT (REAL)
-# -----------------------------------------------------------------------------
-
-if "messages" not in st.session_state:
-    st.session_state.messages = [
-        {"role": "assistant", "content": "Olá! Analisei seus dados. \n\nEstou pronto para criar a estratégia perfeita. O que vamos vender hoje?"}
-    ]
-
-# Exibir mensagens
-for msg in st.session_state.messages:
-    if msg["role"] == "assistant":
-        with st.chat_message("assistant", avatar="🤖"):
-            st.write(msg["content"])
+with col2:
+    # SE TIVER FOTO, MOSTRA A FOTO. SE NÃO, MOSTRA UM ÍCONE.
+    if arquivo_foto is not None:
+        image = Image.open(arquivo_foto)
+        st.image(image, width=150) # Mostra a foto que você subiu
+    elif os.path.exists("perfil.png"):
+        # Fallback local se existir
+        st.image("perfil.png", width=150)
     else:
-        with st.chat_message("user", avatar="👤"):
-            st.write(msg["content"])
+        st.markdown('<div style="font-size: 80px; text-align: center;">�</div>', unsafe_allow_html=True)
+        st.caption("Suba sua foto no menu lateral 👈")
 
-# Input do Usuário
+    st.markdown("<h1 style='text-align: center; color: #00C9FF;'>IA VENDAS ELITE</h1>", unsafe_allow_html=True)
+
+# 5. CHAT (Lógica com IA Real)
+if "messages" not in st.session_state:
+    st.session_state.messages = [{"role": "assistant", "content": "Olá! Sistema reconectado. Qual produto vamos vender hoje?"}]
+
+# Mostra histórico
+for msg in st.session_state.messages:
+    with st.chat_message(msg["role"]):
+        st.write(msg["content"])
+
+# Campo de Digitação
 if prompt := st.chat_input("Digite aqui..."):
-    # 1. Mostrar mensagem do usuário
+    # Usuário
     st.session_state.messages.append({"role": "user", "content": prompt})
+    with st.chat_message("user"):
+        st.write(prompt)
+
+    # Resposta IA (Imediata)
+    with st.chat_message("assistant"):
+        message_placeholder = st.empty()
+        
+        if model:
+            try:
+                message_placeholder.markdown("⚡ Processando...")
+                # Prompt de Sistema Oculto
+                system_prompt = "ATUE COMO: Vendedor Elite. SEJA: Curto, direto e estratégico."
+                response = model.generate_content(f"{system_prompt}\n\nMensagem: {prompt}")
+                resposta = response.text
+            except Exception as e:
+                resposta = f"Erro na API: {e}"
+        else:
+            time.sleep(0.5)
+            resposta = f"Entendi. A estratégia para '{prompt}' já está sendo processada. (Modo Simulação: Configure API Key)"
+
+        message_placeholder.write(resposta)
+
+    st.session_state.messages.append({"role": "assistant", "content": resposta})
