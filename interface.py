@@ -16,7 +16,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# --- 2. CSS (ESTILO INTELIGENTE) ---
+# --- 2. CSS BLINDADO (PC E CELULAR PERFEITOS) ---
 st.markdown("""
 <style>
     /* FUNDO */
@@ -29,61 +29,36 @@ st.markdown("""
         color: #FFFFFF !important;
     }
 
-    /* --- CORREÇÃO DO LAYOUT MOBILE (O PULO DO GATO) --- */
-    /* Isso força as colunas a ficarem LADO A LADO mesmo no celular */
-    @media (max-width: 640px) {
+    /* --- TRUQUE DE MESTRE PARA O CELULAR --- */
+    /* Isso força o layout a ficar LADO A LADO na tela pequena */
+    @media (max-width: 600px) {
+        /* Obriga as colunas a ficarem na mesma linha */
         div[data-testid="stHorizontalBlock"] {
-            flex-direction: row !important; /* Força linha horizontal */
+            flex-direction: row !important; 
             align-items: center !important;
-            gap: 10px !important;
+            gap: 5px !important;
         }
         
-        div[data-testid="column"] {
-            width: auto !important;
-            flex: 1 !important;
-            min-width: 0 !important; /* Permite encolher se precisar */
+        /* Ajusta a largura das colunas para caber */
+        div[data-testid="column"]:nth-of-type(1) {
+            flex: 1 !important; /* Coluna da foto menor */
+            min-width: 90px !important;
         }
+        div[data-testid="column"]:nth-of-type(2) {
+            flex: 2 !important; /* Coluna do texto maior */
+        }
+
+        /* Reduz tamanhos para o celular */
+        .profile-mask { width: 85px !important; height: 85px !important; margin-bottom: 0 !important; }
+        .neon-title { font-size: 19px !important; margin-bottom: 2px !important; text-align: left !important; }
+        .neon-subtitle { font-size: 10px !important; margin-bottom: 5px !important; text-align: left !important; }
+        .social-bar { margin-bottom: 5px !important; justify-content: flex-start !important; }
+        .social-icon { width: 20px !important; height: 20px !important; }
         
-        /* Ajustes específicos para caber na tela pequena */
-        .profile-mask {
-            width: 90px !important; 
-            height: 90px !important;
-            margin-bottom: 0 !important;
-        }
-        
-        .neon-title {
-            font-size: 18px !important; /* Título menor no celular */
-            text-align: left !important;
-            margin-bottom: 2px !important;
-        }
-        
-        .neon-subtitle {
-            font-size: 10px !important;
-            text-align: left !important;
-            margin-bottom: 8px !important;
-            line-height: 1.2 !important;
-        }
-        
-        .social-bar {
-            justify-content: flex-start !important;
-            gap: 8px !important;
-            margin-bottom: 8px !important;
-        }
-        
-        .social-icon {
-            width: 20px !important;
-            height: 20px !important;
-        }
-        
-        /* Ajuste do botão no mobile */
-        div.stButton > button p {
-            font-size: 12px !important;
-        }
-        div.stButton > button::before {
-            width: 22px !important;
-            height: 22px !important;
-            margin-right: 5px !important;
-        }
+        /* Ajuste do botão no celular */
+        div.stButton > button { margin-top: 0px !important; }
+        div.stButton > button p { font-size: 11px !important; }
+        div.stButton > button::before { width: 22px !important; height: 22px !important; }
     }
 
     /* --- ESTILOS GERAIS (PC) --- */
@@ -117,7 +92,7 @@ st.markdown("""
         margin-top: 0;
     }
     .neon-subtitle { 
-        font-size: 18px; font-weight: 400; color: #d1d1d1 !important; 
+        font-size: 16px; font-weight: 400; color: #d1d1d1 !important; 
         letter-spacing: 1px; margin-bottom: 15px;
     }
 
@@ -253,14 +228,15 @@ else:
 user_avatar_chat = "https://cdn-icons-png.flaticon.com/512/9408/9408175.png" 
 bot_avatar_chat = "https://cdn-icons-png.flaticon.com/512/4712/4712139.png"
 
-# --- 6. CABEÇALHO (Layout Ajustado) ---
+# --- 6. CABEÇALHO ---
 st.markdown('<div style="margin-top: 20px;"></div>', unsafe_allow_html=True)
 
-# Colunas (No mobile agora elas vão ficar lado a lado por causa do CSS acima)
-# Ajustei a proporção para 1.3 : 2.7 para dar espaço à foto no mobile
-col_foto, col_texto = st.columns([1.3, 2.7]) 
+# CONFIGURAÇÃO DE COLUNAS LADO A LADO
+# Coluna 1: Foto (Menor) | Coluna 2: Texto + Ícones + Botão (Maior)
+col_foto, col_texto = st.columns([1.2, 2.8]) 
 
 with col_foto:
+    # A foto fica centralizada dentro da coluna dela
     st.markdown(f"""
     <div style="display:flex; justify-content:center;">
         <div class="profile-mask">
@@ -270,7 +246,7 @@ with col_foto:
     """, unsafe_allow_html=True)
 
 with col_texto:
-    # A estrutura HTML
+    # O HTML do texto e redes sociais
     st.markdown(f"""
     <div style="display:flex; flex-direction:column; justify-content:center; height:100%;">
         <div class="neon-title">CDM IA CHATBOT</div>
@@ -292,7 +268,7 @@ with col_texto:
     </div>
     """, unsafe_allow_html=True)
     
-    # O Botão (Agora dentro da coluna, logo abaixo do HTML acima)
+    # O Botão "DIGITAL CARD" fica logo abaixo
     if st.button("DIGITAL CARD"):
         toggle_card()
         st.rerun()
@@ -301,7 +277,7 @@ with col_texto:
 if st.session_state.show_card:
     cartao_visita = "perfil.jpg.jpg"
     if os.path.exists(cartao_visita):
-        st.markdown('<div style="animation: float 0.5s ease-out; margin-top: 20px; margin-bottom: 20px;">', unsafe_allow_html=True)
+        st.markdown('<div style="animation: float 0.5s ease-out; margin-top: 15px; margin-bottom: 20px;">', unsafe_allow_html=True)
         st.image(cartao_visita, use_column_width=True)
         st.markdown('</div>', unsafe_allow_html=True)
 
