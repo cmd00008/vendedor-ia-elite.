@@ -11,103 +11,111 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# --- 2. CSS: VISUAL NEON E LAYOUT LADO-A-LADO ---
+# --- 2. CSS: DESIGN HÍBRIDO + ZOOM NO ROSTO ---
 st.markdown("""
 <style>
-    /* FUNDO AZUL PROFUNDO */
+    /* FUNDO */
     .stApp {
         background: linear-gradient(to bottom, #0f2027, #203a43, #2c5364);
         background-attachment: fixed;
     }
     
-    /* FORÇAR TEXTOS GERAIS BRANCOS */
     p, span, div, li, label, .stMarkdown, button, textarea {
         color: #FFFFFF !important;
     }
 
-    /* --- CABEÇALHO (FOTO + TEXTO NEON) --- */
+    /* --- CONTAINER DO CABEÇALHO (FLEXBOX) --- */
     .header-container {
         display: flex;
-        flex-direction: row; /* Coloca um do lado do outro */
-        align-items: center; /* Alinha verticalmente no centro */
-        justify-content: center; /* Centraliza o conjunto na tela */
-        padding-top: 30px;
-        padding-bottom: 30px;
-        gap: 25px; /* Espaço entre a foto e o texto */
+        flex-direction: row;       /* Lado a lado */
+        align-items: center;       /* Centralizado verticalmente */
+        justify-content: center;   /* Centralizado na tela */
+        padding-top: 20px;
+        padding-bottom: 20px;
+        gap: 20px;                 /* Espaço entre foto e texto */
     }
 
-    /* FOTO (Círculo com Zoom e Brilho) */
-    .profile-img {
-        width: 130px; 
-        height: 130px;
-        border-radius: 50%;
-        object-fit: cover;
-        object-position: top center;
-        border: 3px solid #00f2fe; /* Borda Ciano Neon */
-        box-shadow: 0px 0px 30px rgba(0, 242, 254, 0.5); /* Brilho Azul Claro */
+    /* --- A MÁGICA DO ZOOM (CÍRCULO MÁSCARA) --- */
+    .profile-mask {
+        width: 120px;              /* Tamanho PC */
+        height: 120px;
+        border-radius: 50%;        /* Círculo Perfeito */
+        border: 3px solid #00f2fe; /* Borda Neon */
+        box-shadow: 0px 0px 20px rgba(0, 242, 254, 0.5);
+        overflow: hidden;          /* CORTA o que passar do círculo */
         animation: float 6s ease-in-out infinite;
-        flex-shrink: 0; /* Garante que a foto não amasse */
+        flex-shrink: 0;
+        
+        /* Centraliza a imagem dentro da máscara */
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
-    
-    /* ÁREA DO TEXTO DA MARCA */
+
+    /* A IMAGEM DENTRO DO CÍRCULO */
+    .profile-img-zoom {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;         /* Preenche tudo */
+        
+        /* O SEGREDO DO FOCO: */
+        object-position: center 15%; /* Foca horizontalmente no meio e verticalmente no TOPO (rosto) */
+        transform: scale(1.4);       /* DA UM ZOOM DE 40% PARA O ROSTO FICAR GRANDE */
+    }
+
+    /* TEXTOS */
     .brand-text {
         display: flex;
         flex-direction: column;
+        text-align: left;
     }
 
-    /* TÍTULO PRINCIPAL (CDM IA Chatbot) - EFEITO NEON FORTE */
     .neon-title {
-        font-size: 36px;
+        font-size: 32px;
         font-weight: 800;
         margin: 0;
-        line-height: 1.2;
+        line-height: 1;
         text-transform: uppercase;
         color: #FFFFFF !important;
-        /* O Segredo do Brilho Neon: Múltiplas sombras */
-        text-shadow: 
-            0 0 5px #FFFFFF,
-            0 0 10px #00f2fe,
-            0 0 20px #00f2fe,
-            0 0 40px #4facfe,
-            0 0 80px #4facfe;
+        text-shadow: 0 0 10px #00f2fe, 0 0 20px #4facfe;
     }
 
-    /* SUBTÍTULO (O futuro...) - BRILHO MAIS SUAVE */
     .neon-subtitle {
-        font-size: 20px;
+        font-size: 16px;
         font-weight: 400;
         margin: 0;
-        color: #e0e0e0 !important;
+        color: #d1d1d1 !important;
         letter-spacing: 1px;
-        text-shadow: 0 0 15px rgba(79, 172, 254, 0.8);
+    }
+
+    /* --- CELULAR (AJUSTES) --- */
+    @media (max-width: 600px) {
+        .header-container {
+            justify-content: center; /* Centraliza no mobile também */
+            gap: 15px;
+        }
+        .profile-mask {
+            width: 85px;  /* Menor no celular */
+            height: 85px;
+        }
+        .neon-title {
+            font-size: 20px; /* Texto menor para caber */
+        }
+        .neon-subtitle {
+            font-size: 11px;
+        }
     }
     
-    /* ANIMAÇÃO DE FLUTUAR */
     @keyframes float {
         0% { transform: translateY(0px); }
-        50% { transform: translateY(-10px); }
+        50% { transform: translateY(-5px); }
         100% { transform: translateY(0px); }
     }
 
-    /* --- RESPONSIVIDADE (CELULAR) --- */
-    /* No celular, coloca um embaixo do outro para não apertar */
-    @media (max-width: 600px) {
-        .header-container {
-            flex-direction: column;
-            text-align: center;
-        }
-        .brand-text {
-            margin-top: 15px;
-            align-items: center;
-        }
-        .neon-title { font-size: 28px; }
-        .neon-subtitle { font-size: 16px; }
-    }
-
-    /* --- ESTILOS DO CHAT --- */
+    /* --- CHAT --- */
     .stChatInput textarea {
-        background-color: #FFFFFF !important; /* Fundo BRANCO */
-        color: #000000 !important;       /* Letra PRETA */
+        background-color: #FFFFFF !important;
+        color: #000000 !important;
         border: 2px solid #4facfe !important;
         border-radius: 30px !important;
     }
@@ -131,7 +139,7 @@ try:
     if api_key:
         genai.configure(api_key=api_key)
     else:
-        st.error("⚠️ API Key não configurada.")
+        st.error("⚠️ API Key ausente.")
         st.stop()
 except Exception as e:
     st.error(f"⚠️ Erro de Configuração: {e}")
@@ -142,55 +150,55 @@ model = genai.GenerativeModel('models/gemini-2.5-flash', system_instruction="Voc
 
 # --- 4. MEMÓRIA ---
 if "messages" not in st.session_state:
-    st.session_state.messages = [{"role": "model", "content": "Olá! Sou o CDM. Vamos transformar suas conversas em vendas? 🚀"}]
+    st.session_state.messages = [{"role": "model", "content": "Olá! Sou o CDM. Como posso ajudar a escalar suas vendas hoje? 🚀"}]
 
-# --- 5. CABEÇALHO (FOTO + TEXTO NEON LADO A LADO) ---
-
-# Busca a imagem
-nomes_possiveis = ["perfil.jpg", "perfil.png", "perfil.jpeg", "perfil.jpg.png"]
-arquivo_encontrado = None
-for nome in nomes_possiveis:
-    if os.path.exists(nome):
-        arquivo_encontrado = nome
+# --- 5. CABEÇALHO ---
+# Busca imagem
+nomes = ["perfil.jpg", "perfil.png", "perfil.jpeg", "perfil.jpg.png"]
+arquivo = None
+for n in nomes:
+    if os.path.exists(n):
+        arquivo = n
         break
 
-# Prepara a tag da imagem
-if arquivo_encontrado:
-    with open(arquivo_encontrado, "rb") as f:
+if arquivo:
+    with open(arquivo, "rb") as f:
         encoded = base64.b64encode(f.read()).decode()
-    mime = "image/png" if "png" in arquivo_encontrado else "image/jpeg"
-    img_html = f'<img src="data:{mime};base64,{encoded}" class="profile-img">'
+    mime = "image/png" if "png" in arquivo else "image/jpeg"
+    # APLICA A CLASSE DE ZOOM
+    img_tag = f'<img src="data:{mime};base64,{encoded}" class="profile-img-zoom">'
 else:
-    img_html = '<img src="https://cdn-icons-png.flaticon.com/512/4712/4712139.png" class="profile-img">'
+    img_tag = '<img src="https://cdn-icons-png.flaticon.com/512/4712/4712139.png" class="profile-img-zoom">'
 
-# MONTA O HTML DO CABEÇALHO COM O TEXTO BRILHANTE
+# MONTAGEM FINAL COM ESTRUTURA DE MÁSCARA
 st.markdown(f"""
 <div class="header-container">
-    {img_html}
+    <div class="profile-mask">
+        {img_tag}
+    </div>
     <div class="brand-text">
-        <h1 class="neon-title">CDM IA Chatbot</h1>
-        <h3 class="neon-subtitle">O futuro das suas vendas.</h3>
+        <div class="neon-title">CDM IA CHATBOT</div>
+        <div class="neon-subtitle">O futuro das suas vendas.</div>
     </div>
 </div>
 """, unsafe_allow_html=True)
 
-
-# --- 6. CHAT E BARRA DE DIGITAÇÃO ---
-st.markdown('<div style="margin-bottom: 50px;">', unsafe_allow_html=True)
+# --- 6. CHAT ---
+st.markdown('<div style="margin-bottom: 60px;">', unsafe_allow_html=True)
 for msg in st.session_state.messages:
     avatar = "⚡" if msg["role"] == "model" else "👤"
     with st.chat_message(msg["role"], avatar=avatar):
         st.markdown(msg["content"])
 st.markdown('</div>', unsafe_allow_html=True)
 
-if prompt := st.chat_input("Digite sua mensagem aqui..."):
+if prompt := st.chat_input("Digite sua mensagem..."):
     st.session_state.messages.append({"role": "user", "content": prompt})
     with st.chat_message("user", avatar="👤"):
         st.markdown(prompt)
 
     with st.chat_message("model", avatar="⚡"):
         try:
-            # FIX: safer history slicing
+            # FIX: Safer history slicing
             chat_hist = [{"role": m["role"], "parts": [m["content"]]} 
                          for m in st.session_state.messages[:-1]]
             
