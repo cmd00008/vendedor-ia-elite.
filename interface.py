@@ -1,222 +1,169 @@
 import streamlit as st
+import os
 import google.generativeai as genai
-import requests
-from streamlit_lottie import st_lottie
-import time
 
-# 1. Configuração da Página
-st.set_page_config(page_title="IA Vendas Elite 2.5", page_icon="🚀")
+# --- Configuração da Página ---
+st.set_page_config(page_title="IA Vendas Elite 2.5", layout="centered")
 
-# 2. Visual 'Ilha Paradisíaca' (Mobile Friendly)
+# --- CSS Personalizado (O Segredo do Visual) ---
+# Aqui definimos a imagem de fundo, fontes e o estilo dos botões
 st.markdown("""
-<style>
-    /* Esconder Menu, Header, Footer */
-    #MainMenu {visibility: hidden;}
-    header {visibility: hidden;}
-    footer {visibility: hidden;}
-
-    /* Fundo de Ilha (Responsivo) */
+    <style>
+    /* Imagem de Fundo (Petronas Towers) */
     .stApp {
-        background-color: #0e1117; /* Fallback */
-        background-image: url('https://images.unsplash.com/photo-1596422846543-75c6fc197f07?q=80&w=2070');
+        background-image: url("https://images.unsplash.com/photo-1549420078-45e0d37e624c?q=80&w=2574&auto=format&fit=crop");
         background-size: cover;
-        background-attachment: fixed;
         background-position: center;
+        background-attachment: fixed;
+    }
+
+    /* Cor do Texto Geral */
+    h1, h2, h3, p, div, span {
+        color: white !important;
+        text-shadow: 2px 2px 4px #000000; /* Sombra para leitura no fundo */
+    }
+
+    /* Estilo do Título Principal */
+    h1 {
+        font-weight: 800 !important;
+        font-size: 3rem !important;
+        padding-top: 0px;
+    }
+
+    /* Estilo da Mensagem do Usuário (Verde) */
+    .st-emotion-cache-1c7y2kd {
+        background-color: #2e7d32 !important; /* Verde escuro */
         color: white;
     }
     
-    /* 1. Forçar texto do Robô para BRANCO PURO */
-    div[data-testid="stChatMessage"] p, 
-    div[data-testid="stChatMessage"] .stMarkdown {
-        color: #FFFFFF !important;
-        text-shadow: 0px 0px 2px black; /* Sombra para garantir leitura */
-    }
-    /* 2. Transformar a Caixa de Digitação em MODO ESCURO */
-    .stTextInput input, .stChatInput textarea {
-        color: #FFFFFF !important;       /* Letra Branca */
-        background-color: #333333 !important; /* Fundo Cinza Escuro */
-        border: 1px solid #555555 !important;
-    }
-    /* 3. Cor do texto enquanto digita */
-    textarea, input {
-        color: #FFFFFF !important;
-        -webkit-text-fill-color: #FFFFFF !important;
-    }
-    /* 4. Placeholder (Texto 'Digite sua mensagem...') */
-    ::placeholder {
-        color: #CCCCCC !important;
-    }
-
-    /* Mensagens com Transparência para Leitura */
-    [data-testid="stChatMessage"] {
-        background-color: rgba(30, 30, 30, 0.85); /* Fundo preto semi-transparente */
-        border: 1px solid rgba(255, 255, 255, 0.1);
+    /* Botões de Bandeira (Estilo Transparente) */
+    .stButton > button {
+        background-color: rgba(0,0,0,0.5);
+        border: 1px solid white;
+        color: white;
+        font-size: 24px;
         border-radius: 10px;
-        backdrop-filter: blur(5px);
+        padding: 5px 15px;
+    }
+    .stButton > button:hover {
+        background-color: rgba(255,255,255,0.2);
+        border-color: #00ff00;
+        color: white;
     }
     
-    /* --- AVATAR FLUTUANTE (Topo Direito) --- */
-    @keyframes float {
-        0% { transform: translateY(0px); }
-        50% { transform: translateY(-5px); } /* Movimento suave */
-        100% { transform: translateY(0px); }
-    }
+    /* Avatar no canto superior direito (Simulado via CSS ou Coluna) */
+    </style>
+    """, unsafe_allow_html=True)
 
-    .floating-avatar {
-        width: 90px;
-        height: 90px;
-        border-radius: 50%;
-        border: 3px solid #4CAF50; /* Borda verde */
-        
-        /* Imagem como fundo para controle de corte/foco */
-        background-image: url('https://i.postimg.cc/SKhHjFHv/Gemini-Generated-Image-7tgz1j7tgz1j7tgz.png');
-        background-size: cover; 
-        background-position: center top; /* Foca na parte de cima (rosto) */
-        
-        /* Posicionamento no TOPO (Ajustado PRO) */
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        z-index: 1000;
-        box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-        
-        /* Animação */
-        animation: float 3s ease-in-out infinite;
-        transition: transform 0.3s ease;
-    }
-    
-    .floating-avatar:hover {
-        transform: scale(1.05);
-        cursor: pointer;
-    }
-    
-    .speech-bubble {
-        position: absolute;
-        top: 35px; /* Ajuste PRO */
-        right: 120px; /* Ajuste PRO */
-        
-        background-color: white;
-        color: black !important; /* Exceção: Texto preto no balão branco */
-        padding: 10px 15px;
-        border-radius: 15px 15px 0 15px;
-        
-        box-shadow: 0px 2px 5px rgba(0,0,0,0.3);
-        font-weight: bold;
-        font-size: 14px;
-        width: max-content;
-        max-width: 200px;
-        text-align: right;
-        display: block; /* Garante visibilidade */
-    }
-    
-    /* --- CSS Responsivo para Celular --- */
-    @media screen and (max-width: 600px) {
-        .floating-avatar {
-            width: 50px !important; /* Menor no celular */
-            height: 50px !important;
-            top: 15px !important;
-            right: 10px !important;
-        }
-        .speech-bubble {
-            display: block !important; /* Mantém VISÍVEL no celular */
-            right: 65px !important; /* Ajusta distância para avatar menor */
-            top: 10px !important;
-            font-size: 11px !important; /* Texto menor */
-            padding: 5px 10px !important;
-        }
-    }
-    
-</style>
+# --- Configuração da API (Backend Restaurado) ---
+api_key = os.environ.get("GOOGLE_API_KEY")
 
-<!-- Elementos Flutuantes -->
-<div class="floating-avatar">
-    <div class="speech-bubble">Oi, eu sou CDM. Posso te ajudar?</div>
-</div>
-
-""", unsafe_allow_html=True)
-
-# Função para carregar Lottie
-def load_lottieurl(url):
+# Tenta pegar dos secrets se não estiver no ambiente
+if not api_key:
     try:
-        r = requests.get(url)
-        if r.status_code != 200:
-            return None
-        return r.json()
+        api_key = st.secrets.get("GOOGLE_API_KEY")
     except:
-        return None
+        pass
 
-# Carregar Animação (Robô 3D)
-lottie_url = "https://lottie.host/58830071-5803-420a-941e-315543769727/I1b3W6l8kE.json"
-lottie_json = load_lottieurl(lottie_url)
+if not api_key:
+    st.warning("⚠️ API Key não encontrada. Configure GOOGLE_API_KEY no ambiente ou secrets.")
+    # Input lateral opcional para fallback
+    with st.sidebar:
+        api_key = st.text_input("Insira API Key", type="password")
 
-# Exibir Animação (Se carregou)
-if lottie_json:
-    st_lottie(lottie_json, height=200, key="coding")
+if api_key:
+    genai.configure(api_key=api_key)
+    # Usando o modelo estável 1.5 Flash
+    model = genai.GenerativeModel("gemini-1.5-flash")
+else:
+    model = None
 
-st.title("Demonstração: IA Vendas Elite 2.5")
-st.caption("🚀 Versão 2.5 Flash Turbo (Super Rápida)")
-st.markdown("---")
 
-# 3. Configurações da API (CONEXÃO SEGURA - BLINDADA)
-try:
-    # Lendo DIRETAMENTE do arquivo .streamlit/secrets.toml
-    genai.configure(api_key=st.secrets["GOOGLE_API_KEY"])
-except Exception:
-    st.error("❌ Erro CRÍTICO: Chave API não encontrada nos Secrets!")
-    st.stop()
+# --- Barra de Idiomas (No Topo) ---
+if 'idioma' not in st.session_state:
+    st.session_state['idioma'] = 'pt' # Padrão
 
-# 4. Motor e System Instruction
-# Define a instrução de sistema PRIMEIRO
-system_instruction = """
-Você é o CDM, uma IA de Vendas Global.
-SUA REGRA NÚMERO 1 (INVIOLÁVEL): ESPELHAMENTO DE IDIOMA.
-- Antes de responder, DETECTE o idioma do usuário.
-- Se o usuário falar INGLÊS -> Responda 100% em INGLÊS.
-- Se o usuário falar ESPANHOL -> Responda 100% em ESPANHOL.
-- Se o usuário falar PORTUGUÊS -> Responda 100% em PORTUGUÊS.
-Nunca responda em Português se a pergunta for em Inglês.
-Seja curto, grosso e focado em vendas.
-"""
+col_lang1, col_lang2, col_lang3, col_vazia = st.columns([1, 1, 1, 5])
 
-try:
-    # Passa a instrução NO MODELO (Melhor prática)
-    # Usando gemini-2.5-flash pois o 2.0-flash-exp deu 404
-    model = genai.GenerativeModel('gemini-2.5-flash', system_instruction=system_instruction)
-except Exception as e:
-    st.error(f"Erro de Modelo: {e}")
+with col_lang1:
+    if st.button("🇧🇷"):
+        st.session_state['idioma'] = 'pt'
+        st.rerun()
+with col_lang2:
+    if st.button("🇺🇸"):
+        st.session_state['idioma'] = 'en'
+        st.rerun()
+with col_lang3:
+    if st.button("🇪🇸"):
+        st.session_state['idioma'] = 'es'
+        st.rerun()
 
-# 5. Inicialização do Histórico
+# --- Cabeçalho e Avatar ---
+col_texto, col_avatar = st.columns([4, 1])
+
+with col_texto:
+    st.markdown("<h1>Demonstração: IA<br>Vendas Elite 2.5</h1>", unsafe_allow_html=True)
+    st.caption("🚀 Versão 2.5 Flash Turbo (Super Rápida)")
+
+with col_avatar:
+    # Substitua pelo link da sua foto real
+    st.image("https://randomuser.me/api/portraits/men/3.jpg", width=80) 
+
+# --- Área de Chat ---
+# Inicializa histórico se não existir
 if "messages" not in st.session_state:
-    st.session_state.messages = []
+    st.session_state.messages = [
+        {"role": "assistant", "content": "Olá! Pronta para ir direto ao ponto e otimizar seu tempo? Diga-me, qual seu desafio principal hoje?"}
+    ]
 
-# 6. Exibir mensagens do histórico
+# Exibe mensagens anteriores
 for message in st.session_state.messages:
-    avatar = "🤖" if message["role"] == "assistant" else "👤"
-    with st.chat_message(message["role"], avatar=avatar):
-        # Hack visual opcional mantido
+    with st.chat_message(message["role"]):
         st.markdown(message["content"])
 
-# 7. Entrada do Usuário
+# Input do Usuário
 if prompt := st.chat_input("Digite sua mensagem..."):
-    # Adicionar mensagem do usuário
+    # Mostra mensagem do usuário
+    with st.chat_message("user"):
+        st.markdown(prompt)
+    
     st.session_state.messages.append({"role": "user", "content": prompt})
-    with st.chat_message("user", avatar="👤"):
-        # Estilo inline verde para usuário (mantido)
-        st.markdown(f'<div style="background-color: #2b8a3e; padding: 10px; border-radius: 5px; color: white;">{prompt}</div>', unsafe_allow_html=True)
 
-    # 8. Lógica do Vendedor (Agora usa apenas o prompt, instrução já está no modelo)
-    with st.chat_message("assistant", avatar="🤖"):
-        message_placeholder = st.empty()
-        
-        # Chamada LIMPA e DIRETA à API
-        try:
-            # Envia apenas o prompt, pois o system_instruction foi configurado no modelo
-            response = model.generate_content(prompt)
-            full_response = response.text
-            message_placeholder.markdown(full_response)
-            st.session_state.messages.append({"role": "assistant", "content": full_response})
+    # Resposta (Backend Real)
+    if model:
+        with st.chat_message("assistant"):
+            message_placeholder = st.empty()
+            message_placeholder.markdown("⏳ Gerando resposta...")
             
-        except Exception as e:
-            # Se der erro no 2.5, mostramos o erro real.
-            st.error(f'⚠️ Erro de API: {e}.')
-            st.caption("Dica: Se o erro for 404, o modelo 'gemini-2.5-flash' não está habilitado para esta chave.")
+            try:
+                # System Prompt Dinâmico Baseado no Idioma Escolhido
+                idioma_atual = st.session_state['idioma']
+                instrucao_idioma = ""
+                if idioma_atual == 'pt':
+                    instrucao_idioma = "Responda em PORTUGUÊS."
+                elif idioma_atual == 'en':
+                    instrucao_idioma = "Responda em INGLÊS."
+                elif idioma_atual == 'es':
+                    instrucao_idioma = "Responda em ESPANHOL."
+                
+                system_prompt = f"""
+                ATUE COMO: Um Vendedor Consultivo Especialista Global.
+                {instrucao_idioma}
+                1. Identifique o tom do cliente e adapte-se.
+                2. Seja persuasivo mas profissional.
+                3. Identifique a necessidade oculta.
+                """
+                
+                # Monta a conversa para enviar (Contexto Simplificado)
+                content_to_send = [prompt, system_prompt]
+                
+                response = model.generate_content(content_to_send)
+                full_response = response.text
+                
+                message_placeholder.markdown(full_response)
+                st.session_state.messages.append({"role": "assistant", "content": full_response})
+            except Exception as e:
+                message_placeholder.error(f"Erro na API: {e}")
+    else:
+        with st.chat_message("assistant"):
+            st.error("Configure a API Key para receber respostas reais.")
