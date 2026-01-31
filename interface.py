@@ -16,7 +16,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# --- 2. CSS (LAYOUT PERFEITO COM BOTÃO) ---
+# --- 2. CSS (REPLICA EXATA DA FOTO) ---
 st.markdown("""
 <style>
     /* FUNDO */
@@ -29,14 +29,14 @@ st.markdown("""
         color: #FFFFFF !important;
     }
 
-    /* --- LAYOUT MOBILE (LADO A LADO + CENTRO VERTICAL) --- */
+    /* --- LAYOUT MOBILE: IDÊNTICO À FOTO --- */
     @media (max-width: 600px) {
         
-        /* 1. Força LINHA (Lado a Lado) */
+        /* 1. Bloqueio Horizontal e Vertical */
         div[data-testid="stHorizontalBlock"] {
             flex-direction: row !important;
-            align-items: center !important; 
-            gap: 5px !important;
+            align-items: center !important; /* Centraliza verticalmente a foto com o texto */
+            gap: 10px !important;
         }
         
         /* 2. Coluna da Foto */
@@ -47,28 +47,29 @@ st.markdown("""
             justify-content: center !important;
         }
         
-        /* 3. Coluna do Texto (CENTRALIZA TUDO VERTICALMENTE) */
+        /* 3. Coluna do Texto */
         div[data-testid="column"]:nth-of-type(2) {
-            flex: 2.5 !important;
+            flex: 2.2 !important;
             display: flex !important;
             flex-direction: column !important;
             
-            /* O SEGREDO: Centraliza o bloco na altura */
-            justify-content: center !important; 
-            align-self: center !important;
+            /* ALINHAMENTO IGUAL À FOTO: */
+            justify-content: center !important; /* Centro Vertical */
+            align-items: flex-start !important; /* Esquerda Horizontal */
             
             padding-left: 5px !important;
         }
 
-        /* Ajustes de Fonte no Celular */
+        /* Título */
         .neon-title {
-            font-size: 20px !important; 
+            font-size: 19px !important; 
             text-align: left !important; 
             margin-bottom: 2px !important;
             line-height: 1.1 !important;
             margin-top: 0 !important;
         }
         
+        /* Subtítulo */
         .neon-subtitle {
             font-size: 11px !important; 
             text-align: left !important; 
@@ -87,11 +88,12 @@ st.markdown("""
         /* Foto Mobile */
         .profile-mask { width: 100px !important; height: 100px !important; }
         
-        /* Botão Digital Card no Mobile */
+        /* Botão Digital Card (Colado na esquerda) */
         div.stButton > button {
             justify-content: flex-start !important;
             margin-left: 0px !important;
-            margin-top: 0px !important;
+            padding-left: 0px !important;
+            margin-top: -2px !important;
         }
     }
 
@@ -153,17 +155,18 @@ st.markdown("""
     
     div.stButton > button:hover { transform: scale(1.05); }
 
-    /* ÍCONE TELEFONE VERMELHO */
+    /* ÍCONE TELEFONE VERDE (CORRIGIDO PELA FOTO) */
     div.stButton > button::before {
         content: "";
         display: inline-block;
         width: 28px; height: 28px;
-        background-image: url('https://cdn-icons-png.flaticon.com/512/5585/5585856.png'); 
+        /* Ícone Verde igual da foto */
+        background-image: url('https://cdn-icons-png.flaticon.com/512/3616/3616190.png'); 
         background-size: contain; 
         background-repeat: no-repeat;
         background-position: center;
-        margin-right: 10px;
-        filter: drop-shadow(0 0 8px rgba(255, 50, 50, 0.8)); 
+        margin-right: 8px;
+        filter: drop-shadow(0 0 5px rgba(0, 255, 0, 0.4)); 
     }
 
     /* TEXTO DOURADO */
@@ -171,7 +174,7 @@ st.markdown("""
         background: linear-gradient(to right, #BF953F, #FCF6BA, #B38728, #FBF5B7);
         -webkit-background-clip: text !important;
         -webkit-text-fill-color: transparent !important;
-        font-size: 14px !important;
+        font-size: 13px !important;
         font-weight: 800 !important;
         text-transform: uppercase;
         margin: 0 !important;
@@ -262,11 +265,10 @@ bot_avatar_chat = "https://cdn-icons-png.flaticon.com/512/4712/4712139.png"
 # --- 6. CABEÇALHO ---
 st.markdown('<div style="margin-top: 20px;"></div>', unsafe_allow_html=True)
 
-# Coluna 1: Foto | Coluna 2: Texto
+# Coluna 1: Foto | Coluna 2: Texto + Ícones + Botão
 col_foto, col_texto = st.columns([1.2, 2.8]) 
 
 with col_foto:
-    # A foto
     st.markdown(f"""
     <div style="display:flex; justify-content:center;">
         <div class="profile-mask">
@@ -276,7 +278,7 @@ with col_foto:
     """, unsafe_allow_html=True)
 
 with col_texto:
-    # O HTML com Título, Subtítulo e Ícones
+    # A estrutura com justify-content: center para alinhar no meio
     st.markdown(f"""
     <div style="display:flex; flex-direction:column; justify-content:center; height:100%;">
         <div class="neon-title">CDM IA CHATBOT</div>
@@ -298,7 +300,7 @@ with col_texto:
     </div>
     """, unsafe_allow_html=True)
     
-    # RESTAUREI O BOTÃO "DIGITAL CARD" AQUI
+    # O BOTÃO DIGITAL CARD (Com ícone VERDE)
     if st.button("DIGITAL CARD"):
         toggle_card()
         st.rerun()
