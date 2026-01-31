@@ -16,7 +16,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# --- 2. CSS (LAYOUT HÍBRIDO: CENTRO + ESQUERDA) ---
+# --- 2. CSS (LAYOUT IDÊNTICO À FOTO) ---
 st.markdown("""
 <style>
     /* FUNDO */
@@ -29,56 +29,68 @@ st.markdown("""
         color: #FFFFFF !important;
     }
 
-    /* --- AJUSTES ESPECÍFICOS PARA CELULAR --- */
+    /* --- LAYOUT MOBILE (LADO A LADO + DIGITAL CARD) --- */
     @media (max-width: 600px) {
         
-        /* 1. Empilha as colunas (Volta ao padrão vertical) */
+        /* Força as colunas a ficarem lado a lado */
         div[data-testid="stHorizontalBlock"] {
-            flex-direction: column !important;
-            gap: 5px !important;
+            flex-direction: row !important;
+            align-items: center !important;
+            gap: 10px !important;
         }
         
-        /* 2. Centraliza a Foto e remove margens extras */
+        /* Coluna da Foto */
         div[data-testid="column"]:nth-of-type(1) {
+            flex: 1 !important;
             display: flex !important;
             justify-content: center !important;
-            width: 100% !important;
-            margin-bottom: 5px !important;
         }
         
-        /* 3. Centraliza o Título e Subtítulo */
-        .neon-title {
-            text-align: center !important;
-            font-size: 24px !important;
-            margin-bottom: 5px !important;
-        }
-        .neon-subtitle {
-            text-align: center !important;
-            font-size: 14px !important;
-            margin-bottom: 20px !important; /* Espaço para separar dos ícones */
-        }
-        
-        /* 4. Ícones: Bem na Esquerda */
-        .social-bar {
-            justify-content: flex-start !important; /* Esquerda */
-            padding-left: 15px !important; /* Margem da borda */
-            margin-bottom: 10px !important;
-        }
-        
-        /* 5. Botão: Bem na Esquerda (Debaixo dos ícones) */
-        div.stButton > button {
-            justify-content: flex-start !important;
-            margin-left: 15px !important; /* Alinhado com os ícones */
-            width: auto !important;
+        /* Coluna do Texto (Alinhado à ESQUERDA) */
+        div[data-testid="column"]:nth-of-type(2) {
+            flex: 2.5 !important; /* Mais espaço para o texto */
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: flex-start !important; /* ALINHA TUDO À ESQUERDA */
+            justify-content: center !important;
+            padding-left: 5px !important;
         }
 
-        /* Reduz foto no celular */
-        .profile-mask { width: 110px !important; height: 110px !important; }
+        /* Ajustes de Texto no Mobile */
+        .neon-title {
+            font-size: 20px !important; 
+            text-align: left !important; 
+            margin-bottom: 2px !important;
+        }
+        
+        .neon-subtitle {
+            font-size: 11px !important; 
+            text-align: left !important; 
+            margin-bottom: 15px !important; /* Espaço maior antes dos ícones */
+        }
+        
+        /* Ícones Alinhados à Esquerda */
+        .social-bar {
+            justify-content: flex-start !important; 
+            gap: 10px !important;
+            margin-bottom: 5px !important;
+        }
+        
+        .social-icon { width: 22px !important; height: 22px !important; }
+        
+        /* Tamanho da Foto no Mobile */
+        .profile-mask { width: 95px !important; height: 95px !important; }
+
+        /* Botão Digital Card no Mobile */
+        div.stButton > button {
+            justify-content: flex-start !important;
+            margin-left: 0px !important; /* Alinhado com os ícones */
+            width: auto !important;
+        }
     }
 
     /* --- ESTILOS GERAIS (PC) --- */
     
-    /* MÁSCARA DA FOTO */
     .profile-mask {
         width: 140px; height: 140px;
         border-radius: 50%;
@@ -98,7 +110,6 @@ st.markdown("""
         transform-origin: center 20%;
     }
 
-    /* TEXTOS */
     .neon-title {
         font-size: 36px; font-weight: 800; line-height: 1; text-transform: uppercase;
         color: #FFFFFF !important;
@@ -111,7 +122,6 @@ st.markdown("""
         letter-spacing: 1px; margin-bottom: 15px;
     }
 
-    /* REDES SOCIAIS */
     .social-bar {
         display: flex; justify-content: flex-start; gap: 15px; margin-bottom: 15px;
     }
@@ -122,7 +132,7 @@ st.markdown("""
     }
     .social-icon:hover { transform: scale(1.2); }
 
-    /* --- BOTÃO DIGITAL CARD --- */
+    /* --- BOTÃO DIGITAL CARD (RESTAURADO) --- */
     div.stButton > button {
         background: transparent !important;
         border: none !important;
@@ -136,18 +146,15 @@ st.markdown("""
     }
     div.stButton > button:hover { transform: scale(1.05); }
 
-    /* ÍCONE TELEFONE (CORRIGIDO PARA NÃO CORTAR) */
+    /* ÍCONE TELEFONE VERMELHO */
     div.stButton > button::before {
         content: "";
         display: inline-block;
         width: 28px; height: 28px;
         background-image: url('https://cdn-icons-png.flaticon.com/512/5585/5585856.png'); 
-        
-        /* O SEGREDO DO ÍCONE PERFEITO: */
         background-size: contain; 
         background-repeat: no-repeat;
         background-position: center;
-        
         margin-right: 10px;
         filter: drop-shadow(0 0 8px rgba(255, 50, 50, 0.8)); 
     }
@@ -245,9 +252,8 @@ else:
 user_avatar_chat = "https://cdn-icons-png.flaticon.com/512/9408/9408175.png" 
 bot_avatar_chat = "https://cdn-icons-png.flaticon.com/512/4712/4712139.png"
 
-# --- 6. CABEÇALHO ---
-# Puxa tudo um pouco pra cima no mobile
-st.markdown('<div style="margin-top: 10px;"></div>', unsafe_allow_html=True)
+# --- 6. CABEÇALHO IGUAL À FOTO ---
+st.markdown('<div style="margin-top: 20px;"></div>', unsafe_allow_html=True)
 
 col_foto, col_texto = st.columns([1.2, 2.8]) 
 
@@ -282,6 +288,7 @@ with col_texto:
     </div>
     """, unsafe_allow_html=True)
     
+    # RESTAUREI O BOTÃO DIGITAL CARD AQUI
     if st.button("DIGITAL CARD"):
         toggle_card()
         st.rerun()
