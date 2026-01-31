@@ -11,7 +11,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# --- 2. CSS: ZOOM NO ROSTO (CORRIGIDO) + ANIMAÇÃO DE CHAT ---
+# --- 2. CSS: ZOOM PERFEITO NO ROSTO + CHAT MODERNO ---
 st.markdown("""
 <style>
     /* FUNDO */
@@ -41,22 +41,26 @@ st.markdown("""
         border-radius: 50%;
         border: 3px solid #00f2fe;
         box-shadow: 0px 0px 25px rgba(0, 242, 254, 0.6);
-        overflow: hidden; /* Corta o excesso */
+        overflow: hidden; 
         animation: float 6s ease-in-out infinite;
         flex-shrink: 0;
         display: flex; align-items: center; justify-content: center;
     }
 
-    /* FOTO COM ZOOM NO ROSTO (CORREÇÃO DE FOCO) */
+    /* --- FOTO COM ZOOM INTELIGENTE (AJUSTE FINO) --- */
     .profile-img-zoom {
         width: 100%; height: 100%;
         object-fit: cover;
         
-        /* AQUI ESTÁ O SEGREDO: Foca no TOPO (Rosto/Boné) */
-        object-position: center 10%; 
+        /* 1. Posiciona a imagem para mostrar o topo (onde está a cabeça) */
+        object-position: center top; 
         
-        /* Zoom ajustado para enquadrar o rosto perfeitamente */
-        transform: scale(2.2); 
+        /* 2. Zoom moderado (1.6x) para não cortar o boné */
+        transform: scale(1.6); 
+        
+        /* 3. O SEGREDO: O Zoom acontece a partir do ponto 'center 20%' (rosto) */
+        /* Isso impede que o zoom empurre a cabeça para fora */
+        transform-origin: center 20%;
     }
 
     /* TEXTOS */
@@ -90,9 +94,7 @@ st.markdown("""
     }
     .stChatInput button { color: #4facfe !important; }
 
-    /* --- BALÕES DE CHAT COM ANIMAÇÃO "AVATAR" --- */
-    
-    /* Animação de Entrada (Slide Up + Fade In) */
+    /* --- BALÕES DE CHAT --- */
     @keyframes slideIn {
         from { opacity: 0; transform: translateY(20px); }
         to { opacity: 1; transform: translateY(0); }
@@ -105,19 +107,15 @@ st.markdown("""
         box-shadow: 0 4px 15px rgba(0,0,0,0.2);
         backdrop-filter: blur(5px);
         margin-bottom: 10px;
-        
-        /* Aplica a animação de entrada */
         animation: slideIn 0.5s ease-out forwards;
     }
     
-    /* Ícone do Avatar no Chat (Deixa Redondo e Brilhante) */
     .stChatMessageAvatar img {
         border-radius: 50% !important;
         border: 2px solid #4facfe !important;
         box-shadow: 0 0 10px rgba(79, 172, 254, 0.5);
     }
     
-    /* Texto Metálico Suave */
     div[data-testid="stChatMessage"] .stMarkdown p {
         background: linear-gradient(to bottom, #ffffff, #dcdcdc);
         -webkit-background-clip: text;
@@ -149,32 +147,27 @@ model = genai.GenerativeModel('models/gemini-2.5-flash', system_instruction="Voc
 if "messages" not in st.session_state:
     st.session_state.messages = [{"role": "model", "content": "Olá! Sou o CDM. Como posso ajudar a escalar suas vendas hoje? 🚀"}]
 
-# --- 5. LÓGICA DE IMAGEM (PERFIL E AVATAR) ---
+# --- 5. CABEÇALHO ---
 nomes = ["perfil.jpg", "perfil.png", "perfil.jpeg", "perfil.jpg.png"]
-arquivo_usuario = None # Caminho do arquivo para usar no chat
-
-# Procura a foto
+arquivo_usuario = None
 for n in nomes:
     if os.path.exists(n):
         arquivo_usuario = n
         break
 
-# Define o HTML para o Cabeçalho (Topo)
 if arquivo_usuario:
     with open(arquivo_usuario, "rb") as f:
         encoded = base64.b64encode(f.read()).decode()
     mime = "image/png" if "png" in arquivo_usuario else "image/jpeg"
     img_tag = f'<img src="data:{mime};base64,{encoded}" class="profile-img-zoom">'
-    # Prepara o avatar para o chat (Streamlit aceita "image" direta)
     user_avatar_chat = arquivo_usuario 
 else:
     img_tag = '<img src="https://cdn-icons-png.flaticon.com/512/4712/4712139.png" class="profile-img-zoom">'
-    user_avatar_chat = "👤" # Ícone padrão se não tiver foto
+    user_avatar_chat = "👤"
 
-# Avatar do Robô (Link direto ou ícone)
 bot_avatar_chat = "https://cdn-icons-png.flaticon.com/512/4712/4712139.png"
 
-# --- 6. EXIBIR CABEÇALHO ---
+# --- 6. EXIBIÇÃO ---
 st.markdown(f"""
 <div class="header-container">
     <div class="profile-mask">
@@ -187,34 +180,26 @@ st.markdown(f"""
 </div>
 """, unsafe_allow_html=True)
 
-# --- 7. CHAT (COM AVATARES REAIS) ---
+# --- 7. CHAT ---
 st.markdown('<div style="margin-bottom: 60px;">', unsafe_allow_html=True)
-
 for msg in st.session_state.messages:
-    # Escolhe o avatar certo (Sua foto ou o Robô)
     if msg["role"] == "user":
         avatar_icon = user_avatar_chat
     else:
-        avatar_icon = bot_avatar_chat # Usa a imagem do robô como avatar
-        
+        avatar_icon = bot_avatar_chat
     with st.chat_message(msg["role"], avatar=avatar_icon):
         st.markdown(msg["content"])
-        
 st.markdown('</div>', unsafe_allow_html=True)
 
 if prompt := st.chat_input("Digite sua mensagem..."):
     st.session_state.messages.append({"role": "user", "content": prompt})
-    # Mostra mensagem do usuário com a FOTO DELE
     with st.chat_message("user", avatar=user_avatar_chat):
         st.markdown(prompt)
 
-    # Resposta da IA com FOTO DO ROBÔ
     with st.chat_message("model", avatar=bot_avatar_chat):
         try:
-            # FIX: Safer history slicing
-            chat_hist = [{"role": m["role"], "parts": [m["content"]]} 
-                         for m in st.session_state.messages[:-1]]
-            
+            # FIX: Safer history slicing logic
+            chat_hist = [{"role": m["role"], "parts": [m["content"]]} for m in st.session_state.messages[:-1]]
             chat = model.start_chat(history=chat_hist)
             response = chat.send_message(prompt)
             st.markdown(response.text)
