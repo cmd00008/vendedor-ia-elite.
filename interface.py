@@ -16,7 +16,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# --- 2. CSS (LAYOUT IDÊNTICO À FOTO) ---
+# --- 2. CSS (LAYOUT PERFEITO COM BOTÃO) ---
 st.markdown("""
 <style>
     /* FUNDO */
@@ -29,63 +29,69 @@ st.markdown("""
         color: #FFFFFF !important;
     }
 
-    /* --- LAYOUT MOBILE (LADO A LADO + DIGITAL CARD) --- */
+    /* --- LAYOUT MOBILE (LADO A LADO + CENTRO VERTICAL) --- */
     @media (max-width: 600px) {
         
-        /* Força as colunas a ficarem lado a lado */
+        /* 1. Força LINHA (Lado a Lado) */
         div[data-testid="stHorizontalBlock"] {
             flex-direction: row !important;
-            align-items: center !important;
-            gap: 10px !important;
+            align-items: center !important; 
+            gap: 5px !important;
         }
         
-        /* Coluna da Foto */
+        /* 2. Coluna da Foto */
         div[data-testid="column"]:nth-of-type(1) {
             flex: 1 !important;
             display: flex !important;
+            align-items: center !important;
             justify-content: center !important;
         }
         
-        /* Coluna do Texto (Alinhado à ESQUERDA) */
+        /* 3. Coluna do Texto (CENTRALIZA TUDO VERTICALMENTE) */
         div[data-testid="column"]:nth-of-type(2) {
-            flex: 2.5 !important; /* Mais espaço para o texto */
+            flex: 2.5 !important;
             display: flex !important;
             flex-direction: column !important;
-            align-items: flex-start !important; /* ALINHA TUDO À ESQUERDA */
-            justify-content: center !important;
+            
+            /* O SEGREDO: Centraliza o bloco na altura */
+            justify-content: center !important; 
+            align-self: center !important;
+            
             padding-left: 5px !important;
         }
 
-        /* Ajustes de Texto no Mobile */
+        /* Ajustes de Fonte no Celular */
         .neon-title {
             font-size: 20px !important; 
             text-align: left !important; 
             margin-bottom: 2px !important;
+            line-height: 1.1 !important;
+            margin-top: 0 !important;
         }
         
         .neon-subtitle {
             font-size: 11px !important; 
             text-align: left !important; 
-            margin-bottom: 15px !important; /* Espaço maior antes dos ícones */
+            margin-bottom: 8px !important;
         }
         
-        /* Ícones Alinhados à Esquerda */
+        /* Ícones */
         .social-bar {
             justify-content: flex-start !important; 
-            gap: 10px !important;
+            gap: 12px !important;
             margin-bottom: 5px !important;
         }
         
         .social-icon { width: 22px !important; height: 22px !important; }
         
-        /* Tamanho da Foto no Mobile */
-        .profile-mask { width: 95px !important; height: 95px !important; }
-
+        /* Foto Mobile */
+        .profile-mask { width: 100px !important; height: 100px !important; }
+        
         /* Botão Digital Card no Mobile */
         div.stButton > button {
             justify-content: flex-start !important;
-            margin-left: 0px !important; /* Alinhado com os ícones */
-            width: auto !important;
+            margin-left: 0px !important;
+            margin-top: 0px !important;
         }
     }
 
@@ -132,7 +138,7 @@ st.markdown("""
     }
     .social-icon:hover { transform: scale(1.2); }
 
-    /* --- BOTÃO DIGITAL CARD (RESTAURADO) --- */
+    /* --- BOTÃO DIGITAL CARD --- */
     div.stButton > button {
         background: transparent !important;
         border: none !important;
@@ -144,6 +150,7 @@ st.markdown("""
         transition: transform 0.3s ease;
         margin-top: -5px;
     }
+    
     div.stButton > button:hover { transform: scale(1.05); }
 
     /* ÍCONE TELEFONE VERMELHO */
@@ -252,12 +259,14 @@ else:
 user_avatar_chat = "https://cdn-icons-png.flaticon.com/512/9408/9408175.png" 
 bot_avatar_chat = "https://cdn-icons-png.flaticon.com/512/4712/4712139.png"
 
-# --- 6. CABEÇALHO IGUAL À FOTO ---
+# --- 6. CABEÇALHO ---
 st.markdown('<div style="margin-top: 20px;"></div>', unsafe_allow_html=True)
 
+# Coluna 1: Foto | Coluna 2: Texto
 col_foto, col_texto = st.columns([1.2, 2.8]) 
 
 with col_foto:
+    # A foto
     st.markdown(f"""
     <div style="display:flex; justify-content:center;">
         <div class="profile-mask">
@@ -267,6 +276,7 @@ with col_foto:
     """, unsafe_allow_html=True)
 
 with col_texto:
+    # O HTML com Título, Subtítulo e Ícones
     st.markdown(f"""
     <div style="display:flex; flex-direction:column; justify-content:center; height:100%;">
         <div class="neon-title">CDM IA CHATBOT</div>
@@ -288,7 +298,7 @@ with col_texto:
     </div>
     """, unsafe_allow_html=True)
     
-    # RESTAUREI O BOTÃO DIGITAL CARD AQUI
+    # RESTAUREI O BOTÃO "DIGITAL CARD" AQUI
     if st.button("DIGITAL CARD"):
         toggle_card()
         st.rerun()
