@@ -16,7 +16,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# --- 2. CSS (VISUAL PREMIUM) ---
+# --- 2. CSS (VISUAL PREMIUM REFINADO) ---
 st.markdown("""
 <style>
     /* FUNDO */
@@ -29,16 +29,15 @@ st.markdown("""
         color: #FFFFFF !important;
     }
 
-    /* ALINHAMENTO DAS COLUNAS (PC e MOBILE) */
+    /* ALINHAMENTO DAS COLUNAS */
     [data-testid="column"] {
         display: flex;
         flex-direction: column;
         justify-content: center;
     }
     
-    /* CENTRALIZAR FOTO NA COLUNA DA ESQUERDA */
     [data-testid="column"]:first-child {
-        align-items: center; /* Centraliza a foto */
+        align-items: center;
     }
 
     /* MÁSCARA DA FOTO */
@@ -62,7 +61,7 @@ st.markdown("""
         transform-origin: center 20%;
     }
 
-    /* TEXTOS (ALINHADOS A ESQUERDA) */
+    /* TEXTOS */
     .neon-title {
         font-size: 32px; font-weight: 800; line-height: 1; text-transform: uppercase;
         color: #FFFFFF !important;
@@ -97,44 +96,44 @@ st.markdown("""
         align-items: center;
         justify-content: flex-start;
         transition: transform 0.3s ease;
-        margin-top: -5px; /* Puxa um pouco pra cima */
+        margin-top: -5px;
     }
     
     div.stButton > button:hover { transform: scale(1.05); }
     div.stButton > button:active { background: transparent !important; }
     div.stButton > button:focus { color: transparent !important; }
 
-    /* O ÍCONE COLORIDO (CONTATO) */
+    /* O NOVO ÍCONE (Estilo Telefone Vermelho Degradê) */
     div.stButton > button::before {
         content: "";
         display: inline-block;
-        width: 30px; height: 30px;
-        /* Ícone de Agenda Colorido (Vibrante) */
-        background-image: url('https://cdn-icons-png.flaticon.com/512/9632/9632832.png'); 
+        width: 28px; height: 28px; /* Um pouco menor para acompanhar a letra */
+        /* Link para um ícone no estilo solicitado */
+        background-image: url('https://cdn-icons-png.flaticon.com/512/5585/5585856.png'); 
         background-size: cover;
-        margin-right: 12px;
-        filter: drop-shadow(0 0 5px rgba(255,255,255,0.3));
+        margin-right: 10px;
+        filter: drop-shadow(0 0 5px rgba(255, 50, 50, 0.5)); /* Brilho avermelhado */
     }
 
-    /* O TEXTO (DOURADO MENOR) */
+    /* O TEXTO (AINDA MENOR) */
     div.stButton > button p {
         background: linear-gradient(to right, #BF953F, #FCF6BA, #B38728, #FBF5B7);
         -webkit-background-clip: text !important;
         -webkit-text-fill-color: transparent !important;
-        font-size: 16px !important; /* LETRA MENOR */
+        font-size: 14px !important; /* <-- REDUZIDO PARA 14px */
         font-weight: 800 !important;
         text-transform: uppercase;
         margin: 0 !important;
         letter-spacing: 1px;
     }
 
-    /* CELULAR: CENTRALIZA TUDO */
+    /* CELULAR */
     @media (max-width: 600px) {
         .neon-title { font-size: 24px; text-align: center; }
         .neon-subtitle { font-size: 12px; text-align: center; }
         .social-bar { justify-content: center; }
         div.stButton > button { justify-content: center; width: 100%; }
-        [data-testid="column"] { align-items: center; } /* Centraliza colunas */
+        [data-testid="column"] { align-items: center; }
     }
     
     @keyframes float {
@@ -172,7 +171,7 @@ st.markdown("""
 
 # --- 3. CONEXÃO (BLINDADA) ---
 try:
-    api_key = os.environ.get("GOOGLE_API_KEY") # Prioridade para Env Var
+    api_key = os.environ.get("GOOGLE_API_KEY") 
     if not api_key:
         api_key = st.secrets["GOOGLE_API_KEY"]
     
@@ -218,10 +217,9 @@ user_avatar_chat = "https://cdn-icons-png.flaticon.com/512/9408/9408175.png"
 bot_avatar_chat = "https://cdn-icons-png.flaticon.com/512/4712/4712139.png"
 
 # --- 6. CABEÇALHO DIVIDIDO EM COLUNAS ---
-# Isso permite alinhar o botão "Digital Card" exatamente embaixo dos ícones
 st.markdown('<div style="margin-top: 30px;"></div>', unsafe_allow_html=True)
 
-col_foto, col_texto = st.columns([1, 2.5]) # Ajuste de proporção
+col_foto, col_texto = st.columns([1, 2.5])
 
 with col_foto:
     st.markdown(f"""
@@ -231,7 +229,6 @@ with col_foto:
     """, unsafe_allow_html=True)
 
 with col_texto:
-    # Título, Subtítulo e Redes Sociais
     st.markdown(f"""
     <div class="brand-text">
         <div class="neon-title">CDM IA CHATBOT</div>
@@ -253,7 +250,7 @@ with col_texto:
     </div>
     """, unsafe_allow_html=True)
     
-    # BOTÃO DIGITAL CARD (PYTHON) - Fica logo abaixo dos ícones
+    # BOTÃO DIGITAL CARD
     if st.button("DIGITAL CARD"):
         toggle_card()
         st.rerun()
