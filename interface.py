@@ -16,7 +16,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# --- 2. CSS (ESTRUTURA ELITE: ESQUERDA - CENTRO - DIREITA) ---
+# --- 2. CSS (ESTILO INTELIGENTE) ---
 st.markdown("""
 <style>
     /* FUNDO */
@@ -29,26 +29,75 @@ st.markdown("""
         color: #FFFFFF !important;
     }
 
-    /* --- ÁREA CENTRAL (FOTO + TEXTO) --- */
-    .center-content {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        text-align: center;
+    /* --- CORREÇÃO DO LAYOUT MOBILE (O PULO DO GATO) --- */
+    /* Isso força as colunas a ficarem LADO A LADO mesmo no celular */
+    @media (max-width: 640px) {
+        div[data-testid="stHorizontalBlock"] {
+            flex-direction: row !important; /* Força linha horizontal */
+            align-items: center !important;
+            gap: 10px !important;
+        }
+        
+        div[data-testid="column"] {
+            width: auto !important;
+            flex: 1 !important;
+            min-width: 0 !important; /* Permite encolher se precisar */
+        }
+        
+        /* Ajustes específicos para caber na tela pequena */
+        .profile-mask {
+            width: 90px !important; 
+            height: 90px !important;
+            margin-bottom: 0 !important;
+        }
+        
+        .neon-title {
+            font-size: 18px !important; /* Título menor no celular */
+            text-align: left !important;
+            margin-bottom: 2px !important;
+        }
+        
+        .neon-subtitle {
+            font-size: 10px !important;
+            text-align: left !important;
+            margin-bottom: 8px !important;
+            line-height: 1.2 !important;
+        }
+        
+        .social-bar {
+            justify-content: flex-start !important;
+            gap: 8px !important;
+            margin-bottom: 8px !important;
+        }
+        
+        .social-icon {
+            width: 20px !important;
+            height: 20px !important;
+        }
+        
+        /* Ajuste do botão no mobile */
+        div.stButton > button p {
+            font-size: 12px !important;
+        }
+        div.stButton > button::before {
+            width: 22px !important;
+            height: 22px !important;
+            margin-right: 5px !important;
+        }
     }
 
-    /* MÁSCARA DA FOTO (NO PC ELA É MAIOR) */
+    /* --- ESTILOS GERAIS (PC) --- */
+    
+    /* MÁSCARA DA FOTO */
     .profile-mask {
-        width: 150px; height: 150px;
+        width: 140px; height: 140px;
         border-radius: 50%;
-        border: 4px solid #00f2fe;
-        box-shadow: 0px 0px 40px rgba(0, 242, 254, 0.6);
+        border: 3px solid #00f2fe;
+        box-shadow: 0px 0px 25px rgba(0, 242, 254, 0.6);
         overflow: hidden; 
         animation: float 6s ease-in-out infinite;
         flex-shrink: 0;
         display: flex; align-items: center; justify-content: center;
-        margin-bottom: 15px; /* Espaço para o texto */
     }
 
     .profile-img-zoom {
@@ -59,49 +108,31 @@ st.markdown("""
         transform-origin: center 20%;
     }
 
-    /* TÍTULO (NO PC É GIGANTE) */
+    /* TEXTOS */
     .neon-title {
-        font-size: 40px; 
-        font-weight: 900; 
-        line-height: 1.2; 
-        text-transform: uppercase;
+        font-size: 36px; font-weight: 800; line-height: 1; text-transform: uppercase;
         color: #FFFFFF !important;
-        text-shadow: 0 0 15px #00f2fe, 0 0 30px #4facfe;
-        margin: 0;
+        text-shadow: 0 0 10px #00f2fe, 0 0 20px #4facfe;
+        margin-bottom: 5px;
+        margin-top: 0;
     }
     .neon-subtitle { 
-        font-size: 18px; 
-        font-weight: 400; 
-        color: #e0e0e0 !important; 
-        letter-spacing: 3px; /* Letras espaçadas estilo cinema */
-        margin-top: 5px;
+        font-size: 18px; font-weight: 400; color: #d1d1d1 !important; 
+        letter-spacing: 1px; margin-bottom: 15px;
     }
 
-    /* --- ÁREA DA DIREITA (REDES SOCIAIS) --- */
-    .social-bar-right {
-        display: flex; 
-        justify-content: flex-end; /* Alinha tudo para a DIREITA */
-        gap: 20px;
-        align-items: center;
-        height: 100%; /* Para centralizar verticalmente com o botão */
-        padding-top: 15px; /* Ajuste fino de altura */
+    /* REDES SOCIAIS */
+    .social-bar {
+        display: flex; justify-content: flex-start; gap: 15px; margin-bottom: 15px;
     }
     .social-icon {
-        width: 35px; height: 35px;
+        width: 30px; height: 30px;
         transition: transform 0.3s ease;
-        filter: drop-shadow(0 0 5px rgba(255,255,255,0.3));
+        filter: drop-shadow(0 0 5px rgba(255,255,255,0.2));
     }
-    .social-icon:hover { transform: scale(1.3); }
+    .social-icon:hover { transform: scale(1.2); }
 
-    /* --- ÁREA DA ESQUERDA (BOTÃO DIGITAL CARD) --- */
-    
-    /* Força o botão a ficar na esquerda */
-    div.stButton {
-        display: flex;
-        justify-content: flex-start;
-        padding-top: 10px; /* Alinha com os ícones */
-    }
-
+    /* --- BOTÃO DIGITAL CARD --- */
     div.stButton > button {
         background: transparent !important;
         border: none !important;
@@ -109,42 +140,37 @@ st.markdown("""
         padding: 0px !important;
         display: inline-flex;
         align-items: center;
+        justify-content: flex-start;
         transition: transform 0.3s ease;
+        margin-top: -5px;
     }
     
     div.stButton > button:hover { transform: scale(1.05); }
 
+    /* ÍCONE DO BOTÃO (TELEFONE VERMELHO) */
     div.stButton > button::before {
         content: "";
         display: inline-block;
-        width: 32px; height: 32px;
+        width: 28px; height: 28px;
         background-image: url('https://cdn-icons-png.flaticon.com/512/5585/5585856.png'); 
         background-size: contain;
         background-repeat: no-repeat;
         background-position: center;
-        margin-right: 12px;
+        margin-right: 10px;
         filter: drop-shadow(0 0 8px rgba(255, 50, 50, 0.8)); 
     }
 
+    /* TEXTO DO BOTÃO (DOURADO) */
     div.stButton > button p {
         background: linear-gradient(to right, #BF953F, #FCF6BA, #B38728, #FBF5B7);
         -webkit-background-clip: text !important;
         -webkit-text-fill-color: transparent !important;
-        font-size: 16px !important;
+        font-size: 14px !important;
         font-weight: 800 !important;
         text-transform: uppercase;
         margin: 0 !important;
         letter-spacing: 1px;
-        text-shadow: 0 0 15px rgba(191, 149, 63, 0.4);
-    }
-
-    /* --- CELULAR (AJUSTE AUTOMÁTICO) --- */
-    @media (max-width: 800px) {
-        .social-bar-right { justify-content: center; margin-top: 15px; } /* Centraliza ícones */
-        div.stButton { justify-content: center; margin-top: 15px; } /* Centraliza botão */
-        .neon-title { font-size: 26px; }
-        .neon-subtitle { font-size: 12px; letter-spacing: 1px; }
-        .profile-mask { width: 120px; height: 120px; }
+        text-shadow: 0 0 10px rgba(191, 149, 63, 0.5);
     }
     
     @keyframes float {
@@ -198,7 +224,7 @@ except Exception as e:
 # ANTIGRAVITY FIX: models/gemini-2.5-flash
 model = genai.GenerativeModel('models/gemini-2.5-flash', system_instruction="Você é o CDM, IA de Vendas Elite. Responda no idioma do usuário.")
 
-# --- 4. MEMÓRIA & ESTADO ---
+# --- 4. ESTADO ---
 if "messages" not in st.session_state:
     st.session_state.messages = [{"role": "model", "content": "Olá! Sou o CDM. Como posso ajudar a escalar suas vendas hoje? 🚀"}]
 
@@ -227,64 +253,59 @@ else:
 user_avatar_chat = "https://cdn-icons-png.flaticon.com/512/9408/9408175.png" 
 bot_avatar_chat = "https://cdn-icons-png.flaticon.com/512/4712/4712139.png"
 
-# --- 6. CABEÇALHO ESTRUTURADO (PC ELITE) ---
-st.markdown('<div style="margin-top: 30px;"></div>', unsafe_allow_html=True)
+# --- 6. CABEÇALHO (Layout Ajustado) ---
+st.markdown('<div style="margin-top: 20px;"></div>', unsafe_allow_html=True)
 
-# CRIA 3 COLUNAS BALANCEADAS: [ESQUERDA] [CENTRO MAIOR] [DIREITA]
-# No celular, elas vão empilhar automaticamente.
-col_left, col_center, col_right = st.columns([1, 1.5, 1])
+# Colunas (No mobile agora elas vão ficar lado a lado por causa do CSS acima)
+# Ajustei a proporção para 1.3 : 2.7 para dar espaço à foto no mobile
+col_foto, col_texto = st.columns([1.3, 2.7]) 
 
-# --- COLUNA DA ESQUERDA: BOTÃO DIGITAL CARD ---
-with col_left:
-    st.markdown('<div style="height: 20px;"></div>', unsafe_allow_html=True) # Espaçador
+with col_foto:
+    st.markdown(f"""
+    <div style="display:flex; justify-content:center;">
+        <div class="profile-mask">
+            {img_tag_header}
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+with col_texto:
+    # A estrutura HTML
+    st.markdown(f"""
+    <div style="display:flex; flex-direction:column; justify-content:center; height:100%;">
+        <div class="neon-title">CDM IA CHATBOT</div>
+        <div class="neon-subtitle">O futuro das suas vendas.</div>
+        <div class="social-bar">
+            <a href="{LINK_FACEBOOK}" target="_blank">
+                <img src="https://cdn-icons-png.flaticon.com/512/5968/5968764.png" class="social-icon" title="Facebook">
+            </a>
+            <a href="{LINK_INSTAGRAM}" target="_blank">
+                <img src="https://cdn-icons-png.flaticon.com/512/3955/3955024.png" class="social-icon" title="Instagram">
+            </a>
+            <a href="{LINK_YOUTUBE}" target="_blank">
+                <img src="https://cdn-icons-png.flaticon.com/512/3670/3670147.png" class="social-icon" title="YouTube">
+            </a>
+            <a href="{LINK_TIKTOK}" target="_blank">
+                <img src="https://cdn-icons-png.flaticon.com/512/3046/3046121.png" class="social-icon" title="TikTok">
+            </a>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    # O Botão (Agora dentro da coluna, logo abaixo do HTML acima)
     if st.button("DIGITAL CARD"):
         toggle_card()
         st.rerun()
 
-# --- COLUNA DO CENTRO: FOTO + TÍTULO ---
-with col_center:
-    st.markdown(f"""
-    <div class="center-content">
-        <div class="profile-mask">
-            {img_tag_header}
-        </div>
-        <div class="neon-title">CDM IA CHATBOT</div>
-        <div class="neon-subtitle">O futuro das suas vendas.</div>
-    </div>
-    """, unsafe_allow_html=True)
-
-# --- COLUNA DA DIREITA: ÍCONES SOCIAIS ---
-with col_right:
-    # Usamos uma div especial para alinhar à direita
-    st.markdown(f"""
-    <div class="social-bar-right">
-        <a href="{LINK_FACEBOOK}" target="_blank">
-            <img src="https://cdn-icons-png.flaticon.com/512/5968/5968764.png" class="social-icon" title="Facebook">
-        </a>
-        <a href="{LINK_INSTAGRAM}" target="_blank">
-            <img src="https://cdn-icons-png.flaticon.com/512/3955/3955024.png" class="social-icon" title="Instagram">
-        </a>
-        <a href="{LINK_YOUTUBE}" target="_blank">
-            <img src="https://cdn-icons-png.flaticon.com/512/3670/3670147.png" class="social-icon" title="YouTube">
-        </a>
-        <a href="{LINK_TIKTOK}" target="_blank">
-            <img src="https://cdn-icons-png.flaticon.com/512/3046/3046121.png" class="social-icon" title="TikTok">
-        </a>
-    </div>
-    """, unsafe_allow_html=True)
-
-# --- 7. MOSTRA O CARTÃO (Centralizado) ---
+# --- 7. MOSTRA O CARTÃO ---
 if st.session_state.show_card:
     cartao_visita = "perfil.jpg.jpg"
     if os.path.exists(cartao_visita):
-        # Cria colunas para centralizar a imagem do cartão
-        c1, c2, c3 = st.columns([1, 2, 1])
-        with c2:
-            st.markdown('<div style="animation: float 0.5s ease-out; margin-top: 20px; margin-bottom: 20px;">', unsafe_allow_html=True)
-            st.image(cartao_visita, use_column_width=True)
-            st.markdown('</div>', unsafe_allow_html=True)
+        st.markdown('<div style="animation: float 0.5s ease-out; margin-top: 20px; margin-bottom: 20px;">', unsafe_allow_html=True)
+        st.image(cartao_visita, use_column_width=True)
+        st.markdown('</div>', unsafe_allow_html=True)
 
-st.markdown('<div style="margin-bottom: 50px;"></div>', unsafe_allow_html=True)
+st.markdown('<div style="margin-bottom: 40px;"></div>', unsafe_allow_html=True)
 
 # --- 8. CHAT ---
 st.markdown('<div style="margin-bottom: 60px;">', unsafe_allow_html=True)
