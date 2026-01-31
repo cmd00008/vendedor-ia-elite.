@@ -11,126 +11,116 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# --- CSS FUTURISTA (BASEADO NA IMAGEM) ---
+# --- CSS FUTURISTA E RESPONSIVO ---
 st.markdown("""
 <style>
-    /* 1. FUNDO GRADIENTE AZUL */
+    /* 1. FUNDO GRADIENTE AZUL (Baseado na imagem) */
     .stApp {
-        background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d); /* Gradiente Azul/Roxo/Laranja sutil */
         background: linear-gradient(to bottom, #0f2027, #203a43, #2c5364); /* Gradiente Azul Profundo */
         background-attachment: fixed;
     }
     
-    /* 2. OCULTAR ELEMENTOS PADRÃO DO STREAMLIT */
+    /* Ocultar elementos padrão do Streamlit para limpar o visual */
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
     header {visibility: hidden;}
     
-    /* 3. ESTILO DOS CÍRCULOS ÍCONES (Fundo) */
-    .icon-container {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        width: 80%;
-        height: 80%;
-        pointer-events: none; /* Não interfere no clique */
-        z-index: 0;
-        opacity: 0.4; /* Levemente transparente */
-        background-image: url('https://img.freepik.com/free-vector/gradient-artificial-intelligence-background_23-2150378223.jpg?w=1380&t=st=1706728000~exp=1706728600~hmac=7b1283019461981901209320715053150687112018107115103102104105106'); /* Imagem de fundo similar */
-        background-size: contain;
-        background-position: center;
-        background-repeat: no-repeat;
+    /* Forçar texto branco globalmente */
+    h1, h2, h3, h4, h5, h6, p, span, div, li, label, .stMarkdown {
+        color: #FFFFFF !important;
     }
 
-    /* 4. CONTAINER CENTRAL (Robô e Barra) */
-    .main-container {
-        position: absolute;
-        top: 40%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        text-align: center;
-        z-index: 1;
-        width: 60%;
+    /* ============================================================
+       ÁREA SUPERIOR FLUTUANTE (Robô + Input)
+    ============================================================ */
+    /* Container que agrupa o robô e o input */
+    .floating-header-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        margin-top: 40px; /* Espaço do topo */
+        margin-bottom: 30px; /* Espaço para o chat abaixo */
     }
 
     /* Ícone do Robô Central */
-    .robot-icon {
-        width: 120px;
+    .robot-icon-img {
+        width: 100px; /* Tamanho bom para mobile e PC */
         margin-bottom: 20px;
+        filter: drop-shadow(0px 0px 10px rgba(79, 172, 254, 0.7)); /* Brilho azul */
     }
 
-    /* Balões de "pensamento" do robô */
-    .thought-bubbles {
-        position: absolute;
-        top: -40px;
-        right: 30%;
-        font-size: 24px;
-        color: #4facfe;
-    }
-
-    /* 5. BARRA DE PESQUISA "HOW CAN I HELP YOU?" */
-    /* Esconde o label padrão e estiliza o input */
-    .stTextInput label {
-        display: none;
-    }
+    /* Estilização da Barra de Pesquisa "How can I help you?" */
+    /* Esconde o label padrão */
+    .stTextInput label { display: none; }
+    
+    /* A caixa de input em si */
     .stTextInput input {
         background-color: #000000 !important; /* Fundo Preto */
         color: #FFFFFF !important; /* Texto Branco */
         border: 2px solid #4facfe !important; /* Borda Azul Brilhante */
         border-radius: 50px !important; /* Bordas Redondas */
-        padding: 20px 30px !important; /* Espaçamento interno */
-        font-size: 20px !important; /* Texto maior */
-        box-shadow: 0px 0px 20px rgba(79, 172, 254, 0.5); /* Brilho Azul */
-        text-align: left;
-        padding-left: 60px !important; /* Espaço para a lupa */
-        background-image: url('https://cdn-icons-png.flaticon.com/512/54/54481.png'); /* Ícone de Lupa Azul */
-        background-repeat: no-repeat;
-        background-position: 20px center;
-        background-size: 25px;
+        padding: 15px 25px !important; /* Espaçamento interno */
+        font-size: 18px !important; /* Texto maior */
+        box-shadow: 0px 0px 20px rgba(79, 172, 254, 0.5); /* Sombra Azul */
+        text-align: center; /* Texto centralizado */
     }
     /* Placeholder (Texto de ajuda) */
     ::placeholder {
         color: #a0a0a0 !important;
         font-style: italic;
     }
+    
+    /* Responsividade do Input: Mais largo no PC, mais estreito no Mobile */
+    div[data-testid="stTextInput"] {
+        width: 90%; /* Mobile: ocupa quase tudo */
+        max-width: 600px; /* PC: limita a largura para não ficar gigante */
+        margin: auto;
+    }
 
-    /* 6. ÁREA DO CHAT (Aparece abaixo da barra) */
-    .chat-container {
-        margin-top: 450px; /* Empurra o chat para baixo da barra central */
-        z-index: 2;
-        position: relative;
-        width: 70%;
-        margin-left: auto;
-        margin-right: auto;
+    /* ============================================================
+       ÁREA DO CHAT (Estável Abaixo)
+    ============================================================ */
+    /* Container para as mensagens */
+    .chat-history-container {
+        width: 90%;
+        max-width: 800px;
+        margin: auto; /* Centraliza no PC */
+        padding-bottom: 50px;
     }
     
-    /* Balões de Chat Transparentes */
+    /* Balões de Chat Transparentes/Vidro */
     div[data-testid="stChatMessage"] {
-        background-color: rgba(0, 0, 0, 0.3); /* Fundo preto transparente */
-        border: 1px solid rgba(79, 172, 254, 0.3); /* Borda azul sutil */
+        background-color: rgba(0, 0, 0, 0.4); /* Fundo preto transparente */
+        border: 1px solid rgba(79, 172, 254, 0.2); /* Borda azul sutil */
         border-radius: 15px;
-        color: #FFFFFF !important;
+        margin-bottom: 10px;
     }
-    .stMarkdown, p, span, div {
-        color: #FFFFFF !important;
+    
+    /* Avatar do usuário e modelo */
+    .stChatMessageAvatar {
+        border: 2px solid #4facfe;
     }
 
 </style>
+""", unsafe_allow_html=True)
 
-<div class="icon-container"></div>
+# -----------------------------------------------------------------------------
+# BACKEND (RESTORED by Antigravity)
+# -----------------------------------------------------------------------------
 
-<div class="main-container">
-    <div class="thought-bubbles">💬 💭</div>
-    <img src="https://cdn-icons-png.flaticon.com/512/4712/4712139.png" class="robot-icon" alt="Robot Icon">
+# 1. VISUAL DO CABEÇALHO (HTML)
+st.markdown("""
+<div class="floating-header-container">
+    <img src="https://cdn-icons-png.flaticon.com/512/4712/4712139.png" class="robot-icon-img">
 </div>
 """, unsafe_allow_html=True)
 
-# --- CONEXÃO BLINDADA ---
+# 2. CONEXÃO BLINDADA
 try:
-    api_key = os.environ.get("GOOGLE_API_KEY") # Tenta ambiente
+    api_key = os.environ.get("GOOGLE_API_KEY") 
     if not api_key:
-        api_key = st.secrets["GOOGLE_API_KEY"] # Tenta secrets
+        api_key = st.secrets["GOOGLE_API_KEY"]
     
     if api_key:
         genai.configure(api_key=api_key)
@@ -138,49 +128,40 @@ try:
         st.error("⚠️ API Key não encontrada.")
         st.stop()
 except Exception as e:
-    st.error(f"⚠️ Erro nos Secrets/Config: {e}")
+    st.error(f"⚠️ Erro de Configuração: {e}")
     st.stop()
 
-# --- CÉREBRO DA IA ---
+# 3. CÉREBRO DA IA (Gemini 2.5)
 system_instruction = """
 Você é o CDM, a IA de Vendas Elite (v2.5).
 REGRA DE IDIOMA: Responda SEMPRE no idioma que o usuário falar.
 Seja direto, use emojis e foque em ajudar.
 """
-# CORREÇÃO: Usando modelo 2.5 disponível
+# Usando o modelo funcional 2.5
 model = genai.GenerativeModel('models/gemini-2.5-flash', system_instruction=system_instruction)
 
-# --- LÓGICA DO CHAT ---
+# 4. LÓGICA DO CHAT
 if "messages" not in st.session_state:
     st.session_state.messages = []
-    # Mensagem inicial discreta
-    st.session_state.messages.append({"role": "model", "content": "Olá! Como posso te ajudar hoje? 🤖"})
+    st.session_state.messages.append({"role": "model", "content": "Olá! Sistema Online. Como posso ajudar? 🤖"})
 
-# --- BARRA DE ENTRADA (Centralizada) ---
-# Usamos um container para posicionar o input no meio da tela
-with st.container():
-    st.markdown('<div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -20%); width: 60%; z-index: 10;">', unsafe_allow_html=True)
-    # Callback limpa o input após envio se necessário, mas st.rerun já ajuda
-    prompt = st.text_input("How can I help you?...", placeholder="How can I help you?...", key="main_input")
-    st.markdown('</div>', unsafe_allow_html=True)
+# 5. INPUT FLUTUANTE (Centralizado)
+# O input fica logo abaixo do robô visualmente (devido ao CSS)
+prompt = st.text_input("How can I help you?", placeholder="How can I help you?...", key="main_input")
 
-# --- EXIBIÇÃO DO CHAT (Abaixo da barra) ---
-st.markdown('<div class="chat-container">', unsafe_allow_html=True)
+# 6. EXIBIÇÃO DO CHAT (Abaixo do Input)
+st.markdown('<div class="chat-history-container">', unsafe_allow_html=True)
 for message in st.session_state.messages:
     avatar_icon = "🤖" if message["role"] == "model" else "👤"
     with st.chat_message(message["role"], avatar=avatar_icon):
         st.markdown(message["content"])
 st.markdown('</div>', unsafe_allow_html=True)
 
-# --- PROCESSAMENTO DA MENSAGEM ---
+# 7. PROCESSAMENTO
 if prompt:
-    # Evita reprocessar se já foi a última (embora st.rerun limpe o input geralmente, mas o key mantem estado)
-    # O truque aqui é que 'prompt' vem do text_input.
-    
-    # Adiciona mensagem do usuário
+    # Adiciona msg usuário
     st.session_state.messages.append({"role": "user", "content": prompt})
     
-    # Gera resposta
     try:
         # Prepara histórico
         chat_history = [
@@ -192,11 +173,8 @@ if prompt:
         
         st.session_state.messages.append({"role": "model", "content": response.text})
         
-        # O text_input não limpa sozinho com st.rerun() se tiver key fixa sem callback.
-        # Mas vamos seguir o padrão solicitado pelo usuário:
-        # Para limpar, idealmente precisaríamos de callback on_change, mas st.rerun() funciona se ele não travar.
-        # Aqui, vamos torcer para o fluxo manual funcionar ou o usuário apagar.
-        # OBS: Usuário pediu rerunn.
+        # Recarregar para atualizar a tela e 'limpar' o input (fluxo pseudo-chat)
+        st.rerun()
         
     except Exception as e:
         st.error(f"Erro: {e}")
