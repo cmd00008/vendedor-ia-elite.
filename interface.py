@@ -3,7 +3,7 @@ import google.generativeai as genai
 import os
 import base64
 
-# --- 1. CONFIGURAÇÃO E LINKS ---
+# --- 1. CONFIGURAÇÃO E LINKS (Podem editar aqui) ---
 LINK_FACEBOOK = "https://www.facebook.com/share/1BivFdqW66/"
 LINK_INSTAGRAM = "https://www.instagram.com/tocadocdm?igsh=MTdkYng5OGszNGI3Zw=="
 LINK_YOUTUBE = "https://youtube.com/@cdm_236?si=2cvU0sn9cgEssDpW"
@@ -16,31 +16,32 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# --- 2. CSS: ALINHAMENTO DE ÍCONES SOB O TEXTO ---
+# --- 2. CSS (ESTILO VISUAL) ---
 st.markdown("""
 <style>
-    /* FUNDO */
+    /* FUNDO AZUL ESCURO */
     .stApp {
         background: linear-gradient(to bottom, #0f2027, #203a43, #2c5364);
         background-attachment: fixed;
     }
     
-    p, span, div, li, label, .stMarkdown, button, textarea {
+    /* TEXTO BRANCO EM TUDO */
+    p, span, div, li, label, .stMarkdown, button, textarea, h1, h2, h3 {
         color: #FFFFFF !important;
     }
 
-    /* --- CABEÇALHO GERAL --- */
+    /* CONTAINER DO TOPO */
     .header-container {
         display: flex;
-        flex-direction: row;       /* Lado a Lado */
-        align-items: center;       /* Centralizado Verticalmente */
-        justify-content: center;   /* Centralizado na Tela */
-        padding-top: 20px;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        padding-top: 30px;
         padding-bottom: 20px;
         gap: 20px;
     }
 
-    /* MÁSCARA DA FOTO */
+    /* MÁSCARA DA FOTO (CÍRCULO) */
     .profile-mask {
         width: 120px; height: 120px;
         border-radius: 50%;
@@ -61,11 +62,11 @@ st.markdown("""
         transform-origin: center 20%;
     }
 
-    /* --- COLUNA DE TEXTO (ONDE OS ÍCONES VÃO FICAR) --- */
+    /* COLUNA DE TEXTO */
     .brand-text { 
         display: flex; 
         flex-direction: column; 
-        text-align: left;         /* Tudo alinhado à esquerda */
+        text-align: left;
         justify-content: center;
     }
     
@@ -81,28 +82,23 @@ st.markdown("""
         font-weight: 400; 
         color: #d1d1d1 !important; 
         letter-spacing: 1px; 
-        margin-bottom: 12px; /* Espaço entre subtítulo e ícones */
+        margin-bottom: 12px;
     }
 
-    /* --- BARRA DE REDES SOCIAIS (AGORA ALINHADA A ESQUERDA) --- */
+    /* BARRA DE ÍCONES (ALINHADA À ESQUERDA) */
     .social-bar {
         display: flex;
-        justify-content: flex-start; /* Alinha no começo (esquerda) junto com o texto */
-        gap: 15px; /* Espaço entre os ícones */
+        justify-content: flex-start;
+        gap: 15px;
     }
     
     .social-icon {
-        width: 28px; /* Tamanho delicado para caber bem */
-        height: 28px;
+        width: 28px; height: 28px;
         transition: transform 0.3s ease, filter 0.3s ease;
         filter: drop-shadow(0 0 5px rgba(255,255,255,0.2));
     }
     
     .social-icon:hover { transform: scale(1.2); }
-    .icon-fb:hover { filter: drop-shadow(0 0 10px #1877F2); }
-    .icon-insta:hover { filter: drop-shadow(0 0 10px #E4405F); }
-    .icon-yt:hover { filter: drop-shadow(0 0 10px #FF0000); }
-    .icon-tiktok:hover { filter: drop-shadow(0 0 10px #00F2EA); }
 
     /* CELULAR */
     @media (max-width: 600px) {
@@ -119,7 +115,7 @@ st.markdown("""
         50% { transform: translateY(-5px); }
     }
 
-    /* --- CHAT --- */
+    /* CHAT */
     .stChatInput textarea {
         background-color: #FFFFFF !important;
         color: #000000 !important;
@@ -152,7 +148,7 @@ st.markdown("""
 
 # --- 3. CONEXÃO (BLINDADA) ---
 try:
-    api_key = os.environ.get("GOOGLE_API_KEY") 
+    api_key = os.environ.get("GOOGLE_API_KEY") # Prioridade para Env Var
     if not api_key:
         api_key = st.secrets["GOOGLE_API_KEY"]
     
@@ -191,7 +187,7 @@ else:
 user_avatar_chat = "https://cdn-icons-png.flaticon.com/512/9408/9408175.png" 
 bot_avatar_chat = "https://cdn-icons-png.flaticon.com/512/4712/4712139.png"
 
-# --- 6. EXIBIR CABEÇALHO COM ÍCONES INTEGRADOS ---
+# --- 6. EXIBIR CABEÇALHO (HTML PURO) ---
 st.markdown(f"""
 <div class="header-container">
     <div class="profile-mask">
@@ -200,19 +196,18 @@ st.markdown(f"""
     <div class="brand-text">
         <div class="neon-title">CDM IA CHATBOT</div>
         <div class="neon-subtitle">O futuro das suas vendas.</div>
-        
         <div class="social-bar">
             <a href="{LINK_FACEBOOK}" target="_blank">
-                <img src="https://cdn-icons-png.flaticon.com/512/5968/5968764.png" class="social-icon icon-fb" title="Facebook">
+                <img src="https://cdn-icons-png.flaticon.com/512/5968/5968764.png" class="social-icon" title="Facebook">
             </a>
             <a href="{LINK_INSTAGRAM}" target="_blank">
-                <img src="https://cdn-icons-png.flaticon.com/512/3955/3955024.png" class="social-icon icon-insta" title="Instagram">
+                <img src="https://cdn-icons-png.flaticon.com/512/3955/3955024.png" class="social-icon" title="Instagram">
             </a>
             <a href="{LINK_YOUTUBE}" target="_blank">
-                <img src="https://cdn-icons-png.flaticon.com/512/3670/3670147.png" class="social-icon icon-yt" title="YouTube">
+                <img src="https://cdn-icons-png.flaticon.com/512/3670/3670147.png" class="social-icon" title="YouTube">
             </a>
             <a href="{LINK_TIKTOK}" target="_blank">
-                <img src="https://cdn-icons-png.flaticon.com/512/3046/3046121.png" class="social-icon icon-tiktok" title="TikTok">
+                <img src="https://cdn-icons-png.flaticon.com/512/3046/3046121.png" class="social-icon" title="TikTok">
             </a>
         </div>
     </div>
