@@ -1,122 +1,99 @@
 import streamlit as st
 import google.generativeai as genai
-import time
 import os
+import time
 
 # --- CONFIGURAÇÃO DA PÁGINA ---
 st.set_page_config(
     page_title="Gemini 2.5 Flash Elite",
-    page_icon="🤖",
+    page_icon="⚡",
     layout="wide",
     initial_sidebar_state="collapsed"
 )
 
-# --- CSS FUTURISTA E RESPONSIVO ---
+# --- CSS: ANIMAÇÃO DE LEVITAÇÃO E CORREÇÃO VISUAL ---
 st.markdown("""
 <style>
-    /* 1. FUNDO GRADIENTE AZUL (Baseado na imagem) */
+    /* 1. FUNDO GRADIENTE FUTURISTA */
     .stApp {
-        background: linear-gradient(to bottom, #0f2027, #203a43, #2c5364); /* Gradiente Azul Profundo */
+        background: linear-gradient(to bottom, #0f2027, #203a43, #2c5364);
         background-attachment: fixed;
     }
     
-    /* Ocultar elementos padrão do Streamlit para limpar o visual */
+    /* Limpeza da Interface */
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
     header {visibility: hidden;}
     
-    /* Forçar texto branco globalmente */
+    /* Texto Branco Global */
     h1, h2, h3, h4, h5, h6, p, span, div, li, label, .stMarkdown {
         color: #FFFFFF !important;
     }
 
-    /* ============================================================
-       ÁREA SUPERIOR FLUTUANTE (Robô + Input)
-    ============================================================ */
-    /* Container que agrupa o robô e o input */
-    .floating-header-container {
+    /* 2. ANIMAÇÃO DE LEVITAÇÃO (FLUTUAR) */
+    @keyframes float {
+        0% { transform: translatey(0px); }
+        50% { transform: translatey(-20px); } /* Sobe 20px */
+        100% { transform: translatey(0px); }
+    }
+    
+    .robot-float {
+        animation: float 6s ease-in-out infinite; /* Animação infinita suave */
+        width: 120px;
+        margin-bottom: 20px;
+        filter: drop-shadow(0px 0px 15px rgba(79, 172, 254, 0.6)); /* Brilho neon */
+    }
+
+    /* 3. CONTAINER DO TOPO (Robô + Input) */
+    .header-container {
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        margin-top: 40px; /* Espaço do topo */
-        margin-bottom: 30px; /* Espaço para o chat abaixo */
-    }
-
-    /* Ícone do Robô Central */
-    .robot-icon-img {
-        width: 100px; /* Tamanho bom para mobile e PC */
+        margin-top: 30px;
         margin-bottom: 20px;
-        filter: drop-shadow(0px 0px 10px rgba(79, 172, 254, 0.7)); /* Brilho azul */
+        padding: 20px;
     }
 
-    /* Estilização da Barra de Pesquisa "How can I help you?" */
-    /* Esconde o label padrão */
+    /* 4. ESTILO DA BARRA DE DIGITAÇÃO (Igual Search Bar) */
     .stTextInput label { display: none; }
     
-    /* A caixa de input em si */
     .stTextInput input {
-        background-color: #000000 !important; /* Fundo Preto */
-        color: #FFFFFF !important; /* Texto Branco */
-        border: 2px solid #4facfe !important; /* Borda Azul Brilhante */
-        border-radius: 50px !important; /* Bordas Redondas */
-        padding: 15px 25px !important; /* Espaçamento interno */
-        font-size: 18px !important; /* Texto maior */
-        box-shadow: 0px 0px 20px rgba(79, 172, 254, 0.5); /* Sombra Azul */
-        text-align: center; /* Texto centralizado */
-    }
-    /* Placeholder (Texto de ajuda) */
-    ::placeholder {
-        color: #a0a0a0 !important;
-        font-style: italic;
+        background-color: #000000 !important;
+        color: #FFFFFF !important;
+        border: 2px solid #4facfe !important;
+        border-radius: 50px !important;
+        padding: 15px 25px !important;
+        font-size: 18px !important;
+        box-shadow: 0px 0px 15px rgba(79, 172, 254, 0.3);
+        text-align: center;
     }
     
-    /* Responsividade do Input: Mais largo no PC, mais estreito no Mobile */
+    /* Responsividade da Barra */
     div[data-testid="stTextInput"] {
-        width: 90%; /* Mobile: ocupa quase tudo */
-        max-width: 600px; /* PC: limita a largura para não ficar gigante */
+        width: 90%;
+        max-width: 600px;
         margin: auto;
     }
 
-    /* ============================================================
-       ÁREA DO CHAT (Estável Abaixo)
-    ============================================================ */
-    /* Container para as mensagens */
-    .chat-history-container {
+    /* 5. ÁREA DO CHAT (Abaixo) */
+    .chat-container {
         width: 90%;
         max-width: 800px;
-        margin: auto; /* Centraliza no PC */
+        margin: auto;
         padding-bottom: 50px;
     }
     
-    /* Balões de Chat Transparentes/Vidro */
     div[data-testid="stChatMessage"] {
-        background-color: rgba(0, 0, 0, 0.4); /* Fundo preto transparente */
-        border: 1px solid rgba(79, 172, 254, 0.2); /* Borda azul sutil */
+        background-color: rgba(0, 0, 0, 0.5);
+        border: 1px solid rgba(255, 255, 255, 0.1);
         border-radius: 15px;
-        margin-bottom: 10px;
-    }
-    
-    /* Avatar do usuário e modelo */
-    .stChatMessageAvatar {
-        border: 2px solid #4facfe;
     }
 
 </style>
 """, unsafe_allow_html=True)
 
-# -----------------------------------------------------------------------------
-# BACKEND (RESTORED by Antigravity)
-# -----------------------------------------------------------------------------
-
-# 1. VISUAL DO CABEÇALHO (HTML)
-st.markdown("""
-<div class="floating-header-container">
-    <img src="https://cdn-icons-png.flaticon.com/512/4712/4712139.png" class="robot-icon-img">
-</div>
-""", unsafe_allow_html=True)
-
-# 2. CONEXÃO BLINDADA
+# --- CONEXÃO COM A IA (BLINDADA) ---
 try:
     api_key = os.environ.get("GOOGLE_API_KEY") 
     if not api_key:
@@ -131,39 +108,63 @@ except Exception as e:
     st.error(f"⚠️ Erro de Configuração: {e}")
     st.stop()
 
-# 3. CÉREBRO DA IA (Gemini 2.5)
+# --- MODELO (GEMINI 2.5) ---
 system_instruction = """
-Você é o CDM, a IA de Vendas Elite (v2.5).
-REGRA DE IDIOMA: Responda SEMPRE no idioma que o usuário falar.
-Seja direto, use emojis e foque em ajudar.
+Você é o CDM, IA de Vendas Elite (v2.5).
+Responda sempre no idioma do usuário. Seja direto e futurista.
 """
 # Usando o modelo funcional 2.5
 model = genai.GenerativeModel('models/gemini-2.5-flash', system_instruction=system_instruction)
 
-# 4. LÓGICA DO CHAT
+# --- INICIALIZAÇÃO DE VARIÁVEIS ---
 if "messages" not in st.session_state:
     st.session_state.messages = []
     st.session_state.messages.append({"role": "model", "content": "Olá! Sistema Online. Como posso ajudar? 🤖"})
 
-# 5. INPUT FLUTUANTE (Centralizado)
-# O input fica logo abaixo do robô visualmente (devido ao CSS)
-prompt = st.text_input("How can I help you?", placeholder="How can I help you?...", key="main_input")
+if "last_prompt" not in st.session_state:
+    st.session_state.last_prompt = None
 
-# 6. EXIBIÇÃO DO CHAT (Abaixo do Input)
-st.markdown('<div class="chat-history-container">', unsafe_allow_html=True)
+# --- FUNÇÃO MÁGICA PARA CORRIGIR O INPUT (CALLBACK) ---
+def process_input():
+    # Pega o texto digitado
+    user_text = st.session_state.widget_input
+    if user_text:
+        # Salva na memória temporária para processar
+        st.session_state.last_prompt = user_text
+        # LIMPA O CAMPO VISUALMENTE IMEDIATAMENTE (Resolve o bug)
+        st.session_state.widget_input = ""
+
+# --- LAYOUT VISUAL ---
+
+# 1. IMAGEM FLUTUANTE (HTML Puro para aplicar a animação CSS)
+st.markdown("""
+<div class="header-container">
+    <img src="https://cdn-icons-png.flaticon.com/512/4712/4712139.png" class="robot-float">
+</div>
+""", unsafe_allow_html=True)
+
+# 2. INPUT CENTRAL COM CALLBACK
+st.text_input("Pergunta", key="widget_input", on_change=process_input)
+
+# 3. EXIBIÇÃO DO CHAT
+st.markdown('<div class="chat-container">', unsafe_allow_html=True)
 for message in st.session_state.messages:
     avatar_icon = "🤖" if message["role"] == "model" else "👤"
     with st.chat_message(message["role"], avatar=avatar_icon):
         st.markdown(message["content"])
 st.markdown('</div>', unsafe_allow_html=True)
 
-# 7. PROCESSAMENTO
-if prompt:
+# 4. PROCESSAMENTO PÓS-CALLBACK
+if st.session_state.last_prompt:
+    prompt = st.session_state.last_prompt
+    # Limpa o last_prompt para não repetir no próximo rerun
+    st.session_state.last_prompt = None 
+    
     # Adiciona msg usuário
     st.session_state.messages.append({"role": "user", "content": prompt})
     
+    # Processa resposta
     try:
-        # Prepara histórico
         chat_history = [
             {"role": m["role"], "parts": [m["content"]]} 
             for m in st.session_state.messages[:-1]
@@ -173,7 +174,7 @@ if prompt:
         
         st.session_state.messages.append({"role": "model", "content": response.text})
         
-        # Recarregar para atualizar a tela e 'limpar' o input (fluxo pseudo-chat)
+        # Rerun para atualizar a tela com a nova resposta
         st.rerun()
         
     except Exception as e:
