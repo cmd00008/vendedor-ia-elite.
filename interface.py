@@ -11,7 +11,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# --- 2. CSS: ZOOM "SUPER CLOSE" + CHAT MODERNO ---
+# --- 2. CSS: ZOOM AJUSTADO (BONÉ VISÍVEL) + CHAT MODERNO ---
 st.markdown("""
 <style>
     /* FUNDO */
@@ -47,18 +47,18 @@ st.markdown("""
         display: flex; align-items: center; justify-content: center;
     }
 
-    /* --- FOTO COM ZOOM MÁXIMO (ROSTO E BONÉ) --- */
+    /* --- FOTO COM ZOOM AJUSTADO --- */
     .profile-img-zoom {
         width: 100%; height: 100%;
         object-fit: cover;
         
-        /* 1. Posicionamento inicial focado no topo */
+        /* Posicionamento focado no topo */
         object-position: center 15%; 
         
-        /* 2. ZOOM FORTE (2.8x): Para cortar a jaqueta e focar só na face */
-        transform: scale(2.8); 
+        /* ZOOM REDUZIDO LEVEMENTE (De 2.8 para 2.4): Para mostrar o boné inteiro */
+        transform: scale(2.4); 
         
-        /* 3. PONTO DE ANCORAGEM: Mantém o foco entre o boné e o nariz */
+        /* PONTO DE ANCORAGEM: Mantém o foco no rosto */
         transform-origin: center 20%;
     }
 
