@@ -11,7 +11,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# --- 2. CSS: ZOOM PERFEITO (2.0) + CHAT MODERNO ---
+# --- 2. CSS: ZOOM AJUSTADO PARA 1.8 + CHAT MODERNO ---
 st.markdown("""
 <style>
     /* FUNDO */
@@ -47,18 +47,18 @@ st.markdown("""
         display: flex; align-items: center; justify-content: center;
     }
 
-    /* --- FOTO COM ZOOM FINAL (2.0) --- */
+    /* --- FOTO COM ZOOM 1.8 (AJUSTE FINO) --- */
     .profile-img-zoom {
         width: 100%; height: 100%;
         object-fit: cover;
         
-        /* Posiciona o foco no topo (onde está a cabeça) */
+        /* Foco no topo (cabeça) */
         object-position: center 15%; 
         
-        /* O AJUSTE PEDIDO: 2.0 (Equilíbrio perfeito entre rosto e boné) */
-        transform: scale(2.0); 
+        /* O AJUSTE PEDIDO: 1.8 (Um pouco mais afastado que o 2.0) */
+        transform: scale(1.8); 
         
-        /* PONTO DE ANCORAGEM: Garante que o zoom foque no rosto */
+        /* PONTO DE ANCORAGEM: Mantém o foco no rosto */
         transform-origin: center 20%;
     }
 
