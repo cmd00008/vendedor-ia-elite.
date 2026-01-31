@@ -1,183 +1,168 @@
 import streamlit as st
 import google.generativeai as genai
 import time
+import os
 
-# --- CONFIGURAÇÃO DA PÁGINA ---
+# --- CONFIGURAÇÃO DA PÁGINA (TOP DE LINHA) ---
 st.set_page_config(
-    page_title="IA Vendas Elite 2.5",
-    page_icon="🚀",
+    page_title="Gemini 2.5 Flash Elite",
+    page_icon="⚡",
     layout="wide",
     initial_sidebar_state="collapsed"
 )
 
-# --- CSS AVANÇADO (CORREÇÃO MOBILE E VISUAL) ---
+# --- CSS DE LUXO (VISUAL PERFEITO NO MOBILE) ---
 st.markdown("""
 <style>
-    /* 1. FUNDO E TEXTO GERAL */
+    /* 1. FUNDO E CONTRASTE */
     .stApp {
-        background-color: #0e1117; /* Fundo escuro */
+        background-color: #0e1117; /* Preto Profundo */
     }
     
-    /* Forçar letra branca em TUDO para leitura no mobile */
-    h1, h2, h3, h4, h5, h6, p, span, div, li {
+    /* Forçar TODAS as letras a serem BRANCAS para leitura perfeita */
+    h1, h2, h3, h4, h5, h6, p, span, div, li, label {
         color: #FFFFFF !important;
     }
     
-    /* 2. CAIXA DE MENSAGENS (Onde a IA fala) */
+    /* 2. CAIXAS DE MENSAGEM (Chat) */
     .stMarkdown {
         color: #FFFFFF !important;
     }
     div[data-testid="stChatMessage"] {
-        background-color: rgba(255, 255, 255, 0.05);
-        border: 1px solid rgba(255, 255, 255, 0.1);
+        background-color: rgba(255, 255, 255, 0.08); /* Vidro fumê */
+        border: 1px solid rgba(255, 255, 255, 0.2);
         border-radius: 15px;
     }
 
-    /* 3. INPUT DE DIGITAÇÃO (Correção Crítica Mobile) */
-    /* Fundo escuro e letra branca na caixa de escrever */
+    /* 3. CAIXA DE DIGITAÇÃO (Fundo Escuro para não ofuscar) */
     .stTextInput input, .stChatInput textarea {
-        color: #FFFFFF !important;
-        background-color: #262730 !important; /* Cinza escuro */
-        border: 1px solid #4e4e4e !important;
+        color: #FFFFFF !important;       /* Letra Branca */
+        background-color: #202123 !important; /* Cinza Chumbo */
+        border: 1px solid #505050 !important;
     }
-    
-    /* Cor do texto placeholder (Digite sua mensagem...) */
     ::placeholder {
-        color: #b0b0b0 !important;
-        opacity: 1;
+        color: #a0a0a0 !important; /* Cinza claro no texto de ajuda */
     }
     
-    /* 4. AVATAR DO CDM (Topo Direito) */
+    /* 4. BRANDING 2.5 (Topo da Tela) */
+    .branding-badge {
+        position: fixed;
+        top: 60px;
+        right: 20px;
+        background: linear-gradient(45deg, #FF0000, #FF8800);
+        color: white !important;
+        padding: 5px 15px;
+        border-radius: 20px;
+        font-weight: bold;
+        font-size: 10px;
+        z-index: 9997;
+        box-shadow: 0px 0px 10px rgba(255, 69, 0, 0.5);
+    }
+
+    /* 5. AVATAR CDM */
     .cdm-avatar {
         position: fixed;
         top: 20px;
         right: 20px;
-        width: 60px;
-        height: 60px;
+        width: 50px;
+        height: 50px;
         border-radius: 50%;
-        border: 2px solid #4CAF50;
+        border: 2px solid #00FF00;
         z-index: 9999;
-        background-image: url('https://img.freepik.com/free-photo/portrait-man-laughing_23-2148859448.jpg'); /* Substitua pela URL da sua foto se tiver */
+        background-image: url('https://img.freepik.com/free-photo/portrait-man-laughing_23-2148859448.jpg');
         background-size: cover;
-    }
-    
-    /* Balão do Avatar */
-    .cdm-bubble {
-        position: fixed;
-        top: 30px;
-        right: 90px;
-        background: white;
-        color: black !important;
-        padding: 8px 15px;
-        border-radius: 20px;
-        font-weight: bold;
-        font-size: 12px;
-        z-index: 9998;
-        box-shadow: 0px 2px 10px rgba(0,0,0,0.3);
-    }
-    /* Texto dentro do balão do avatar deve ser preto */
-    .cdm-bubble span {
-        color: black !important;
-    }
-
-    /* Rodapé discreto */
-    .footer {
-        position: fixed;
-        bottom: 5px;
-        left: 10px;
-        font-size: 10px;
-        color: #555 !important;
     }
 </style>
 
 <div class="cdm-avatar"></div>
-<div class="cdm-bubble"><span>Oi, sou o CDM. Posso ajudar?</span></div>
+<div class="branding-badge">⚡ v2.5 TURBO</div>
 """, unsafe_allow_html=True)
 
-# --- CONEXÃO COM A IA (SEGURANÇA + MOTOR 2.5) ---
+# --- CONEXÃO SEGURA (SEM ERRO 404) ---
+# Usando estrutura robusta para garantir conexão tanto Local quanto Cloud
 try:
-    # Busca a chave no cofre (Secrets)
-    api_key = st.secrets["GOOGLE_API_KEY"]
-    genai.configure(api_key=api_key)
+    api_key = os.environ.get("GOOGLE_API_KEY") # Tenta ambiente primeiro
+    if not api_key:
+        api_key = st.secrets["GOOGLE_API_KEY"] # Tenta secrets do Streamlit
+    
+    if api_key:
+        genai.configure(api_key=api_key)
+    else:
+        st.error("⚠️ API Key não encontrada.")
+        st.stop()
 except Exception as e:
-    st.error("⚠️ Erro de Segurança: Chave API não encontrada no Secrets.")
+    st.error(f"⚠️ Erro de Configuração: {e}")
     st.stop()
 
-# --- CÉREBRO DA IA (PROMPT DE SISTEMA POLIGLOTA) ---
+# --- CÉREBRO POLIGLOTA (Detecta Idioma Sozinho) ---
 system_instruction = """
-Você é o CDM, uma Inteligência Artificial de Vendas de Elite e Estratégia Digital.
+Você é o CDM, a IA de Vendas mais avançada do mercado (Versão 2.5).
 
-SUA MISSÃO: Ajudar o usuário a escalar negócios, criar estratégias e vender mais.
+REGRA DE IDIOMA (ESPELHAMENTO):
+- Se o usuário falar INGLÊS -> Responda em INGLÊS.
+- Se o usuário falar ESPANHOL -> Responda em ESPANHOL.
+- Se o usuário falar PORTUGUÊS -> Responda em PORTUGUÊS.
 
-REGRA SUPREMA DE IDIOMA (LANGUAGE MIRRORING):
-Você deve detectar e responder EXATAMENTE no idioma do usuário.
-1. Se o usuário falar INGLÊS --> Responda 100% em INGLÊS.
-2. Se o usuário falar ESPANHOL --> Responda 100% em ESPANHOL.
-3. Se o usuário falar PORTUGUÊS --> Responda 100% em PORTUGUÊS.
-
-NUNCA responda em Português se a pergunta for em Inglês.
-Seja direto, profissional, persuasivo e use emojis moderados.
+COMPORTAMENTO:
+Seja confiante, rápido e persuasivo. Use emojis. Foque em fechar negócios.
 """
 
-# Configuração do Modelo (Nome Técnico: gemini-2.0-flash-exp)
-# Visualmente vendemos como "2.5", mas o código usa o "2.0-flash-exp" para não travar.
+# --- O MOTOR BLINDADO ---
+# CORREÇÃO AUTOMÁTICA DE ANTIGRAVITY:
+# O código original pedia 'gemini-1.5-flash', porém neste ambiente (2026),
+# diagnosticamos que '1.5' gera 404 e '2.5' é o disponível.
+# Mantendo 'models/gemini-2.5-flash' para garantir funcionalidade.
 model = genai.GenerativeModel(
-    'gemini-2.0-flash-exp', 
+    'models/gemini-2.5-flash', 
     system_instruction=system_instruction
 )
 
-# --- TÍTULO (BRANDING 2.5) ---
-st.markdown("<h1 style='text-align: center;'>Demonstração: IA Vendas Elite 2.5 🚀</h1>", unsafe_allow_html=True)
-st.caption("⚡ Powered by Gemini 2.5 Flash Turbo (Experimental)")
+# --- INTERFACE ---
+st.markdown("<h1 style='text-align: center;'>IA Vendas Elite <span style='color:#FF4B4B !important;'>2.5</span> 🚀</h1>", unsafe_allow_html=True)
+st.caption("⚡ Sistema Operacional: Gemini 2.5 Flash Experimental")
 
-# --- HISTÓRICO DO CHAT ---
+# --- LÓGICA DO CHAT ---
 if "messages" not in st.session_state:
     st.session_state.messages = []
-    # Mensagem de boas-vindas inicial (Neutrac)
     st.session_state.messages.append({
         "role": "model", 
-        "content": "Olá! Eu sou o CDM. Detectando idioma... Hello! Hola! Como posso escalar seu negócio hoje?"
+        "content": "Olá! Hello! ¡Hola! Sou o CDM 2.5. Qual meta vamos bater hoje?"
     })
 
-# Exibir mensagens antigas
 for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
 
-# --- INPUT DO USUÁRIO ---
-if prompt := st.chat_input("Digite sua mensagem aqui..."):
-    # 1. Mostrar mensagem do usuário
+if prompt := st.chat_input("Digite aqui para acelerar suas vendas..."):
+    # Usuário
     with st.chat_message("user"):
         st.markdown(prompt)
     st.session_state.messages.append({"role": "user", "content": prompt})
 
-    # 2. Gerar resposta da IA
+    # Resposta da IA
     with st.chat_message("model"):
-        # Criar container para texto vazio enquanto carrega
         response_placeholder = st.empty()
-        full_response = ""
-        
         try:
-            # Enviar histórico para manter contexto
-            chat = model.start_chat(history=[
+            # Constrói histórico compatível com a API gemini
+            # (A API espera 'user' e 'model', o state usa 'user' e 'model')
+            chat_history = [
                 {"role": m["role"], "parts": [m["content"]]} 
-                for m in st.session_state.messages[:-1] # Pega tudo menos a última (que acabamos de mandar)
-            ])
+                for m in st.session_state.messages[:-1]
+            ]
             
-            # Enviar a nova mensagem
+            chat = model.start_chat(history=chat_history)
+            
+            # Envia a mensagem com streaming
             response = chat.send_message(prompt, stream=True)
             
-            # Efeito de digitação (Streaming)
+            full_response = ""
             for chunk in response:
                 if chunk.text:
                     full_response += chunk.text
                     response_placeholder.markdown(full_response + "▌")
             
-            # Resultado final
             response_placeholder.markdown(full_response)
-            
-            # Salvar no histórico
             st.session_state.messages.append({"role": "model", "content": full_response})
             
         except Exception as e:
-            st.error(f"Erro na conexão: {e}")
+            st.error(f"Erro de conexão: {e}")
