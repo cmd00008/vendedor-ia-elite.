@@ -16,7 +16,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# --- 2. CSS (VISUAL OURO E NEON) ---
+# --- 2. CSS (VISUAL PREMIUM) ---
 st.markdown("""
 <style>
     /* FUNDO */
@@ -25,25 +25,25 @@ st.markdown("""
         background-attachment: fixed;
     }
     
-    /* TEXTOS GERAIS */
     p, span, div, li, label, .stMarkdown, button, textarea, h1, h2, h3 {
         color: #FFFFFF !important;
     }
 
-    /* HEADER */
-    .header-container {
+    /* ALINHAMENTO DAS COLUNAS (PC e MOBILE) */
+    [data-testid="column"] {
         display: flex;
-        flex-direction: row;
-        align-items: center;
+        flex-direction: column;
         justify-content: center;
-        padding-top: 30px;
-        padding-bottom: 20px;
-        gap: 20px;
+    }
+    
+    /* CENTRALIZAR FOTO NA COLUNA DA ESQUERDA */
+    [data-testid="column"]:first-child {
+        align-items: center; /* Centraliza a foto */
     }
 
-    /* FOTO */
+    /* MÁSCARA DA FOTO */
     .profile-mask {
-        width: 120px; height: 120px;
+        width: 130px; height: 130px;
         border-radius: 50%;
         border: 3px solid #00f2fe;
         box-shadow: 0px 0px 25px rgba(0, 242, 254, 0.6);
@@ -51,6 +51,7 @@ st.markdown("""
         animation: float 6s ease-in-out infinite;
         flex-shrink: 0;
         display: flex; align-items: center; justify-content: center;
+        margin-bottom: 10px;
     }
 
     .profile-img-zoom {
@@ -61,103 +62,79 @@ st.markdown("""
         transform-origin: center 20%;
     }
 
-    /* TEXTO LATERAL */
-    .brand-text { 
-        display: flex; flex-direction: column; 
-        text-align: left; justify-content: center;
-    }
+    /* TEXTOS (ALINHADOS A ESQUERDA) */
     .neon-title {
         font-size: 32px; font-weight: 800; line-height: 1; text-transform: uppercase;
         color: #FFFFFF !important;
         text-shadow: 0 0 10px #00f2fe, 0 0 20px #4facfe;
         margin-bottom: 5px;
+        margin-top: 0;
     }
     .neon-subtitle { 
         font-size: 16px; font-weight: 400; color: #d1d1d1 !important; 
-        letter-spacing: 1px; margin-bottom: 12px;
+        letter-spacing: 1px; margin-bottom: 15px;
     }
 
-    /* REDES SOCIAIS */
+    /* BARRA DE REDES SOCIAIS */
     .social-bar {
-        display: flex; justify-content: flex-start; gap: 15px;
+        display: flex; justify-content: flex-start; gap: 15px; margin-bottom: 15px;
     }
     .social-icon {
         width: 28px; height: 28px;
-        transition: transform 0.3s ease, filter 0.3s ease;
+        transition: transform 0.3s ease;
         filter: drop-shadow(0 0 5px rgba(255,255,255,0.2));
     }
     .social-icon:hover { transform: scale(1.2); }
 
-    /* --- BOTÃO DIGITAL CARD (ESTILO OURO) --- */
+    /* --- O BOTÃO DIGITAL CARD (REFINADO) --- */
     
-    /* Remove o estilo padrão de botão do Streamlit */
     div.stButton > button {
         background: transparent !important;
         border: none !important;
         box-shadow: none !important;
-        padding: 5px 0px !important;
-        display: flex;
+        padding: 0px !important;
+        display: inline-flex;
         align-items: center;
-        justify-content: flex-start; /* Alinha a esquerda */
+        justify-content: flex-start;
         transition: transform 0.3s ease;
+        margin-top: -5px; /* Puxa um pouco pra cima */
     }
     
-    /* Efeito ao passar o mouse */
-    div.stButton > button:hover {
-        transform: scale(1.05);
-    }
-    div.stButton > button:active {
-        transform: scale(0.95);
-        background: transparent !important;
-    }
-    div.stButton > button:focus {
-        background: transparent !important;
-        color: transparent !important;
-    }
+    div.stButton > button:hover { transform: scale(1.05); }
+    div.stButton > button:active { background: transparent !important; }
+    div.stButton > button:focus { color: transparent !important; }
 
-    /* O ÍCONE (Adicionado via CSS antes do texto) */
+    /* O ÍCONE COLORIDO (CONTATO) */
     div.stButton > button::before {
         content: "";
         display: inline-block;
-        width: 35px;
-        height: 35px;
-        /* Ícone de Contato/Card */
-        background-image: url('https://cdn-icons-png.flaticon.com/512/3095/3095757.png'); 
+        width: 30px; height: 30px;
+        /* Ícone de Agenda Colorido (Vibrante) */
+        background-image: url('https://cdn-icons-png.flaticon.com/512/9632/9632832.png'); 
         background-size: cover;
-        margin-right: 10px;
-        filter: drop-shadow(0 0 2px rgba(255,215,0, 0.5)); /* Brilho Dourado no ícone */
+        margin-right: 12px;
+        filter: drop-shadow(0 0 5px rgba(255,255,255,0.3));
     }
 
-    /* O TEXTO "DIGITAL CARD" (Efeito Ouro Metálico) */
+    /* O TEXTO (DOURADO MENOR) */
     div.stButton > button p {
-        /* Gradiente Dourado */
-        background: linear-gradient(to right, #BF953F, #FCF6BA, #B38728, #FBF5B7, #AA771C);
+        background: linear-gradient(to right, #BF953F, #FCF6BA, #B38728, #FBF5B7);
         -webkit-background-clip: text !important;
         -webkit-text-fill-color: transparent !important;
-        background-clip: text !important;
-        color: transparent !important;
-        
-        font-size: 22px !important;
-        font-family: 'Arial', sans-serif !important;
-        font-weight: 900 !important; /* Negrito Forte */
+        font-size: 16px !important; /* LETRA MENOR */
+        font-weight: 800 !important;
         text-transform: uppercase;
         margin: 0 !important;
         letter-spacing: 1px;
-        text-shadow: 0px 2px 2px rgba(0,0,0,0.5);
     }
 
-    /* CELULAR */
+    /* CELULAR: CENTRALIZA TUDO */
     @media (max-width: 600px) {
-        .header-container { gap: 15px; }
-        .profile-mask { width: 90px; height: 90px; }
-        .neon-title { font-size: 20px; }
-        .neon-subtitle { font-size: 11px; }
-        .social-icon { width: 24px; height: 24px; }
-        .social-bar { gap: 10px; }
-        
-        /* Ajuste do botão no celular para centralizar */
+        .neon-title { font-size: 24px; text-align: center; }
+        .neon-subtitle { font-size: 12px; text-align: center; }
+        .social-bar { justify-content: center; }
         div.stButton > button { justify-content: center; width: 100%; }
-        div.stButton > button p { font-size: 18px !important; }
+        [data-testid="column"] { align-items: center; } /* Centraliza colunas */
     }
     
     @keyframes float {
@@ -173,7 +150,6 @@ st.markdown("""
         border-radius: 30px !important;
     }
     .stChatInput button { color: #4facfe !important; }
-
     div[data-testid="stChatMessage"] {
         background-color: rgba(20, 30, 40, 0.5) !important;
         border-radius: 20px !important;
@@ -181,13 +157,11 @@ st.markdown("""
         backdrop-filter: blur(5px);
         margin-bottom: 10px;
     }
-    
     .stChatMessageAvatar img {
         border-radius: 50% !important;
         background-color: #ffffff;
         padding: 2px;
     }
-    
     div[data-testid="stChatMessage"] .stMarkdown p {
         background: linear-gradient(to bottom, #ffffff, #dcdcdc);
         -webkit-background-clip: text;
@@ -198,7 +172,7 @@ st.markdown("""
 
 # --- 3. CONEXÃO (BLINDADA) ---
 try:
-    api_key = os.environ.get("GOOGLE_API_KEY") 
+    api_key = os.environ.get("GOOGLE_API_KEY") # Prioridade para Env Var
     if not api_key:
         api_key = st.secrets["GOOGLE_API_KEY"]
     
@@ -214,11 +188,10 @@ except Exception as e:
 # ANTIGRAVITY FIX: models/gemini-2.5-flash
 model = genai.GenerativeModel('models/gemini-2.5-flash', system_instruction="Você é o CDM, IA de Vendas Elite. Responda no idioma do usuário.")
 
-# --- 4. MEMÓRIA & ESTADOS ---
+# --- 4. MEMÓRIA & ESTADO ---
 if "messages" not in st.session_state:
     st.session_state.messages = [{"role": "model", "content": "Olá! Sou o CDM. Como posso ajudar a escalar suas vendas hoje? 🚀"}]
 
-# Estado do Cartão
 if "show_card" not in st.session_state:
     st.session_state.show_card = False
 
@@ -244,12 +217,22 @@ else:
 user_avatar_chat = "https://cdn-icons-png.flaticon.com/512/9408/9408175.png" 
 bot_avatar_chat = "https://cdn-icons-png.flaticon.com/512/4712/4712139.png"
 
-# --- 6. HEADER COMPLETO ---
-st.markdown(f"""
-<div class="header-container">
+# --- 6. CABEÇALHO DIVIDIDO EM COLUNAS ---
+# Isso permite alinhar o botão "Digital Card" exatamente embaixo dos ícones
+st.markdown('<div style="margin-top: 30px;"></div>', unsafe_allow_html=True)
+
+col_foto, col_texto = st.columns([1, 2.5]) # Ajuste de proporção
+
+with col_foto:
+    st.markdown(f"""
     <div class="profile-mask">
         {img_tag_header}
     </div>
+    """, unsafe_allow_html=True)
+
+with col_texto:
+    # Título, Subtítulo e Redes Sociais
+    st.markdown(f"""
     <div class="brand-text">
         <div class="neon-title">CDM IA CHATBOT</div>
         <div class="neon-subtitle">O futuro das suas vendas.</div>
@@ -268,33 +251,24 @@ st.markdown(f"""
             </a>
         </div>
     </div>
-</div>
-""", unsafe_allow_html=True)
-
-# --- 7. BOTÃO DIGITAL CARD (PURO LUXO) ---
-
-# Centraliza o botão (no PC usa colunas, no mobile o CSS ajusta)
-col1, col2, col3 = st.columns([1, 2, 1])
-
-with col2:
-    if st.button("DIGITAL CARD", use_container_width=True):
+    """, unsafe_allow_html=True)
+    
+    # BOTÃO DIGITAL CARD (PYTHON) - Fica logo abaixo dos ícones
+    if st.button("DIGITAL CARD"):
         toggle_card()
         st.rerun()
 
-# --- 8. MOSTRA O CARTÃO ---
+# --- 7. MOSTRA O CARTÃO ---
 if st.session_state.show_card:
     cartao_visita = "perfil.jpg.jpg"
     if os.path.exists(cartao_visita):
-        # Efeito de aparecer suave
-        st.markdown('<div style="animation: float 1s ease-out;">', unsafe_allow_html=True)
+        st.markdown('<div style="animation: float 0.5s ease-out; margin-top: 20px; margin-bottom: 20px;">', unsafe_allow_html=True)
         st.image(cartao_visita, use_column_width=True)
         st.markdown('</div>', unsafe_allow_html=True)
-    else:
-        st.error(f"⚠️ Imagem '{cartao_visita}' não encontrada.")
 
-st.markdown('<div style="margin-bottom: 30px;"></div>', unsafe_allow_html=True)
+st.markdown('<div style="margin-bottom: 40px;"></div>', unsafe_allow_html=True)
 
-# --- 9. CHAT ---
+# --- 8. CHAT ---
 st.markdown('<div style="margin-bottom: 60px;">', unsafe_allow_html=True)
 for msg in st.session_state.messages:
     icon = user_avatar_chat if msg["role"] == "user" else bot_avatar_chat
