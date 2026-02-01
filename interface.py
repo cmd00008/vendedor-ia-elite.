@@ -16,7 +16,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# --- 2. CSS (AJUSTE FINO: COLADO E VISÍVEL) ---
+# --- 2. CSS (A CORREÇÃO FINAL: CENTRALIZADO E COLADO) ---
 st.markdown("""
 <style>
     /* FUNDO */
@@ -29,52 +29,51 @@ st.markdown("""
         color: #FFFFFF !important;
     }
 
-    /* --- LAYOUT MOBILE: COLADO E CENTRALIZADO --- */
+    /* --- LAYOUT MOBILE: O BLINDADO --- */
     @media (max-width: 640px) {
         
-        /* 1. CONTAINER: Centraliza o bloco todo para nada ser cortado */
+        /* 1. O CONTAINER: Centraliza tudo na tela para NÃO CORTAR a foto */
         div[data-testid="stHorizontalBlock"] {
             display: flex !important;
             flex-direction: row !important;
             flex-wrap: nowrap !important;
             align-items: center !important;
-            justify-content: center !important; /* O PULO DO GATO: Centraliza na tela */
-            gap: 8px !important; /* Distância mínima (apenas um respiro) */
+            justify-content: center !important; /* ISSO SALVA A FOTO DE SER CORTADA */
+            gap: 0px !important; /* SEM ESPAÇO NENHUM */
+            padding-left: 0 !important;
+            padding-right: 0 !important;
         }
         
-        /* 2. COLUNA DA FOTO (Lado Esquerdo) */
+        /* 2. COLUNA DA FOTO */
         div[data-testid="column"]:nth-of-type(1) {
-            flex: 0 0 auto !important;
+            flex: 0 0 auto !important; /* Tamanho exato da foto */
             width: auto !important;
-            min-width: auto !important;
             display: flex !important;
-            justify-content: flex-end !important; /* Empurra a foto pra perto do texto */
+            justify-content: flex-end !important; /* Encosta na direita (no texto) */
             align-items: center !important;
             padding: 0 !important;
-            margin: 0 !important;
         }
         
-        /* 3. COLUNA DO TEXTO (Lado Direito - Colado) */
+        /* 3. COLUNA DO TEXTO */
         div[data-testid="column"]:nth-of-type(2) {
-            flex: 0 0 auto !important; /* Ocupa apenas o espaço necessário */
+            flex: 0 0 auto !important; /* Tamanho exato do texto */
             display: flex !important;
             flex-direction: column !important;
             justify-content: center !important;
             align-items: flex-start !important;
-            padding-left: 0px !important; /* ZERO margem extra */
-            margin-left: 0px !important;
+            padding-left: 5px !important; /* Apenas 5px para não sobrepor visualmente */
         }
 
-        /* 4. VISUAL DA FOTO */
+        /* 4. TAMANHO DA FOTO (Controlado) */
         .profile-mask { 
-            width: 90px !important; 
-            height: 90px !important; 
-            margin: 0 !important;
+            width: 95px !important; 
+            height: 95px !important; 
+            margin: 0 !important; /* Remove margens extras */
         }
 
-        /* 5. VISUAL DO TEXTO */
+        /* 5. TEXTO (Ajustado) */
         .neon-title {
-            font-size: 19px !important; 
+            font-size: 18px !important; 
             text-align: left !important;
             line-height: 1.1 !important;
             margin-bottom: 2px !important;
@@ -92,7 +91,7 @@ st.markdown("""
         /* Ícones */
         .social-bar {
             justify-content: flex-start !important;
-            gap: 10px !important;
+            gap: 8px !important;
             margin-bottom: 5px !important;
         }
         
@@ -102,7 +101,7 @@ st.markdown("""
         div.stButton > button {
             margin-left: -2px !important;
             padding: 0px !important;
-            transform: scale(0.95);
+            transform: scale(0.9);
             transform-origin: left center;
         }
     }
@@ -268,8 +267,8 @@ bot_avatar_chat = "https://cdn-icons-png.flaticon.com/512/4712/4712139.png"
 # --- 6. CABEÇALHO ---
 st.markdown('<div style="margin-top: 10px;"></div>', unsafe_allow_html=True)
 
-# Colunas com tamanho automático para ficarem coladas no centro
-col_foto, col_texto = st.columns([1, 2]) 
+# Colunas Automáticas (A Mágica acontece aqui com o CSS de 1 para 1)
+col_foto, col_texto = st.columns([1, 1]) 
 
 with col_foto:
     st.markdown(f"""
