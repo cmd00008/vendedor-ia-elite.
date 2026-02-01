@@ -16,7 +16,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# --- 2. CSS (BARREIRA ENTRE FOTO E TEXTO) ---
+# --- 2. CSS (LAYOUT RESPONSIVO E SEGURO) ---
 st.markdown("""
 <style>
     /* FUNDO */
@@ -29,79 +29,78 @@ st.markdown("""
         color: #FFFFFF !important;
     }
 
-    /* --- LAYOUT MOBILE BLINDADO --- */
+    /* --- LAYOUT MOBILE OTIMIZADO --- */
     @media (max-width: 640px) {
         
-        /* 1. CONTAINER: Força linha e impede sobreposição */
+        /* 1. CONTAINER GERAL: Centraliza o conjunto na tela */
         div[data-testid="stHorizontalBlock"] {
             display: flex !important;
             flex-direction: row !important;
             flex-wrap: nowrap !important;
             align-items: center !important;
-            justify-content: flex-start !important;
-            gap: 0px !important; /* Gap zero, vamos usar margem na coluna */
+            justify-content: center !important; /* Centraliza o bloco todo na tela */
+            gap: 10px !important;
+            max-width: 100% !important; /* Garante que não vaze a tela */
+            margin: 0 auto !important;
         }
         
-        /* 2. COLUNA DA FOTO (ESQUERDA FIXA) */
+        /* 2. COLUNA DA FOTO (Tamanho Fixo) */
         div[data-testid="column"]:nth-of-type(1) {
-            flex: 0 0 110px !important; /* LARGURA TRAVADA */
-            min-width: 110px !important;
-            max-width: 110px !important;
+            flex: 0 0 90px !important; /* Reduzi um pouco para dar espaço ao texto */
+            min-width: 90px !important;
             display: flex !important;
-            justify-content: center !important; /* Foto no meio da coluna dela */
+            justify-content: center !important;
             align-items: center !important;
-            
-            /* A BARREIRA: */
-            margin-right: 15px !important; /* Empurra o texto pra longe */
-            z-index: 10 !important;
         }
         
-        /* 3. COLUNA DO TEXTO (DIREITA FLUIDA) */
+        /* 3. COLUNA DO TEXTO (Flexível) */
         div[data-testid="column"]:nth-of-type(2) {
-            flex: 1 !important;
-            min-width: 0 !important; /* Impede o texto de vazar */
+            flex: 1 !important; /* Ocupa o espaço que sobrar */
+            min-width: 0 !important; /* Impede vazamento */
             display: flex !important;
             flex-direction: column !important;
             justify-content: center !important;
             align-items: flex-start !important;
-            padding-left: 0px !important; /* Já tem a margem da foto */
+            padding-left: 5px !important;
         }
 
-        /* 4. VISUAL DA FOTO */
-        .profile-mask { 
-            width: 100px !important; 
-            height: 100px !important; 
-        }
-
-        /* 5. VISUAL DO TEXTO */
+        /* 4. AJUSTES DE TEXTO PARA CABER */
         .neon-title {
-            font-size: 18px !important; 
+            font-size: 17px !important; /* Ajuste fino para não quebrar */
             text-align: left !important;
-            line-height: 1.2 !important;
+            line-height: 1.1 !important;
             margin-bottom: 2px !important;
             margin-top: 0 !important;
-            white-space: normal !important;
-            word-wrap: break-word !important;
+            white-space: nowrap !important; /* Tenta manter em uma linha */
+            overflow: hidden !important;
+            text-overflow: ellipsis !important; /* Se for muito grande, põe ... em vez de quebrar layout */
         }
         
         .neon-subtitle {
-            font-size: 11px !important; 
+            font-size: 10px !important; 
             text-align: left !important; 
-            margin-bottom: 8px !important;
+            margin-bottom: 5px !important;
+            white-space: nowrap !important;
         }
         
+        /* Ícones */
         .social-bar {
             justify-content: flex-start !important;
-            gap: 10px !important;
+            gap: 8px !important;
             margin-bottom: 5px !important;
         }
         
-        .social-icon { width: 22px !important; height: 22px !important; }
+        .social-icon { width: 18px !important; height: 18px !important; }
         
-        /* Botão */
+        /* Foto Ajustada */
+        .profile-mask { width: 85px !important; height: 85px !important; }
+        
+        /* Botão Compacto */
         div.stButton > button {
             margin-left: -2px !important;
             padding: 0px !important;
+            transform: scale(0.9); /* Reduz levemente o botão */
+            transform-origin: left center;
         }
     }
 
@@ -160,6 +159,7 @@ st.markdown("""
     }
     div.stButton > button:hover { transform: scale(1.05); }
 
+    /* ÍCONE TELEFONE VERDE */
     div.stButton > button::before {
         content: "";
         display: inline-block;
@@ -266,7 +266,7 @@ bot_avatar_chat = "https://cdn-icons-png.flaticon.com/512/4712/4712139.png"
 # --- 6. CABEÇALHO ---
 st.markdown('<div style="margin-top: 10px;"></div>', unsafe_allow_html=True)
 
-# Definindo proporção fixa para garantir espaço
+# Ajustei a proporção para garantir que a foto não tome espaço demais do texto
 col_foto, col_texto = st.columns([1, 2.5]) 
 
 with col_foto:
@@ -279,7 +279,6 @@ with col_foto:
     """, unsafe_allow_html=True)
 
 with col_texto:
-    # Conteúdo da Direita
     st.markdown(f"""
     <div style="display:flex; flex-direction:column; justify-content:center; height:100%;">
         <div class="neon-title">CDM IA CHATBOT</div>
