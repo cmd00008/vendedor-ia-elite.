@@ -16,7 +16,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# --- 2. CSS (LAYOUT RESPONSIVO E SEGURO) ---
+# --- 2. CSS (AJUSTE FINO: COLADO E VISÍVEL) ---
 st.markdown("""
 <style>
     /* FUNDO */
@@ -29,55 +29,61 @@ st.markdown("""
         color: #FFFFFF !important;
     }
 
-    /* --- LAYOUT MOBILE OTIMIZADO --- */
+    /* --- LAYOUT MOBILE: COLADO E CENTRALIZADO --- */
     @media (max-width: 640px) {
         
-        /* 1. CONTAINER GERAL: Centraliza o conjunto na tela */
+        /* 1. CONTAINER: Centraliza o bloco todo para nada ser cortado */
         div[data-testid="stHorizontalBlock"] {
             display: flex !important;
             flex-direction: row !important;
             flex-wrap: nowrap !important;
             align-items: center !important;
-            justify-content: center !important; /* Centraliza o bloco todo na tela */
-            gap: 10px !important;
-            max-width: 100% !important; /* Garante que não vaze a tela */
-            margin: 0 auto !important;
+            justify-content: center !important; /* O PULO DO GATO: Centraliza na tela */
+            gap: 8px !important; /* Distância mínima (apenas um respiro) */
         }
         
-        /* 2. COLUNA DA FOTO (Tamanho Fixo) */
+        /* 2. COLUNA DA FOTO (Lado Esquerdo) */
         div[data-testid="column"]:nth-of-type(1) {
-            flex: 0 0 90px !important; /* Reduzi um pouco para dar espaço ao texto */
-            min-width: 90px !important;
+            flex: 0 0 auto !important;
+            width: auto !important;
+            min-width: auto !important;
             display: flex !important;
-            justify-content: center !important;
+            justify-content: flex-end !important; /* Empurra a foto pra perto do texto */
             align-items: center !important;
+            padding: 0 !important;
+            margin: 0 !important;
         }
         
-        /* 3. COLUNA DO TEXTO (Flexível) */
+        /* 3. COLUNA DO TEXTO (Lado Direito - Colado) */
         div[data-testid="column"]:nth-of-type(2) {
-            flex: 1 !important; /* Ocupa o espaço que sobrar */
-            min-width: 0 !important; /* Impede vazamento */
+            flex: 0 0 auto !important; /* Ocupa apenas o espaço necessário */
             display: flex !important;
             flex-direction: column !important;
             justify-content: center !important;
             align-items: flex-start !important;
-            padding-left: 5px !important;
+            padding-left: 0px !important; /* ZERO margem extra */
+            margin-left: 0px !important;
         }
 
-        /* 4. AJUSTES DE TEXTO PARA CABER */
+        /* 4. VISUAL DA FOTO */
+        .profile-mask { 
+            width: 90px !important; 
+            height: 90px !important; 
+            margin: 0 !important;
+        }
+
+        /* 5. VISUAL DO TEXTO */
         .neon-title {
-            font-size: 17px !important; /* Ajuste fino para não quebrar */
+            font-size: 19px !important; 
             text-align: left !important;
             line-height: 1.1 !important;
             margin-bottom: 2px !important;
             margin-top: 0 !important;
-            white-space: nowrap !important; /* Tenta manter em uma linha */
-            overflow: hidden !important;
-            text-overflow: ellipsis !important; /* Se for muito grande, põe ... em vez de quebrar layout */
+            white-space: nowrap !important;
         }
         
         .neon-subtitle {
-            font-size: 10px !important; 
+            font-size: 11px !important; 
             text-align: left !important; 
             margin-bottom: 5px !important;
             white-space: nowrap !important;
@@ -86,20 +92,17 @@ st.markdown("""
         /* Ícones */
         .social-bar {
             justify-content: flex-start !important;
-            gap: 8px !important;
+            gap: 10px !important;
             margin-bottom: 5px !important;
         }
         
-        .social-icon { width: 18px !important; height: 18px !important; }
+        .social-icon { width: 20px !important; height: 20px !important; }
         
-        /* Foto Ajustada */
-        .profile-mask { width: 85px !important; height: 85px !important; }
-        
-        /* Botão Compacto */
+        /* Botão */
         div.stButton > button {
             margin-left: -2px !important;
             padding: 0px !important;
-            transform: scale(0.9); /* Reduz levemente o botão */
+            transform: scale(0.95);
             transform-origin: left center;
         }
     }
@@ -159,7 +162,6 @@ st.markdown("""
     }
     div.stButton > button:hover { transform: scale(1.05); }
 
-    /* ÍCONE TELEFONE VERDE */
     div.stButton > button::before {
         content: "";
         display: inline-block;
@@ -266,8 +268,8 @@ bot_avatar_chat = "https://cdn-icons-png.flaticon.com/512/4712/4712139.png"
 # --- 6. CABEÇALHO ---
 st.markdown('<div style="margin-top: 10px;"></div>', unsafe_allow_html=True)
 
-# Ajustei a proporção para garantir que a foto não tome espaço demais do texto
-col_foto, col_texto = st.columns([1, 2.5]) 
+# Colunas com tamanho automático para ficarem coladas no centro
+col_foto, col_texto = st.columns([1, 2]) 
 
 with col_foto:
     st.markdown(f"""
