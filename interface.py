@@ -16,7 +16,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# --- 2. CSS (ALINHAMENTO TOTAL À ESQUERDA NO MOBILE) ---
+# --- 2. CSS (BARREIRA ENTRE FOTO E TEXTO) ---
 st.markdown("""
 <style>
     /* FUNDO */
@@ -29,42 +29,59 @@ st.markdown("""
         color: #FFFFFF !important;
     }
 
-    /* --- LAYOUT MOBILE: LADO A LADO E NA ESQUERDA --- */
-    @media (max-width: 600px) {
+    /* --- LAYOUT MOBILE BLINDADO --- */
+    @media (max-width: 640px) {
         
-        /* 1. O Container Principal: Força Lado a Lado e move para a ESQUERDA */
+        /* 1. CONTAINER: Força linha e impede sobreposição */
         div[data-testid="stHorizontalBlock"] {
-            flex-direction: row !important;
-            align-items: center !important; 
-            justify-content: flex-start !important; /* O COMANDO CHAVE: Move tudo para a esquerda */
-            gap: 5px !important;
-        }
-        
-        /* 2. Coluna da Foto */
-        div[data-testid="column"]:nth-of-type(1) {
-            flex: 1 !important;
             display: flex !important;
+            flex-direction: row !important;
+            flex-wrap: nowrap !important;
             align-items: center !important;
-            justify-content: center !important; /* Mantém a foto centrada na coluna dela */
+            justify-content: flex-start !important;
+            gap: 0px !important; /* Gap zero, vamos usar margem na coluna */
         }
         
-        /* 3. Coluna do Texto (Já estava alinhada à esquerda internamente) */
+        /* 2. COLUNA DA FOTO (ESQUERDA FIXA) */
+        div[data-testid="column"]:nth-of-type(1) {
+            flex: 0 0 110px !important; /* LARGURA TRAVADA */
+            min-width: 110px !important;
+            max-width: 110px !important;
+            display: flex !important;
+            justify-content: center !important; /* Foto no meio da coluna dela */
+            align-items: center !important;
+            
+            /* A BARREIRA: */
+            margin-right: 15px !important; /* Empurra o texto pra longe */
+            z-index: 10 !important;
+        }
+        
+        /* 3. COLUNA DO TEXTO (DIREITA FLUIDA) */
         div[data-testid="column"]:nth-of-type(2) {
-            flex: 2.5 !important;
+            flex: 1 !important;
+            min-width: 0 !important; /* Impede o texto de vazar */
             display: flex !important;
             flex-direction: column !important;
             justify-content: center !important;
-            align-items: flex-start !important; /* Alinha os textos à esquerda */
-            padding-left: 5px !important;
+            align-items: flex-start !important;
+            padding-left: 0px !important; /* Já tem a margem da foto */
         }
 
-        /* Ajustes de Fonte no Celular */
+        /* 4. VISUAL DA FOTO */
+        .profile-mask { 
+            width: 100px !important; 
+            height: 100px !important; 
+        }
+
+        /* 5. VISUAL DO TEXTO */
         .neon-title {
-            font-size: 20px !important; 
-            text-align: left !important; 
+            font-size: 18px !important; 
+            text-align: left !important;
+            line-height: 1.2 !important;
             margin-bottom: 2px !important;
-            line-height: 1.1 !important;
             margin-top: 0 !important;
+            white-space: normal !important;
+            word-wrap: break-word !important;
         }
         
         .neon-subtitle {
@@ -73,34 +90,22 @@ st.markdown("""
             margin-bottom: 8px !important;
         }
         
-        /* Ícones */
         .social-bar {
-            justify-content: flex-start !important; 
-            gap: 12px !important;
+            justify-content: flex-start !important;
+            gap: 10px !important;
             margin-bottom: 5px !important;
         }
         
         .social-icon { width: 22px !important; height: 22px !important; }
         
-        /* Foto Mobile */
-        .profile-mask { width: 100px !important; height: 100px !important; }
-        
-        /* Botão Digital Card no Mobile */
+        /* Botão */
         div.stButton > button {
-            justify-content: flex-start !important;
-            margin-left: 0px !important;
-            margin-top: 0px !important;
-        }
-        
-        /* Opcional: Reduz um pouco a margem padrão do Streamlit no mobile para colar mais na borda */
-        .block-container {
-            padding-left: 1rem !important;
-            padding-right: 1rem !important;
+            margin-left: -2px !important;
+            padding: 0px !important;
         }
     }
 
     /* --- ESTILOS GERAIS (PC) --- */
-    
     .profile-mask {
         width: 140px; height: 140px;
         border-radius: 50%;
@@ -142,7 +147,6 @@ st.markdown("""
     }
     .social-icon:hover { transform: scale(1.2); }
 
-    /* --- BOTÃO DIGITAL CARD --- */
     div.stButton > button {
         background: transparent !important;
         border: none !important;
@@ -154,10 +158,8 @@ st.markdown("""
         transition: transform 0.3s ease;
         margin-top: -5px;
     }
-    
     div.stButton > button:hover { transform: scale(1.05); }
 
-    /* ÍCONE TELEFONE VERDE */
     div.stButton > button::before {
         content: "";
         display: inline-block;
@@ -170,7 +172,6 @@ st.markdown("""
         filter: drop-shadow(0 0 5px rgba(0, 255, 0, 0.4)); 
     }
 
-    /* TEXTO DOURADO */
     div.stButton > button p {
         background: linear-gradient(to right, #BF953F, #FCF6BA, #B38728, #FBF5B7);
         -webkit-background-clip: text !important;
@@ -188,7 +189,6 @@ st.markdown("""
         50% { transform: translateY(-5px); }
     }
 
-    /* CHAT */
     .stChatInput textarea {
         background-color: #FFFFFF !important;
         color: #000000 !important;
@@ -234,7 +234,7 @@ except Exception as e:
 # ANTIGRAVITY FIX: models/gemini-2.5-flash
 model = genai.GenerativeModel('models/gemini-2.5-flash', system_instruction="Você é o CDM, IA de Vendas Elite. Responda no idioma do usuário.")
 
-# --- 4. ESTADO ---
+# --- 4. MEMÓRIA ---
 if "messages" not in st.session_state:
     st.session_state.messages = [{"role": "model", "content": "Olá! Sou o CDM. Como posso ajudar a escalar suas vendas hoje? 🚀"}]
 
@@ -264,10 +264,10 @@ user_avatar_chat = "https://cdn-icons-png.flaticon.com/512/9408/9408175.png"
 bot_avatar_chat = "https://cdn-icons-png.flaticon.com/512/4712/4712139.png"
 
 # --- 6. CABEÇALHO ---
-st.markdown('<div style="margin-top: 20px;"></div>', unsafe_allow_html=True)
+st.markdown('<div style="margin-top: 10px;"></div>', unsafe_allow_html=True)
 
-# Coluna 1: Foto | Coluna 2: Texto + Botão
-col_foto, col_texto = st.columns([1.2, 2.8]) 
+# Definindo proporção fixa para garantir espaço
+col_foto, col_texto = st.columns([1, 2.5]) 
 
 with col_foto:
     st.markdown(f"""
@@ -279,7 +279,7 @@ with col_foto:
     """, unsafe_allow_html=True)
 
 with col_texto:
-    # Texto e Ícones
+    # Conteúdo da Direita
     st.markdown(f"""
     <div style="display:flex; flex-direction:column; justify-content:center; height:100%;">
         <div class="neon-title">CDM IA CHATBOT</div>
@@ -301,7 +301,6 @@ with col_texto:
     </div>
     """, unsafe_allow_html=True)
     
-    # O BOTÃO ESTÁ AQUI
     if st.button("DIGITAL CARD"):
         toggle_card()
         st.rerun()
