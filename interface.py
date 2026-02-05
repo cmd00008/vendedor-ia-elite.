@@ -39,7 +39,8 @@ st.markdown("""
             flex-wrap: nowrap !important;
             align-items: center !important;
             justify-content: center !important; /* Centraliza o conjunto na tela */
-            gap: 2px !important; /* Espaço mínimo entre foto e texto */
+            /* LINHA APROXIMADA: 40 */
+gap: 2px !important;  <-- AQUI! Mude para 0px para colar.
         }
         
         /* 2. COLUNA DA FOTO */
@@ -328,3 +329,4 @@ if prompt := st.chat_input("Digite sua mensagem..."):
             st.session_state.messages.append({"role": "model", "content": response.text})
         except Exception as e:
             st.error(f"Erro: {e}")
+
