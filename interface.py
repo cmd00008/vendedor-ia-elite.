@@ -61,7 +61,7 @@ gap: 2px !important;  <-- AQUI! Mude para 0px para colar.
             flex-direction: column !important;
             justify-content: center !important;
             align-items: flex-start !important;
-            padding-left: 2px !important; /* Cola na foto */
+            padding-left: 0px !important; /* Cola na foto */
         }
 
         /* 4. TAMANHO DA FOTO (Reduzido para caber) */
@@ -329,4 +329,5 @@ if prompt := st.chat_input("Digite sua mensagem..."):
             st.session_state.messages.append({"role": "model", "content": response.text})
         except Exception as e:
             st.error(f"Erro: {e}")
+
 
