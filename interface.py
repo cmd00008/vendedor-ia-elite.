@@ -16,7 +16,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# --- 2. CSS (A CORREÇÃO FINAL: CENTRALIZADO E COLADO) ---
+# --- 2. CSS (AJUSTADO PARA NÃO CORTAR NADA) ---
 st.markdown("""
 <style>
     /* FUNDO */
@@ -29,51 +29,50 @@ st.markdown("""
         color: #FFFFFF !important;
     }
 
-    /* --- LAYOUT MOBILE: O BLINDADO --- */
+    /* --- LAYOUT MOBILE OTIMIZADO --- */
     @media (max-width: 640px) {
         
-        /* 1. O CONTAINER: Centraliza tudo na tela para NÃO CORTAR a foto */
+        /* 1. O BLOCO PRINCIPAL: Centraliza tudo na tela */
         div[data-testid="stHorizontalBlock"] {
             display: flex !important;
             flex-direction: row !important;
             flex-wrap: nowrap !important;
             align-items: center !important;
-            justify-content: center !important; /* ISSO SALVA A FOTO DE SER CORTADA */
-            gap: 0px !important; /* SEM ESPAÇO NENHUM */
-            padding-left: 0 !important;
-            padding-right: 0 !important;
+            justify-content: center !important; /* Centraliza o conjunto na tela */
+            gap: 2px !important; /* Espaço mínimo entre foto e texto */
         }
         
         /* 2. COLUNA DA FOTO */
         div[data-testid="column"]:nth-of-type(1) {
-            flex: 0 0 auto !important; /* Tamanho exato da foto */
-            width: auto !important;
+            flex: 0 0 auto !important;
+            width: 90px !important; /* Largura fixa segura */
             display: flex !important;
-            justify-content: flex-end !important; /* Encosta na direita (no texto) */
+            justify-content: flex-end !important; /* Cola no texto */
             align-items: center !important;
             padding: 0 !important;
         }
         
         /* 3. COLUNA DO TEXTO */
         div[data-testid="column"]:nth-of-type(2) {
-            flex: 0 0 auto !important; /* Tamanho exato do texto */
+            flex: 0 0 auto !important;
+            width: auto !important;
             display: flex !important;
             flex-direction: column !important;
             justify-content: center !important;
             align-items: flex-start !important;
-            padding-left: 5px !important; /* Apenas 5px para não sobrepor visualmente */
+            padding-left: 2px !important; /* Cola na foto */
         }
 
-        /* 4. TAMANHO DA FOTO (Controlado) */
+        /* 4. TAMANHO DA FOTO (Reduzido para caber) */
         .profile-mask { 
-            width: 95px !important; 
-            height: 95px !important; 
-            margin: 0 !important; /* Remove margens extras */
+            width: 85px !important; 
+            height: 85px !important; 
+            margin: 0 !important;
         }
 
-        /* 5. TEXTO (Ajustado) */
+        /* 5. TEXTO (Tamanho ajustado) */
         .neon-title {
-            font-size: 18px !important; 
+            font-size: 17px !important; /* Tamanho que não estoura a tela */
             text-align: left !important;
             line-height: 1.1 !important;
             margin-bottom: 2px !important;
@@ -82,7 +81,7 @@ st.markdown("""
         }
         
         .neon-subtitle {
-            font-size: 11px !important; 
+            font-size: 10px !important; 
             text-align: left !important; 
             margin-bottom: 5px !important;
             white-space: nowrap !important;
@@ -92,10 +91,9 @@ st.markdown("""
         .social-bar {
             justify-content: flex-start !important;
             gap: 8px !important;
-            margin-bottom: 5px !important;
+            margin-bottom: 4px !important;
         }
-        
-        .social-icon { width: 20px !important; height: 20px !important; }
+        .social-icon { width: 18px !important; height: 18px !important; }
         
         /* Botão */
         div.stButton > button {
@@ -161,6 +159,7 @@ st.markdown("""
     }
     div.stButton > button:hover { transform: scale(1.05); }
 
+    /* ÍCONE TELEFONE VERDE */
     div.stButton > button::before {
         content: "";
         display: inline-block;
@@ -217,23 +216,15 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# --- 3. CONEXÃO (BLINDADA) ---
+# --- 3. CONEXÃO ---
 try:
-    api_key = os.environ.get("GOOGLE_API_KEY") 
-    if not api_key:
-        api_key = st.secrets["GOOGLE_API_KEY"]
-    
-    if api_key:
-        genai.configure(api_key=api_key)
-    else:
-        st.error("⚠️ API Key ausente.")
-        st.stop()
-except Exception as e:
-    st.error(f"⚠️ Erro de Configuração: {e}")
+    api_key = st.secrets["GOOGLE_API_KEY"]
+    genai.configure(api_key=api_key)
+except:
+    st.error("⚠️ API Key ausente.")
     st.stop()
 
-# ANTIGRAVITY FIX: models/gemini-2.5-flash
-model = genai.GenerativeModel('models/gemini-2.5-flash', system_instruction="Você é o CDM, IA de Vendas Elite. Responda no idioma do usuário.")
+model = genai.GenerativeModel('gemini-1.5-flash', system_instruction="Você é o CDM, IA de Vendas Elite. Responda no idioma do usuário.")
 
 # --- 4. MEMÓRIA ---
 if "messages" not in st.session_state:
@@ -267,8 +258,8 @@ bot_avatar_chat = "https://cdn-icons-png.flaticon.com/512/4712/4712139.png"
 # --- 6. CABEÇALHO ---
 st.markdown('<div style="margin-top: 10px;"></div>', unsafe_allow_html=True)
 
-# Colunas Automáticas (A Mágica acontece aqui com o CSS de 1 para 1)
-col_foto, col_texto = st.columns([1, 1]) 
+# Colunas ajustadas
+col_foto, col_texto = st.columns([1, 1.5]) 
 
 with col_foto:
     st.markdown(f"""
@@ -330,10 +321,7 @@ if prompt := st.chat_input("Digite sua mensagem..."):
 
     with st.chat_message("model", avatar=bot_avatar_chat):
         try:
-            # FIX: Safer history slicing
-            chat_hist = [{"role": m["role"], "parts": [m["content"]]} 
-                         for m in st.session_state.messages[:-1]]
-            
+            chat_hist = [{"role": m["role"], "parts": [m["content"]]} for m in st.session_state.messages if m["role"] != "user" or m["content"] != prompt]
             chat = model.start_chat(history=chat_hist)
             response = chat.send_message(prompt)
             st.markdown(response.text)
